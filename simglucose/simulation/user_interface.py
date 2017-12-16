@@ -1,0 +1,184 @@
+from simglucose.simulation.sim_env import T1DSimEnv, Observation
+from simglucose.controller.basal_bolus_ctrller import BBController
+from simglucose.sensor.cgm import CGMSensor
+from simglucose.pump.insulin_pump import InsulinPump
+from simglucose.patient.t1dpatient import T1DPatient
+from simglucose.simulation.scenario_gen import ScenarioGenerator
+import matplotlib.pyplot as plt
+import logging
+import matplotlib.dates as mdates
+from datetime import timedelta
+import time
+from multiprocessing import Process, Pool
+import os
+
+
+logger = logging.getLogger(__name__)
+
+
+class SimObj(object):
+    def __init__(self,
+                 env,
+                 controller,
+                 sim_time,
+                 animate=True):
+        self.env = env
+        self.controller = controller
+        self.sim_time = sim_time
+        self.animate = animate
+        self._ctrller_kwargs = None
+
+    def set_controller_kwargs(self, **kwargs):
+        self._ctrller_kwargs = kwargs
+
+    def simulate(self):
+        if self.animate:
+            plt.ion()
+            fig, axes = plt.subplots(4)
+
+            axes[0].set_ylabel('BG (mg/dL)')
+            axes[1].set_ylabel('CHO (g/min)')
+            axes[2].set_ylabel('Insulin (U/min)')
+            axes[3].set_ylabel('Risk Index')
+
+            lineBG, = axes[0].plot([], [], label='BG')
+            lineCGM, = axes[0].plot([], [], label='CGM')
+            lineCHO, = axes[1].plot([], [], label='CHO')
+            lineIns, = axes[2].plot([], [], label='Insulin')
+            lineLBGI, = axes[3].plot([], [], label='Hypo Risk')
+            lineHBGI, = axes[3].plot([], [], label='Hyper Risk')
+            lineRI, = axes[3].plot([], [], label='Risk Index')
+
+            lines = [lineBG, lineCGM, lineCHO,
+                     lineIns, lineLBGI, lineHBGI, lineRI]
+
+            axes[0].set_ylim([70, 180])
+            axes[1].set_ylim([-5, 30])
+            axes[2].set_ylim([-0.5, 1])
+            axes[3].set_ylim([0, 5])
+
+            for ax in axes:
+                ax.set_xlim(
+                    [self.env.start_time, self.env.start_time + self.sim_time])
+                ax.legend()
+
+            # Plot zone patches
+            axes[0].axhspan(70, 180, alpha=0.3, color='limegreen', lw=0)
+            axes[0].axhspan(50, 70, alpha=0.3, color='red', lw=0)
+            axes[0].axhspan(0, 50, alpha=0.3, color='darkred', lw=0)
+            axes[0].axhspan(180, 250, alpha=0.3, color='red', lw=0)
+            axes[0].axhspan(250, 1000, alpha=0.3, color='darkred', lw=0)
+
+            axes[0].tick_params(labelbottom='off')
+            axes[1].tick_params(labelbottom='off')
+            axes[2].tick_params(labelbottom='off')
+            axes[3].xaxis.set_minor_locator(mdates.AutoDateLocator())
+            axes[3].xaxis.set_minor_formatter(mdates.DateFormatter('%H:%M\n'))
+            axes[3].xaxis.set_major_locator(mdates.DayLocator())
+            axes[3].xaxis.set_major_formatter(mdates.DateFormatter('\n%b %d'))
+
+            axes[0].set_title(self.env.patient.name)
+
+            fig.canvas.draw()
+            fig.canvas.flush_events()
+
+        obs = Observation(CHO=0, CGM=self.env.patient.observation.Gsub)
+        action = self.controller.policy(obs, **self._ctrller_kwargs)
+
+        tic = time.time()
+        while self.env.time < self.env.start_time + self.sim_time:
+            obs, reward, done, info = self.env.step(action)
+            if self.animate:
+                self.env.render(axes, lines)
+                fig.canvas.draw()
+                fig.canvas.flush_events()
+            action = self.controller.policy(obs, **self._ctrller_kwargs)
+        toc = time.time()
+        logger.info('Simulation took {} seconds.'.format(toc - tic))
+        if self.animate:
+            plt.pause(30)
+
+
+def simulation():
+    print("Process ID: {}".format(os.getpid()))
+    print('Simulation starts ...')
+    # sim_object.simulate()
+    print('Simulation Completed!')
+
+
+def simulation_engine(sim_objects):
+    for s in sim_objects:
+        p = Process(target=s.simulate, args=())
+        p.start()
+
+
+if __name__ == '__main__':
+    # root = logging.getLogger()
+    # root.setLevel(logging.DEBUG)
+    # # logger.setLevel(logging.INFO)
+    # # create console handler and set level to debug
+    # ch = logging.StreamHandler()
+    # # ch.setLevel(logging.DEBUG)
+    # ch.setLevel(logging.INFO)
+    # # create formatter
+    # formatter = logging.Formatter(
+    #     '%(name)s: %(levelname)s: %(message)s')
+    # # add formatter to ch
+    # ch.setFormatter(formatter)
+    # # add ch to logger
+    # root.addHandler(ch)
+
+    # logger.addHandler(logging.NullHandler())
+
+    patient1 = T1DPatient.withName('adolescent#001')
+    sensor1 = CGMSensor.withName('Dexcom', seed=1)
+    pump1 = InsulinPump.withName('Insulet')
+    scenario1 = ScenarioGenerator(seed=1)
+    env1 = T1DSimEnv(patient1, sensor1, pump1, scenario1)
+    controller1 = BBController()
+
+    s1 = SimObj(env1, controller1, sim_time=timedelta(days=1))
+    # s = SimObj(env, controller, sim_time=timedelta(hours=10))
+
+    # s.animate = False
+    s1.set_controller_kwargs(patient_name=patient1.name,
+                             sample_time=s1.env.sample_time)
+
+    # s.simulate()
+
+    patient2 = T1DPatient.withName('adolescent#002')
+    sensor2 = CGMSensor.withName('Dexcom', seed=1)
+    pump2 = InsulinPump.withName('Insulet')
+    scenario2 = ScenarioGenerator(seed=1)
+    env2 = T1DSimEnv(patient2, sensor2, pump2, scenario2)
+    controller2 = BBController()
+
+    s2 = SimObj(env2, controller2, sim_time=timedelta(days=1))
+    # s = SimObj(env, controller, sim_time=timedelta(hours=10))
+
+    # s.animate = False
+    s2.set_controller_kwargs(patient_name=patient2.name,
+                             sample_time=s2.env.sample_time)
+
+    # simulation_engine([s1, s2])
+
+    sim_objects = [s1, s2]
+    # processes = [Process(target=simulation, args=(s,)) for s in sim_objects]
+    # for p in processes:
+    #     p.start()
+
+    # for p in processes:
+    #     p.join()
+
+    # for s in sim_objects:
+    #     p = Process(target=s.simulate, args=())
+    #     p.start()
+
+    with Pool(processes=2) as pool:
+        # pool.map(simulation, sim_objects)
+        res = [pool.apply_async(simulation, (s,)) for s in sim_objects]
+        # res = pool.apply_async(simulation, ())
+        # print(res.get())
+
+        for r in res:
+            print(r.get())

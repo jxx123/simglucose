@@ -1,0 +1,11 @@
+backports.functools-lru-cache==1.4
+cycler==0.10.0
+matplotlib==2.1.0
+numpy==1.13.3
+pandas==0.21.0
+pyparsing==2.2.0
+python-dateutil==2.6.1
+pytz==2017.3
+scipy==1.0.0
+six==1.11.0
+subprocess32==3.2.7
