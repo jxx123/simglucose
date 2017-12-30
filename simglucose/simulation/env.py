@@ -1,6 +1,3 @@
-from rllab.envs.base import Env
-from rllab.envs.base import Step
-from rllab.spaces import Box
 import numpy as np
 from simglucose.patient.t1dpatient import Action
 from simglucose.analysis.risk import risk_index
@@ -8,8 +5,17 @@ import pandas as pd
 from datetime import datetime
 from datetime import timedelta
 import logging
-import matplotlib.dates as mdates
 from collections import namedtuple
+
+rllab = True
+try:
+    from rllab.envs.base import Env
+    from rllab.envs.base import Step
+    from rllab.spaces import Box
+except ImportError:
+    print('You could use rllab features, if you have rllab module.')
+    rllab = False
+    Step = namedtuple("Step", ["observation", "reward", "done", "info"])
 
 Observation = namedtuple('Observation', ['CHO', 'CGM'])
 logger = logging.getLogger(__name__)
@@ -20,32 +26,19 @@ class T1DSimEnv(Env):
                  patient,
                  sensor,
                  pump,
-                 scenario,
-                 start_time=None,
-                 sample_time=None):
-
+                 scenario):
         self.patient = patient
         self.sensor = sensor
         self.pump = pump
         self.scenario = scenario
-
-        if sample_time is None:
-            sample_time = self.sensor.sample_time
-        if (not float(sample_time).is_integer()) or (sample_time <= 0):
-            raise ValueError('Expect sample_time to be positive integer.')
-        self.sample_time = sample_time
-
-        if start_time is None:
-            now = datetime.now()
-            start_time = datetime.combine(now.date(), datetime.min.time())
-        self.start_time = start_time
+        self.sample_time = self.sensor.sample_time
 
         # Initial Recording
         BG = self.patient.observation.Gsub
         horizon = 0
         LBGI, HBGI, risk = risk_index([BG], horizon)
         CGM = self.sensor.measure(self.patient)
-        self.time_hist = [self.start_time]
+        self.time_hist = [self.scenario.start_time]
         self.BG_hist = [BG]
         self.CGM_hist = [CGM]
         self.risk_hist = [risk]
@@ -56,7 +49,7 @@ class T1DSimEnv(Env):
 
     @property
     def time(self):
-        return self.start_time + timedelta(minutes=self.patient.t)
+        return self.scenario.start_time + timedelta(minutes=self.patient.t)
 
     def mini_step(self, action):
         # current action
@@ -68,7 +61,6 @@ class T1DSimEnv(Env):
         patient_mdl_act = Action(insulin=insulin, CHO=CHO)
 
         # State update
-        # logger.info('Updating patient states ...')
         self.patient.step(patient_mdl_act)
 
         # next observation
@@ -124,12 +116,19 @@ class T1DSimEnv(Env):
 
     @property
     def action_space(self):
-        ub = self.pump._params['max_basal'] + self.pump._params['max_bolus']
-        return Box(low=0, high=ub, shape=(1,))
+        if rllab:
+            ub = self.pump._params['max_basal'] + \
+                self.pump._params['max_bolus']
+            return Box(low=0, high=ub, shape=(1,))
+        else:
+            pass
 
     @property
     def observation_space(self):
-        return Box(low=0, high=np.inf, shape=(1,))
+        if rllab:
+            return Box(low=0, high=np.inf, shape=(1,))
+        else:
+            pass
 
     def render(self, axes, lines):
         logger.info('Rendering ...')
@@ -177,35 +176,6 @@ class T1DSimEnv(Env):
         axes[3].draw_artist(lines[6])
         adjust_ylim(axes[3], min(self.risk_hist), max(self.risk_hist))
 
-        # axes[0].clear()
-        # axes[0].plot(self.time_hist, self.BG_hist, label='BG')
-        # axes[0].plot(self.time_hist, self.CGM_hist,
-        #              '*', markersize=1, label='CGM')
-        # axes[0].set_ylabel('BG (mg/dL)')
-        # axes[0].legend()
-
-        # axes[1].clear()
-        # axes[1].plot(self.time_hist[:-1], self.CHO_hist, label='CHO')
-        # axes[1].set_ylabel('CHO (g/min)')
-        # axes[1].legend()
-
-        # axes[2].clear()
-        # axes[2].plot(self.time_hist[:-1], self.insulin_hist, label='insulin')
-        # axes[2].set_ylabel('Insulin (U/min)')
-        # axes[2].legend()
-
-        # axes[3].clear()
-        # axes[3].plot(self.time_hist, self.risk_hist, label='Risk')
-        # axes[3].plot(self.time_hist, self.LBGI_hist, label='Low BG Risk')
-        # axes[3].plot(self.time_hist, self.HBGI_hist, label='High BG Risk')
-        # axes[3].legend()
-
-        # axes[3].xaxis.set_minor_locator(mdates.AutoDateLocator())
-        # axes[3].xaxis.set_minor_formatter(mdates.DateFormatter('%H:%M\n'))
-        # axes[3].xaxis.set_major_locator(mdates.DayLocator())
-        # axes[3].xaxis.set_major_formatter(mdates.DateFormatter('\n%b %d'))
-        # axes[3].set_ylabel('Risk Index')
-
     def show_history(self):
         df = pd.DataFrame()
         df['Time'] = pd.Series(self.time_hist)
@@ -216,6 +186,7 @@ class T1DSimEnv(Env):
         df['LBGI'] = pd.Series(self.LBGI_hist)
         df['HBGI'] = pd.Series(self.HBGI_hist)
         df['Risk'] = pd.Series(self.risk_hist)
+        df = df.set_index('Time')
         return df
 
 

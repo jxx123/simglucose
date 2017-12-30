@@ -7,7 +7,7 @@ class Controller(object):
     def __init__(self, init_state):
         self.state = init_state
 
-    def policy(self, observation, **kwargs):
+    def policy(self, observation, env):
         self.state = observation
         action = self.state[0]
         return action

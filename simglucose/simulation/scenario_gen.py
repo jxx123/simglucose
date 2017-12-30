@@ -1,15 +1,15 @@
+from simglucose.simulation.scenario import Action, Scenario
 import numpy as np
 from scipy.stats import truncnorm
-from collections import namedtuple
 from datetime import datetime
 import logging
 
 logger = logging.getLogger(__name__)
-Action = namedtuple('scenario_action', ['meal'])
 
 
-class ScenarioGenerator(object):
-    def __init__(self, seed=None):
+class RandomScenario(Scenario):
+    def __init__(self, start_time=None, seed=None):
+        Scenario.__init__(self, start_time=start_time)
         self.seed = seed
         self.scenario = self.create_scenario(self.seed)
 
@@ -76,7 +76,7 @@ if __name__ == '__main__':
     t = copy.deepcopy(t0)
     sim_time = timedelta(days=2)
 
-    scenario = ScenarioGenerator(seed=1)
+    scenario = RandomScenario(seed=1)
     m = []
     T = []
     while t < t0 + sim_time:

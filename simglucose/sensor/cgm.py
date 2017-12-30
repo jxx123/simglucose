@@ -1,4 +1,5 @@
-from .noise_gen import CGMNoiseGenerator
+# from .noise_gen import CGMNoiseGenerator
+from .noise_gen import CGMNoise
 import pandas as pd
 import logging
 import pkg_resources
@@ -12,8 +13,7 @@ class CGMSensor(object):
     def __init__(self, params, seed=None):
         self._params = params
         self.name = params.Name
-        self._noise_generator = CGMNoiseGenerator(
-            params, seed=seed).gen_noise()
+        self._noise_generator = CGMNoise(params, seed=seed)
         self.sample_time = params.sample_time
         self.seed = seed
         self._last_CGM = 0
@@ -26,7 +26,7 @@ class CGMSensor(object):
 
     def measure(self, patient):
         if patient.t % self.sample_time == 0:
-            logger.info(
+            logger.debug(
                 't = {} min, CGM is measuring blood glucose'.format(patient.t))
             BG = patient.observation.Gsub
             CGM = BG + next(self._noise_generator)
@@ -40,8 +40,7 @@ class CGMSensor(object):
 
     def reset(self):
         logger.info('Resetting CGM sensor ...')
-        self._noise_generator = CGMNoiseGenerator(
-            self._params, self.seed).gen_noise()
+        self._noise_generator = CGMNoise(self.params, seed=self.seed)
 
 
 if __name__ == '__main__':

@@ -12,29 +12,34 @@ def johnson_transform_SU(xi, lam, gamma, delta, x):
     return xi + lam * np.sinh((x - gamma) / delta)
 
 
-class CGMNoiseGenerator(object):
+class CGMNoise(object):
     PRECOMPUTE = 10  # length of pre-compute noise sequence
     MDL_SAMPLE_TIME = 15
 
-    def __init__(self, params, seed=None):
+    def __init__(self, params, n=np.inf, seed=None):
         self._params = params
         self.seed = seed
-        self._noise15_gen = self._noise15_generator()
+        # self._noise15_gen = self._noise15_generator()
+        self._noise15_gen = noise15_iter(params, seed=seed)
         self._noise_init = next(self._noise15_gen)
 
-    def _noise15_generator(self, num=np.Inf):
-        np.random.seed(self.seed)
-        e = np.random.randn()
-        count = 0
-        while count < num:
-            eps = johnson_transform_SU(self._params["xi"],
-                                       self._params["lambda"],
-                                       self._params["gamma"],
-                                       self._params["delta"],
-                                       e)
-            yield eps
-            e = self._params["PACF"] * (e + np.random.randn())
-            count += 1
+        self.n = n
+        self.count = 0
+        self.noise = deque()
+
+    # def _noise15_generator(self, num=np.Inf):
+    #     np.random.seed(self.seed)
+    #     e = np.random.randn()
+    #     count = 0
+    #     while count < num:
+    #         eps = johnson_transform_SU(self._params["xi"],
+    #                                    self._params["lambda"],
+    #                                    self._params["gamma"],
+    #                                    self._params["delta"],
+    #                                    e)
+    #         yield eps
+    #         e = self._params["PACF"] * (e + np.random.randn())
+    #         count += 1
 
     def _get_noise_seq(self):
         # To make the noise sequence continous, keep the last noise as the
@@ -64,15 +69,56 @@ class CGMNoiseGenerator(object):
 
         return noise2return
 
-    def gen_noise(self, num=np.Inf):
-        count = 0
-        noise = deque()
-        while count < num:
-            if len(noise) == 0:
-                logger.info('Generating a new noise sequence ...')
-                noise = self._get_noise_seq()
-            yield noise.popleft()
-            count += 1
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.count < self.n:
+            if len(self.noise) == 0:
+                logger.debug('Generating a new noise sequence ...')
+                self.noise = self._get_noise_seq()
+            self.count += 1
+            return self.noise.popleft()
+        else:
+            raise StopIteration()
+
+    # def gen_noise(self, num=np.Inf):
+    #     count = 0
+    #     noise = deque()
+    #     while count < num:
+    #         if len(noise) == 0:
+    #             logger.info('Generating a new noise sequence ...')
+    #             noise = self._get_noise_seq()
+    #         yield noise.popleft()
+    #         count += 1
+
+
+class noise15_iter:
+    def __init__(self, params, seed=None, n=np.inf):
+        self.seed = seed
+        np.random.seed(self.seed)
+        self._params = params
+        self.n = n
+        self.e = 0
+        self.count = 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.count == 0:
+            self.e = np.random.randn()
+        elif self.count < self.n:
+            self.e = self._params["PACF"] * (self.e + np.random.randn())
+        else:
+            raise StopIteration()
+        eps = johnson_transform_SU(self._params["xi"],
+                                   self._params["lambda"],
+                                   self._params["gamma"],
+                                   self._params["delta"],
+                                   self.e)
+        self.count += 1
+        return eps
 
 
 if __name__ == '__main__':

@@ -35,8 +35,8 @@ class T1DPatient(Patient):
         self.init_state = init_state
         self.t0 = t0
 
-        self._params.last_Qsto = init_state[0] + init_state[1]
-        self._params.last_foodtaken = 0
+        self._last_Qsto = init_state[0] + init_state[1]
+        self._last_foodtaken = 0
         self.name = self._params.Name
 
         self._odesolver = ode(self.model).set_integrator('dopri5')
@@ -95,16 +95,17 @@ class T1DPatient(Patient):
         # Detect eating or not and update last digestion amount
         if action.CHO > 0 and self._last_action.CHO <= 0:
             logger.info('t = {}, patient starts eating ...'.format(self.t))
-            self._params.last_Qsto = self.state[0] + self.state[1]
-            self._params.last_foodtaken = 0
+            self._last_Qsto = self.state[0] + self.state[1]
+            self._last_foodtaken = 0
             self.is_eating = True
 
         if to_eat > 0:
             # print(action.CHO)
-            logger.info('t = {}, patient eats {} g'.format(self.t, action.CHO))
+            logger.debug('t = {}, patient eats {} g'.format(
+                self.t, action.CHO))
 
         if self.is_eating:
-            self._params.last_foodtaken += action.CHO   # g
+            self._last_foodtaken += action.CHO   # g
 
         # Detect eating ended
         if action.CHO <= 0 and self._last_action.CHO > 0:
@@ -115,7 +116,10 @@ class T1DPatient(Patient):
         self._last_action = action
 
         # ODE solver
-        self._odesolver.set_f_params(action, self._params)
+        # print('Current simulation time: {}'.format(self.t))
+        # print(self._last_Qsto)
+        self._odesolver.set_f_params(
+            action, self._params, self._last_Qsto, self._last_foodtaken)
         if self._odesolver.successful():
             self._odesolver.integrate(self._odesolver.t + self.sample_time)
         else:
@@ -123,7 +127,7 @@ class T1DPatient(Patient):
             raise
 
     @staticmethod
-    def model(t, x, action, params):
+    def model(t, x, action, params, last_Qsto, last_foodtaken):
         dxdt = np.zeros(13)
         d = action.CHO * 1000  # g -> mg
         insulin = action.insulin * 6000 / params.BW  # U/min -> pmol/kg/min
@@ -131,7 +135,7 @@ class T1DPatient(Patient):
 
         # Glucose in the stomach
         qsto = x[0] + x[1]
-        Dbar = params.last_Qsto + params.last_foodtaken
+        Dbar = last_Qsto + last_foodtaken
 
         # Stomach solid
         dxdt[0] = -params.kmax * x[0] + d
@@ -205,7 +209,7 @@ class T1DPatient(Patient):
         dxdt[12] = (x[12] >= 0) * dxdt[12]
 
         if action.insulin > basal:
-            logger.info('t = {}, injecting insulin: {}'.format(
+            logger.debug('t = {}, injecting insulin: {}'.format(
                 t, action.insulin))
             logger.debug('dxdt[10] = {}'.format(dxdt[10]))
             logger.debug('dxdt = \n{}'.format(dxdt))

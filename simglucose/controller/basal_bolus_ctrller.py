@@ -19,11 +19,14 @@ class BBController(Controller):
             PATIENT_PARA_FILE)
         self.target = target
 
-    def policy(self, observation, **kwargs):
-        sample_time = kwargs.get('sample_time', 1)
-        pname = kwargs.get('patient_name')
+    def policy(self, observation, env):
+        # sample_time = kwargs.get('sample_time', 1)
+        # pname = kwargs.get('patient_name')
         action = self._bb_policy(
-            pname, observation.CHO, observation.CGM, sample_time)
+            env.patient.name,
+            observation.CHO,
+            observation.CGM,
+            env.sample_time)
         return action
 
     def _bb_policy(self, name, meal, glucose, env_sample_time):
