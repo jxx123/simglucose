@@ -3,16 +3,10 @@ A Type-1 Diabetes simulator implemented in Python for Reinforcement Learning pur
 
 This simulator is a python implementation of [UVa/Padova Simulator (2008 version)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4454102/) for research purpose only. The simulator includes 30 virtual patients, 10 adolescents, 10 adults, 10 children. 
 
-|                                                                                       |                                                                                |                                                                                                  |                                                                                                  |
-|---------------------------------------------------------------------------------------|:-------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
-| ![animation screenshot](https://github.com/jxx123/simglucose/tree/master/screenshots) | ![CVGA](https://github.com/jxx123/simglucose/blob/master/screenshots/CVGA.png) | ![BG Trace Plot](https://github.com/jxx123/simglucose/blob/master/screenshots/BG_trace_plot.png) | ![Risk Index Stats](https://github.com/jxx123/simglucose/blob/master/screenshots/risk_index.png) |
+| Animation                                                                                         | CVGA Plot                                                                      | BG Trace Plot                                                                                    | Risk Index Stats                                                                                                 |
+|---------------------------------------------------------------------------------------------------|:-------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
+| ![animation screenshot](https://github.com/jxx123/simglucose/blob/master/screenshots/animate.png) | ![CVGA](https://github.com/jxx123/simglucose/blob/master/screenshots/CVGA.png) | ![BG Trace Plot](https://github.com/jxx123/simglucose/blob/master/screenshots/BG_trace_plot.png) | ![Risk Index Stats](https://github.com/jxx123/simglucose/blob/master/screenshots/risk_index.png) |
 
-
-
-<!-- |       |         |   | -->
-<!-- | ------------- |:-------------:| -----:| -->
-<!-- | <img src="https://github.com/jxx123/simglucose/blob/master/screenshots/animate.png" height="200" width="200"> | <img src="https://github.com/jxx123/simglucose/blob/master/screenshots/CVGA.png" height="200" width="200">| <img src="https://github.com/jxx123/simglucose/blob/master/screenshots/BG_trace_plot.png" height="200" width="200"> | -->
-<!-- | <img src="https://github.com/jxx123/simglucose/blob/master/screenshots/risk_index.png" height="200" width="200">  | <img src="https://github.com/jxx123/simglucose/blob/master/screenshots/zone_stats.png" height="200" width="200">   |  | -->
   <!-- ![Zone Stats](https://github.com/jxx123/simglucose/blob/master/screenshots/zone_stats.png) -->
 ## Release Notes, 12/31/2017
 - Simulation enviroment follows [OpenAI gym](https://github.com/openai/gym) and [rllab](https://github.com/rll/rllab) APIs. It returns observation, reward, done, info at each step, which means the simulator is "reinforcement-learning-ready".
