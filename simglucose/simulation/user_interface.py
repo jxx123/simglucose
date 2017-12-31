@@ -355,10 +355,9 @@ def simulate(sim_time=None,
     results = batch_sim(sim_instances, parallel=parallel)
 
     df = pd.concat(results, keys=[s.env.patient.name for s in sim_instances])
-    stats, ri_per_hour, zone_stats, axes = report(df)
-    stats.to_csv(os.path.join(save_path, 'performance_stats.csv'))
-    ri_per_hour.to_csv(os.path.join(save_path, 'risk_trace.csv'))
-    zone_stats.to_csv(os.path.join(save_path, 'CVGA_stats.csv'))
+    report(df, save_path)
+
+    return 0
 
 
 if __name__ == '__main__':

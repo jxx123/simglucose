@@ -89,7 +89,7 @@ def percent_stats(BG, ax=None):
     ax.set_ylabel('Percent of time in Range (%)')
     fig.tight_layout()
 #     p_stats.transpose().plot(kind='bar', legend=False)
-    return p_stats, ax
+    return p_stats, fig, ax
 
 
 def risk_index_trace(df_BG, visualize=False):
@@ -127,7 +127,7 @@ def risk_index_trace(df_BG, visualize=False):
     fig.tight_layout()
 
     axes.append(ax)
-    return ri_per_hour, ri_mean, axes
+    return ri_per_hour, ri_mean, fig, axes
 
 
 def CVGA_background(ax=None):
@@ -174,7 +174,7 @@ def CVGA_background(ax=None):
             ax.annotate(r, (cx, cy), weight='bold', color='k',
                         fontsize=10, ha='center', va='center')
 
-    return ax
+    return fig, ax
 
 
 def CVGA_analysis(BG):
@@ -204,7 +204,7 @@ def CVGA(BG_list, label=None):
         label = [label]
     if label is None:
         label = ['BG%d' % (i + 1) for i in range(len(BG_list))]
-    ax = CVGA_background()
+    fig, ax = CVGA_background()
     zone_stats = []
     for (BG, l) in zip(BG_list, label):
         BGmin, BGmax, A, B, C, D, E = CVGA_analysis(BG)
@@ -215,23 +215,27 @@ def CVGA(BG_list, label=None):
     zone_stats = pd.DataFrame(zone_stats, columns=['A', 'B', 'C', 'D', 'E'])
 #     ax.legend(bbox_to_anchor=(1, 1.10), borderaxespad=0.5)
     ax.legend()
-    return zone_stats, ax
+    return zone_stats, fig, ax
 
 
-def report(df):
+def report(df, save_path):
     BG = df.unstack(level=0).BG
-    # ax1 = ensemble_BG(BG, plot_var=True, nstd=1)
-    # ax2 = ensemble_BG(CGM, plot_var=True, nstd=1)
 
-    fig, ax1, ax2, ax3 = ensemblePlot(df)
-
-    pstats, ax4 = percent_stats(BG)
-    ri_per_hour, ri_mean, ax5 = risk_index_trace(BG, visualize=False)
-    zone_stats, ax6 = CVGA(BG, label='')
-
+    fig_ensemble, ax1, ax2, ax3 = ensemblePlot(df)
+    pstats, fig_percent, ax4 = percent_stats(BG)
+    ri_per_hour, ri_mean, fig_ri, ax5 = risk_index_trace(BG, visualize=False)
+    zone_stats, fig_cvga, ax6 = CVGA(BG, label='')
     axes = [ax1, ax2, ax3, ax4, ax5, ax6]
-
     results = pd.concat([pstats, ri_mean], axis=1)
+
+    results.to_csv(os.path.join(save_path, 'performance_stats.csv'))
+    ri_per_hour.to_csv(os.path.join(save_path, 'risk_trace.csv'))
+    zone_stats.to_csv(os.path.join(save_path, 'CVGA_stats.csv'))
+
+    fig_ensemble.savefig(os.path.join(save_path, 'BG_trace.png'))
+    fig_percent.savefig(os.path.join(save_path, 'zone_stats.png'))
+    fig_ri.savefig(os.path.join(save_path, 'risk_stats.png'))
+    fig_cvga.savefig(os.path.join(save_path, 'CVGA.png'))
 
     plt.show()
     return results, ri_per_hour, zone_stats, axes
