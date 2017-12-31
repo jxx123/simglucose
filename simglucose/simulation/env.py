@@ -2,7 +2,6 @@ import numpy as np
 from simglucose.patient.t1dpatient import Action
 from simglucose.analysis.risk import risk_index
 import pandas as pd
-from datetime import datetime
 from datetime import timedelta
 import logging
 from collections import namedtuple
@@ -14,8 +13,20 @@ try:
     from rllab.spaces import Box
 except ImportError:
     print('You could use rllab features, if you have rllab module.')
+    _Step = namedtuple("Step",
+                       ["observation", "reward", "done", "info"])
+
+    def Step(observation, reward, done, **kwargs):
+        """
+        Convenience method creating a namedtuple with the results of the
+        environment.step method.
+        Put extra diagnostic info in the kwargs
+        """
+        return _Step(observation, reward, done, kwargs)
+
     rllab = False
-    Step = namedtuple("Step", ["observation", "reward", "done", "info"])
+    Step = namedtuple("Step",
+                      ["observation", "reward", "done", "info"])
 
 Observation = namedtuple('Observation', ['CHO', 'CGM'])
 logger = logging.getLogger(__name__)
@@ -106,7 +117,11 @@ class T1DSimEnv(Env):
         reward = - np.log(risk)
         done = BG < 70 or BG > 350
         obs = Observation(CHO=CHO, CGM=CGM)
-        return Step(observation=obs, reward=reward, done=done)
+        return Step(observation=obs,
+                    reward=reward,
+                    done=done,
+                    sample_time=self.sample_time,
+                    patient_name=self.patient.name)
 
     def reset(self):
         self.patient.reset()

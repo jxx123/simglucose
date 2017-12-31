@@ -1,6 +1,9 @@
 # Compiled python modules.
 *.pyc
 
+# Simulation results folders
+/examples/results/
+
 # Setuptools distribution folder.
 /dist/
 

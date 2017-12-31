@@ -15,6 +15,7 @@ class Scenario(object):
                 input('Input simulation start time (hr): ')))
             start_time = datetime.combine(now.date(),
                                           datetime.min.time()) + start_hour
+            print('Simulation start time is set to {}.'.format(start_time))
         self.start_time = start_time
 
     def get_action(self, t):

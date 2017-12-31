@@ -1,4 +1,4 @@
-from simglucose.simulation.env import Observation
+from simglucose.controller.base import Action
 import matplotlib.pyplot as plt
 import logging
 import matplotlib.dates as mdates
@@ -25,9 +25,6 @@ class SimObj(object):
         self.animate = animate
         self._ctrller_kwargs = None
         self.path = path
-
-    # def set_controller_kwargs(self, **kwargs):
-    #     self._ctrller_kwargs = kwargs
 
     def simulate(self):
         if self.animate:
@@ -81,8 +78,8 @@ class SimObj(object):
             fig.canvas.draw()
             fig.canvas.flush_events()
 
-        obs = Observation(CHO=0, CGM=self.env.patient.observation.Gsub)
-        action = self.controller.policy(obs, self.env)
+        basal = self.env.patient._params.u2ss * self.env.patient._params.BW / 6000
+        action = Action(basal=basal, bolus=0)
 
         tic = time.time()
         while self.env.time < self.env.scenario.start_time + self.sim_time:
@@ -91,7 +88,7 @@ class SimObj(object):
                 self.env.render(axes, lines)
                 fig.canvas.draw()
                 fig.canvas.flush_events()
-            action = self.controller.policy(obs, self.env)
+            action = self.controller.policy(obs, reward, done, **info)
         toc = time.time()
         logger.info('Simulation took {} seconds.'.format(toc - tic))
 
@@ -101,7 +98,7 @@ class SimObj(object):
     def save_results(self):
         df = self.results()
         if not os.path.isdir(self.path):
-            os.mkdir(self.path)
+            os.makedirs(self.path)
         filename = os.path.join(self.path, str(self.env.patient.name) + '.csv')
         df.to_csv(filename)
 
@@ -109,20 +106,6 @@ class SimObj(object):
 def sim(sim_object):
     print("Process ID: {}".format(os.getpid()))
     print('Simulation starts ...')
-    # root = logging.getLogger()
-    # root.setLevel(logging.DEBUG)
-    # # logger.setLevel(logging.INFO)
-    # # create console handler and set level to debug
-    # ch = logging.StreamHandler()
-    # # ch.setLevel(logging.DEBUG)
-    # ch.setLevel(logging.INFO)
-    # # create formatter
-    # formatter = logging.Formatter(
-    #     '%(process)d: %(name)s: %(levelname)s: %(message)s')
-    # # add formatter to ch
-    # ch.setFormatter(formatter)
-    # # add ch to logger
-    # root.addHandler(ch)
     sim_object.simulate()
     sim_object.save_results()
     print('Simulation Completed!')

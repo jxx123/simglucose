@@ -13,6 +13,7 @@ import pkg_resources
 import logging
 import os
 from datetime import datetime
+from datetime import timedelta
 from pathos.multiprocessing import ProcessPool as Pool
 import time
 
@@ -289,8 +290,32 @@ def simulate(sim_time=None,
              controller=None,
              start_time=None,
              save_path=None,
-             animate=False,
-             parallel=True):
+             animate=None,
+             parallel=None):
+    if animate is None:
+        while True:
+            select = input('Show animation? (y/n) ')
+            if select == 'y':
+                animate = True
+                break
+            elif select == 'n':
+                animate = False
+                break
+            else:
+                continue
+
+    if parallel is None:
+        while True:
+            select = input('Use multiple processes? (y/n) ')
+            if select == 'y':
+                parallel = True
+                break
+            elif select == 'n':
+                parallel = False
+                break
+            else:
+                continue
+
     if animate is True and parallel is True:
         raise ValueError(
             """animate and parallel cannot be turned on at the same time for
@@ -315,7 +340,6 @@ def simulate(sim_time=None,
 
 
 if __name__ == '__main__':
-    from datetime import timedelta
     root = logging.getLogger()
     root.setLevel(logging.DEBUG)
     # logger.setLevel(logging.INFO)
@@ -331,8 +355,9 @@ if __name__ == '__main__':
     # add ch to logger
     root.addHandler(ch)
 
-    sim_time = timedelta(days=1)
-    simulate(animate=True, parallel=True)
+    # sim_time = timedelta(days=1)
+    simulate()
+    # simulate(animate=True, parallel=True)
     # sim_instances = create_sim_instance(sim_time, animate=False)
     # for s in sim_instances:
     #     s.set_controller_kwargs(patient_name=s.env.patient.name,

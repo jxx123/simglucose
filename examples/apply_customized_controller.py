@@ -1,9 +1,8 @@
-from collections import namedtuple
+from simglucose.simulation.user_interface import simulate
+from simglucose.controller.base import Controller, Action
 
-Action = namedtuple('ctrller_action', ['basal', 'bolus'])
 
-
-class Controller(object):
+class MyController(Controller):
     def __init__(self, init_state):
         self.state = init_state
 
@@ -27,3 +26,7 @@ class Controller(object):
         self.state = observation
         action = Action(basal=0, bolus=0)
         return action
+
+
+ctrller = MyController(0)
+simulate(controller=ctrller)
