@@ -4,10 +4,7 @@ import logging
 import matplotlib.dates as mdates
 from datetime import timedelta
 import time
-# from multiprocessing import Process, Pool
-from pathos.multiprocessing import ProcessPool as Pool
 import os
-
 
 logger = logging.getLogger(__name__)
 
@@ -119,6 +116,7 @@ if __name__ == '__main__':
     from simglucose.actuator.pump import InsulinPump
     from simglucose.patient.t1dpatient import T1DPatient
     from simglucose.simulation.scenario_gen import RandomScenario
+    from pathos.multiprocessing import ProcessPool as Pool
 
     path = './results'
 

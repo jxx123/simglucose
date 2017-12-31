@@ -14,8 +14,14 @@ import logging
 import os
 from datetime import datetime
 from datetime import timedelta
-from pathos.multiprocessing import ProcessPool as Pool
 import time
+
+pathos = True
+try:
+    from pathos.multiprocessing import ProcessPool as Pool
+except ImportError:
+    print('You could install pathos to enable parallel simulation.')
+    pathos = False
 
 logger = logging.getLogger(__name__)
 
@@ -275,10 +281,12 @@ def create_sim_instance(sim_time=None,
 
 def batch_sim(sim_instances, parallel=False):
     tic = time.time()
-    if parallel:
+    if parallel and pathos:
         with Pool() as p:
             results = p.map(sim, sim_instances)
     else:
+        if parallel and not pathos:
+            print('Simulation is using single process even though parallel=True.')
         results = [sim(s) for s in sim_instances]
     toc = time.time()
     print('Simulation took {} sec.'.format(toc - tic))
@@ -292,6 +300,20 @@ def simulate(sim_time=None,
              save_path=None,
              animate=None,
              parallel=None):
+    '''
+    Main user interface.
+    ----
+    Inputs:
+    sim_time   - a datetime.timedelta object specifying the simulation time.
+    scenario   - a simglucose.scenario.Scenario object. Use
+                 simglucose.scenario_gen.RandomScenario or
+                 simglucose.scenario.CustomScenario to create a scenario object.
+    controller - a simglucose.controller.Controller object.
+    start_time - a datetime.datetime object specifying the simulation start time.
+    save_path  - a string representing the directory to save simulation results.
+    animate    - switch for animation. True/False.
+    parallel   - switch for parallel computing. True/False.
+    '''
     if animate is None:
         while True:
             select = input('Show animation? (y/n) ')

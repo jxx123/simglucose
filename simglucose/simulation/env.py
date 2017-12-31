@@ -114,7 +114,8 @@ class T1DSimEnv(Env):
         self.HBGI_hist.append(HBGI)
 
         # Compute reward, and decide whether game is over
-        reward = - np.log(risk)
+        # reward = - np.log(risk)
+        reward = 10 - risk
         done = BG < 70 or BG > 350
         obs = Observation(CHO=CHO, CGM=CGM)
         return Step(observation=obs,
