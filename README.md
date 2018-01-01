@@ -12,7 +12,7 @@ This simulator is a python implementation of [UVa/Padova Simulator (2008 version
   <!-- ![Zone Stats](https://github.com/jxx123/simglucose/blob/master/screenshots/zone_stats.png) -->
 ## Release Notes, 12/31/2017
 - Simulation enviroment follows [OpenAI gym](https://github.com/openai/gym) and [rllab](https://github.com/rll/rllab) APIs. It returns observation, reward, done, info at each step, which means the simulator is "reinforcement-learning-ready".
-- The reward at each step is `10 - risk_index`. Customized reward is not supported for now. `risk_index` is defined in this [paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2903980/pdf/dia.2008.0138.pdf). 
+- The reward at each step is $\Delta risk(t) = risk(t) - risk(t-1)$. Customized reward is not supported for now. $risk(t)$ is the risk index defined in this [paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2903980/pdf/dia.2008.0138.pdf). 
 - Supports parallel computing. The simulator simulates mutliple patients parallelly using [pathos multiprocessing package](https://github.com/uqfoundation/pathos) (you are free to turn parallel off by setting `parallel=False`).
 - The simulator provides a random scenario generator (`from simglucose.simulation.scenario_gen import RandomScenario`) and a customized scenario generator (`from simglucose.simulation.scenario import CustomScnenario`). Commandline user-interface will guide you through the scenario settings.
 - The simulator provides the most basic basal-bolus controller for now. It provides very simple syntax to implement your own controller, like Model Predictive Control, PID control, reinforcement learning control, etc. 
@@ -87,6 +87,7 @@ class MyController(Controller):
 ctrller = MyController(0)
 simulate(controller=ctrller)
 ```
+
 These two examples can also be found in examples\ folder.
 
 In fact, you can specify a lot more simulation parameters through `simulation`:

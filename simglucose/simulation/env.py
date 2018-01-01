@@ -123,7 +123,11 @@ class T1DSimEnv(Env):
 
         # Compute reward, and decide whether game is over
         # reward = - np.log(risk)
-        reward = 10 - risk
+        # reward = 10 - risk
+        if len(self.risk_hist) > 1:
+            reward = self.risk_hist[-2] - self.risk_hist[-1]
+        else:
+            reward = - self.risk_hist[-1]
         done = BG < 70 or BG > 350
         obs = Observation(CHO=CHO, CGM=CGM)
         return Step(observation=obs,

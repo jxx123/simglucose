@@ -4,3 +4,4 @@ include *.py
 include examples/*.py
 include tests/*.py
 recursive-include simglucose *.py
+include README.md
