@@ -15,6 +15,7 @@ import os
 from datetime import datetime
 from datetime import timedelta
 import time
+import platform
 
 pathos = True
 try:
@@ -338,10 +339,10 @@ def simulate(sim_time=None,
             else:
                 continue
 
-    if animate is True and parallel is True:
-        raise ValueError(
-            """animate and parallel cannot be turned on at the same time for
-            now. Most matplotlib backends do not support multiprocessing.""")
+    if platform.system() is 'Darwin':
+        if animate is True and parallel is True:
+            raise ValueError(
+                """animate and parallel cannot be turned on at the same time in macOS.""")
 
     if save_path is None:
         save_path = pick_save_path()

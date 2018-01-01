@@ -12,7 +12,9 @@ try:
     from rllab.envs.base import Step
     from rllab.spaces import Box
 except ImportError:
+    rllab = False
     print('You could use rllab features, if you have rllab module.')
+
     _Step = namedtuple("Step",
                        ["observation", "reward", "done", "info"])
 
@@ -24,9 +26,15 @@ except ImportError:
         """
         return _Step(observation, reward, done, kwargs)
 
-    rllab = False
-    Step = namedtuple("Step",
-                      ["observation", "reward", "done", "info"])
+    class Env(object):
+        def __init__():
+            pass
+
+        def step(self, action):
+            raise NotImplementedError
+
+        def reset(self):
+            raise NotImplementedError
 
 Observation = namedtuple('Observation', ['CHO', 'CGM'])
 logger = logging.getLogger(__name__)

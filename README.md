@@ -16,7 +16,7 @@ This simulator is a python implementation of [UVa/Padova Simulator (2008 version
 - The simulator provides the most basic basal-bolus controller for now. It provides very simple syntax to implement your own controller, like Model Predictive Control, PID control, reinforcement learning control, etc. 
 - You can specify random seed in case you want to repeat your experiments.
 - The simulator will generate several plots for performance analysis after simulation. The plots include blood glucose trace plot, Control Variability Grid Analysis (CVGA) plot, statistics plot of blood glucose in different zones, risk indices statistics plot.
-- NOTE: `animate` and `parallel` cannot be set to `True` at the same time for now. Most backends of matplotlib use a single thread for rendering. Multiprocessing could cause conflicts.
+- NOTE: `animate` and `parallel` cannot be set to `True` at the same time in macOS. Most backends of matplotlib in macOS is not thread-safe. Windows has not been tested. Let me know the results if anybody has tested it out.
 
 ## Installation
 For minimal installation, 
