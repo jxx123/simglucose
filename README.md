@@ -21,13 +21,20 @@ This simulator is a python implementation of [UVa/Padova Simulator (2008 version
 - NOTE: `animate` and `parallel` cannot be set to `True` at the same time in macOS. Most backends of matplotlib in macOS is not thread-safe. Windows has not been tested. Let me know the results if anybody has tested it out.
 
 ## Installation
-For minimal installation, 
+Auto installation:
+```bash
+pip install simglucose
+```
+
+Manual installation: 
 ```bash
 git clone https://github.com/jxx123/simglucose.git
 cd simglucose
 pip install -e .
 ```
 If [rllab (optional)](https://github.com/rll/rllab) is installed, the package will utilize some functionalities in rllab.
+
+Note: there might be some minor differences between auto install version and manual install version. Use `git clone` and manual installation to get the latest version.
 
 ## Quick Start
 Run the simulator user interface
