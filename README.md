@@ -22,12 +22,13 @@ This simulator is a python implementation of [UVa/Padova Simulator (2008 version
 
 ## Installation
 It is highly recommended to use `pip` to install `simglucose`, follow this [link](https://pip.pypa.io/en/stable/installing/) to install pip.
-- Auto installation:
+
+Auto installation:
 ```bash
 pip install simglucose
 ```
 
-- Manual installation: 
+Manual installation: 
 ```bash
 git clone https://github.com/jxx123/simglucose.git
 cd simglucose
