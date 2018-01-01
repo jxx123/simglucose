@@ -1,1 +1,6 @@
 include simglucose/params/*.csv
+include LICENSE
+include *.py
+include examples/*.py
+include tests/*.py
+recursive-include simglucose *.py
