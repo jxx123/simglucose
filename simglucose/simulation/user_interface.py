@@ -1,4 +1,4 @@
-from simglucose.simulation.sim_engine import SimObj, sim
+from simglucose.simulation.sim_engine import batch_sim
 from simglucose.simulation.env import T1DSimEnv
 from simglucose.controller.basal_bolus_ctrller import BBController
 from simglucose.sensor.cgm import CGMSensor
@@ -14,15 +14,8 @@ import logging
 import os
 from datetime import datetime
 from datetime import timedelta
-import time
 import platform
 
-pathos = True
-try:
-    from pathos.multiprocessing import ProcessPool as Pool
-except ImportError:
-    print('You could install pathos to enable parallel simulation.')
-    pathos = False
 
 logger = logging.getLogger(__name__)
 
@@ -278,20 +271,6 @@ def create_sim_instance(sim_time=None,
                             animate=animate,
                             path=save_path) for (e, c) in zip(envs, ctrllers)]
     return sim_instances
-
-
-def batch_sim(sim_instances, parallel=False):
-    tic = time.time()
-    if parallel and pathos:
-        with Pool() as p:
-            results = p.map(sim, sim_instances)
-    else:
-        if parallel and not pathos:
-            print('Simulation is using single process even though parallel=True.')
-        results = [sim(s) for s in sim_instances]
-    toc = time.time()
-    print('Simulation took {} sec.'.format(toc - tic))
-    return results
 
 
 def simulate(sim_time=None,

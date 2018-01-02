@@ -5,6 +5,7 @@ Action = namedtuple('ctrller_action', ['basal', 'bolus'])
 
 class Controller(object):
     def __init__(self, init_state):
+        self.init_state = init_state
         self.state = init_state
 
     def policy(self, observation, reward, done, **info):
@@ -24,6 +25,10 @@ class Controller(object):
         action - a namedtuple defined at the beginning of this file. The
                  controller action contains two entries: basal, bolus
         '''
-        self.state = observation
-        action = Action(basal=0, bolus=0)
-        return action
+        raise NotImplementedError
+
+    def reset(self):
+        '''
+        Reset the controller state to inital state, must be implemented
+        '''
+        raise NotImplementedError

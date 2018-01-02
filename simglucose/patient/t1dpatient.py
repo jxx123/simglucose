@@ -34,17 +34,7 @@ class T1DPatient(Patient):
             init_state = self._params.iloc[2:15]
         self.init_state = init_state
         self.t0 = t0
-
-        self._last_Qsto = init_state[0] + init_state[1]
-        self._last_foodtaken = 0
-        self.name = self._params.Name
-
-        self._odesolver = ode(self.model).set_integrator('dopri5')
-        self._odesolver.set_initial_value(init_state, t0)
-
-        self._last_action = Action(CHO=0, insulin=0)
-        self.is_eating = False
-        self.planned_meal = 0
+        self.reset()
 
         logger.debug('\nparams:\n{}\nState x:\n{}'.format(
             self._params, self.state))
@@ -248,8 +238,16 @@ class T1DPatient(Patient):
         '''
         Reset the patient state to default intial state
         '''
+        self._last_Qsto = self.init_state[0] + self.init_state[1]
+        self._last_foodtaken = 0
+        self.name = self._params.Name
+
         self._odesolver = ode(self.model).set_integrator('dopri5')
         self._odesolver.set_initial_value(self.init_state, self.t0)
+
+        self._last_action = Action(CHO=0, insulin=0)
+        self.is_eating = False
+        self.planned_meal = 0
 
 
 if __name__ == '__main__':

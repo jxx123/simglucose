@@ -10,8 +10,10 @@ logger = logging.getLogger(__name__)
 class RandomScenario(Scenario):
     def __init__(self, start_time=None, seed=None):
         Scenario.__init__(self, start_time=start_time)
+        # self.init_seed = seed
+        # self.scenario = self.create_scenario(self.seed)
         self.seed = seed
-        self.scenario = self.create_scenario(self.seed)
+        self.reset()
 
     def get_action(self, t):
         # t must be datetime.datetime object
@@ -20,10 +22,7 @@ class RandomScenario(Scenario):
 
         if t_sec < 1:
             logger.info('Creating new one day scenario ...')
-            if self.seed:
-                # Make scenario repeatable, but varies every day
-                self.seed += 1
-            self.scenario = self.create_scenario(self.seed)
+            self.scenario = self.create_scenario()
 
         t_min = np.floor(t_sec / 60.0)
 
@@ -34,9 +33,7 @@ class RandomScenario(Scenario):
         else:
             return Action(meal=0)
 
-    @staticmethod
-    def create_scenario(seed):
-        np.random.seed(seed)
+    def create_scenario(self):
         scenario = {'meal': {'time': [],
                              'amount': []}}
 
@@ -53,18 +50,21 @@ class RandomScenario(Scenario):
         for p, tlb, tub, tbar, tsd, mbar, msd in zip(
                 prob, time_lb, time_ub, time_mu, time_sigma,
                 amount_mu, amount_sigma):
-            if np.random.rand() < p:
-                truncnorm_gen = truncnorm((tlb - tbar) / tsd,
-                                          (tub - tbar) / tsd,
-                                          loc=tbar, scale=tsd)
-                scenario['meal']['time'].append(round(truncnorm_gen.rvs()))
+            if self.random_gen.rand() < p:
+                tmeal = np.round(truncnorm.rvs(a=(tlb - tbar) / tsd,
+                                               b=(tub - tbar) / tsd,
+                                               loc=tbar,
+                                               scale=tsd,
+                                               random_state=self.random_gen))
+                scenario['meal']['time'].append(tmeal)
                 scenario['meal']['amount'].append(
-                    max(round(np.random.normal(mbar, msd)), 0))
+                    max(round(self.random_gen.normal(mbar, msd)), 0))
 
         return scenario
 
     def reset(self):
-        self.scenario = self.create_scenario(self.seed)
+        self.random_gen = np.random.RandomState(self.seed)
+        self.scenario = self.create_scenario()
 
 
 if __name__ == '__main__':

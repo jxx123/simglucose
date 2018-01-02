@@ -55,3 +55,6 @@ class BBController(Controller):
         bolus = bolus / env_sample_time
         action = Action(basal=basal, bolus=bolus)
         return action
+
+    def reset(self):
+        pass

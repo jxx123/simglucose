@@ -27,20 +27,6 @@ class CGMNoise(object):
         self.count = 0
         self.noise = deque()
 
-    # def _noise15_generator(self, num=np.Inf):
-    #     np.random.seed(self.seed)
-    #     e = np.random.randn()
-    #     count = 0
-    #     while count < num:
-    #         eps = johnson_transform_SU(self._params["xi"],
-    #                                    self._params["lambda"],
-    #                                    self._params["gamma"],
-    #                                    self._params["delta"],
-    #                                    e)
-    #         yield eps
-    #         e = self._params["PACF"] * (e + np.random.randn())
-    #         count += 1
-
     def _get_noise_seq(self):
         # To make the noise sequence continous, keep the last noise as the
         # beginning of the new sequence
@@ -82,21 +68,11 @@ class CGMNoise(object):
         else:
             raise StopIteration()
 
-    # def gen_noise(self, num=np.Inf):
-    #     count = 0
-    #     noise = deque()
-    #     while count < num:
-    #         if len(noise) == 0:
-    #             logger.info('Generating a new noise sequence ...')
-    #             noise = self._get_noise_seq()
-    #         yield noise.popleft()
-    #         count += 1
-
 
 class noise15_iter:
     def __init__(self, params, seed=None, n=np.inf):
         self.seed = seed
-        np.random.seed(self.seed)
+        self.rand_gen = np.random.RandomState(self.seed)
         self._params = params
         self.n = n
         self.e = 0
@@ -107,9 +83,9 @@ class noise15_iter:
 
     def __next__(self):
         if self.count == 0:
-            self.e = np.random.randn()
+            self.e = self.rand_gen.randn()
         elif self.count < self.n:
-            self.e = self._params["PACF"] * (self.e + np.random.randn())
+            self.e = self._params["PACF"] * (self.e + self.rand_gen.randn())
         else:
             raise StopIteration()
         eps = johnson_transform_SU(self._params["xi"],

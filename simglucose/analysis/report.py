@@ -218,7 +218,7 @@ def CVGA(BG_list, label=None):
     return zone_stats, fig, ax
 
 
-def report(df, save_path):
+def report(df, save_path=None):
     BG = df.unstack(level=0).BG
 
     fig_ensemble, ax1, ax2, ax3 = ensemblePlot(df)
@@ -228,14 +228,15 @@ def report(df, save_path):
     axes = [ax1, ax2, ax3, ax4, ax5, ax6]
     results = pd.concat([pstats, ri_mean], axis=1)
 
-    results.to_csv(os.path.join(save_path, 'performance_stats.csv'))
-    ri_per_hour.to_csv(os.path.join(save_path, 'risk_trace.csv'))
-    zone_stats.to_csv(os.path.join(save_path, 'CVGA_stats.csv'))
+    if save_path is not None:
+        results.to_csv(os.path.join(save_path, 'performance_stats.csv'))
+        ri_per_hour.to_csv(os.path.join(save_path, 'risk_trace.csv'))
+        zone_stats.to_csv(os.path.join(save_path, 'CVGA_stats.csv'))
 
-    fig_ensemble.savefig(os.path.join(save_path, 'BG_trace.png'))
-    fig_percent.savefig(os.path.join(save_path, 'zone_stats.png'))
-    fig_ri.savefig(os.path.join(save_path, 'risk_stats.png'))
-    fig_cvga.savefig(os.path.join(save_path, 'CVGA.png'))
+        fig_ensemble.savefig(os.path.join(save_path, 'BG_trace.png'))
+        fig_percent.savefig(os.path.join(save_path, 'zone_stats.png'))
+        fig_ri.savefig(os.path.join(save_path, 'risk_stats.png'))
+        fig_cvga.savefig(os.path.join(save_path, 'CVGA.png'))
 
     plt.show()
     return results, ri_per_hour, zone_stats, axes
@@ -259,9 +260,10 @@ if __name__ == '__main__':
     # logger.addHandler(fh)
     logger.addHandler(ch)
     # For test only
-    path = os.path.join('..', 'simulation', 'results', '2017-12-28_22-57-27')
+    path = os.path.join('..', '..', 'examples',
+                        'results', '2017-12-31_17-46-32')
     os.chdir(path)
-    filename = glob.glob('*.csv')
+    filename = glob.glob('*#*.csv')
     name = [_f[:-4] for _f in filename]
     df = pd.concat([pd.read_csv(f, index_col=0) for f in filename], keys=name)
     # df_BG = df.unstack(level=0).BG

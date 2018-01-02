@@ -5,3 +5,5 @@ include examples/*.py
 include tests/*.py
 recursive-include simglucose *.py
 include README.md
+include tests/*.csv
+include examples/results/*.csv

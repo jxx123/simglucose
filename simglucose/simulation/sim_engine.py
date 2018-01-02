@@ -6,6 +6,13 @@ from datetime import timedelta
 import time
 import os
 
+pathos = True
+try:
+    from pathos.multiprocessing import ProcessPool as Pool
+except ImportError:
+    print('You could install pathos to enable parallel simulation.')
+    pathos = False
+
 logger = logging.getLogger(__name__)
 
 
@@ -99,6 +106,10 @@ class SimObj(object):
         filename = os.path.join(self.path, str(self.env.patient.name) + '.csv')
         df.to_csv(filename)
 
+    def reset(self):
+        self.env.reset()
+        self.controller.reset()
+
 
 def sim(sim_object):
     print("Process ID: {}".format(os.getpid()))
@@ -109,6 +120,20 @@ def sim(sim_object):
     return sim_object.results()
 
 
+def batch_sim(sim_instances, parallel=False):
+    tic = time.time()
+    if parallel and pathos:
+        with Pool() as p:
+            results = p.map(sim, sim_instances)
+    else:
+        if parallel and not pathos:
+            print('Simulation is using single process even though parallel=True.')
+        results = [sim(s) for s in sim_instances]
+    toc = time.time()
+    print('Simulation took {} sec.'.format(toc - tic))
+    return results
+
+
 if __name__ == '__main__':
     from simglucose.simulation.env import T1DSimEnv
     from simglucose.controller.basal_bolus_ctrller import BBController
@@ -116,7 +141,6 @@ if __name__ == '__main__':
     from simglucose.actuator.pump import InsulinPump
     from simglucose.patient.t1dpatient import T1DPatient
     from simglucose.simulation.scenario_gen import RandomScenario
-    from pathos.multiprocessing import ProcessPool as Pool
 
     path = './results'
 

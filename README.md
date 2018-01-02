@@ -61,6 +61,7 @@ from simglucose.controller.base import Controller, Action
 
 class MyController(Controller):
     def __init__(self, init_state):
+        self.init_state = init_state
         self.state = init_state
 
     def policy(self, observation, reward, done, **info):
@@ -84,6 +85,12 @@ class MyController(Controller):
         action = Action(basal=0, bolus=0)
         return action
 
+    def reset(self):
+        '''
+        Reset the controller state to inital state, must be implemented
+        '''
+        self.state = self.init_state
+
 
 ctrller = MyController(0)
 simulate(controller=ctrller)
@@ -100,4 +107,88 @@ simulate(sim_time=my_sim_time,
          save_path=my_save_path,
          animate=False,
          parallel=True)
+```
+
+## Advanced Usage
+You can create the simulation objects, and run batch simulation. For example,
+```python
+from simglucose.simulation.env import T1DSimEnv
+from simglucose.controller.basal_bolus_ctrller import BBController
+from simglucose.sensor.cgm import CGMSensor
+from simglucose.actuator.pump import InsulinPump
+from simglucose.patient.t1dpatient import T1DPatient
+from simglucose.simulation.scenario_gen import RandomScenario
+from simglucose.simulation.scenario import CustomScenario
+from simglucose.simulation.sim_engine import SimObj, sim, batch_sim
+from datetime import timedelta
+from datetime import datetime
+
+# specify start_time as the beginning of today
+now = datetime.now()
+start_time = datetime.combine(now.date(), datetime.min.time())
+
+# --------- Create Random Scenario --------------
+# Specify results saving path
+path = './results'
+
+# Create a simulation environment
+patient = T1DPatient.withName('adolescent#001')
+sensor = CGMSensor.withName('Dexcom', seed=1)
+pump = InsulinPump.withName('Insulet')
+scenario = RandomScenario(start_time=start_time, seed=1)
+env = T1DSimEnv(patient, sensor, pump, scenario)
+
+# Create a controller
+controller = BBController()
+
+# Put them together to create a simulation object
+s1 = SimObj(env, controller, timedelta(days=1), animate=False, path=path)
+results1 = sim(s1)
+print(results1)
+
+# --------- Create Custom Scenario --------------
+# Create a simulation environment
+patient = T1DPatient.withName('adolescent#001')
+sensor = CGMSensor.withName('Dexcom', seed=1)
+pump = InsulinPump.withName('Insulet')
+# custom scenario is a list of tuples (time, meal_size)
+scen = [(7, 45), (12, 70), (16, 15), (18, 80), (23, 10)]
+scenario = CustomScenario(start_time=start_time, scenario=scen)
+env = T1DSimEnv(patient, sensor, pump, scenario)
+
+# Create a controller
+controller = BBController()
+
+# Put them together to create a simulation object
+s2 = SimObj(env, controller, timedelta(days=1), animate=False, path=path)
+results2 = sim(s2)
+print(results2)
+
+
+# --------- batch simulation --------------
+# Re-initialize simulation objects
+s1.reset()
+s2.reset()
+
+# create a list of SimObj, and call batch_sim
+s = [s1, s2]
+results = batch_sim(s, parallel=True)
+print(results)
+```
+
+Run analysis offline
+```python
+from simglucose.analysis.report import report
+import pandas as pd
+import os
+import glob
+
+# the path where results are saved
+path = os.path.join('.', 'results', '2017-12-31_17-46-32')
+os.chdir(path)
+# find all csv with pattern *#*.csv, e.g. adolescent#001.csv
+filename = glob.glob('*#*.csv')
+name = [_f[:-4] for _f in filename]   # get the filename without extension
+df = pd.concat([pd.read_csv(f, index_col=0) for f in filename], keys=name)
+report(df)
 ```

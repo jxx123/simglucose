@@ -13,10 +13,9 @@ class CGMSensor(object):
     def __init__(self, params, seed=None):
         self._params = params
         self.name = params.Name
-        self._noise_generator = CGMNoise(params, seed=seed)
         self.sample_time = params.sample_time
         self.seed = seed
-        self._last_CGM = 0
+        self.reset()
 
     @classmethod
     def withName(cls, name, **kwargs):
@@ -39,8 +38,9 @@ class CGMSensor(object):
         return self._last_CGM
 
     def reset(self):
-        logger.info('Resetting CGM sensor ...')
-        self._noise_generator = CGMNoise(self.params, seed=self.seed)
+        logger.debug('Resetting CGM sensor ...')
+        self._noise_generator = CGMNoise(self._params, seed=self.seed)
+        self._last_CGM = 0
 
 
 if __name__ == '__main__':

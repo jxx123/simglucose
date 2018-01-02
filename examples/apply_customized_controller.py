@@ -4,6 +4,7 @@ from simglucose.controller.base import Controller, Action
 
 class MyController(Controller):
     def __init__(self, init_state):
+        self.init_state = init_state
         self.state = init_state
 
     def policy(self, observation, reward, done, **info):
@@ -26,6 +27,12 @@ class MyController(Controller):
         self.state = observation
         action = Action(basal=0, bolus=0)
         return action
+
+    def reset(self):
+        '''
+        Reset the controller state to inital state, must be implemented
+        '''
+        self.state = self.init_state
 
 
 ctrller = MyController(0)

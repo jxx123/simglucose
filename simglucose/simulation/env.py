@@ -142,6 +142,19 @@ class T1DSimEnv(Env):
         self.pump.reset()
         self.scenario.reset()
 
+        BG = self.patient.observation.Gsub
+        horizon = 0
+        LBGI, HBGI, risk = risk_index([BG], horizon)
+        CGM = self.sensor.measure(self.patient)
+        self.time_hist = [self.scenario.start_time]
+        self.BG_hist = [BG]
+        self.CGM_hist = [CGM]
+        self.risk_hist = [risk]
+        self.LBGI_hist = [LBGI]
+        self.HBGI_hist = [HBGI]
+        self.CHO_hist = []
+        self.insulin_hist = []
+
     @property
     def action_space(self):
         if rllab:
