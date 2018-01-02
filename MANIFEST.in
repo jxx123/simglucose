@@ -6,4 +6,4 @@ include tests/*.py
 recursive-include simglucose *.py
 include README.md
 include tests/*.csv
-include examples/results/*.csv
+include examples/results/2017-12-31_17-46-32/*.csv
