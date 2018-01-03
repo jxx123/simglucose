@@ -2,7 +2,7 @@ from setuptools import setup
 
 
 setup(name='simglucose',
-      version='0.1.3',
+      version='0.1.4',
       description='A Type-1 Diabetes Simulator as a Reinforcement Learning Environment',
       url='https://github.com/jxx123/simglucose',
       author='Jinyu Xie',
