@@ -226,6 +226,7 @@ def report(df, save_path=None):
     ri_per_hour, ri_mean, fig_ri, ax5 = risk_index_trace(BG, visualize=False)
     zone_stats, fig_cvga, ax6 = CVGA(BG, label='')
     axes = [ax1, ax2, ax3, ax4, ax5, ax6]
+    figs = [fig_ensemble, fig_percent, fig_ri, fig_cvga]
     results = pd.concat([pstats, ri_mean], axis=1)
 
     if save_path is not None:
@@ -239,7 +240,7 @@ def report(df, save_path=None):
         fig_cvga.savefig(os.path.join(save_path, 'CVGA.png'))
 
     plt.show()
-    return results, ri_per_hour, zone_stats, axes
+    return results, ri_per_hour, zone_stats, figs, axes
 
 
 if __name__ == '__main__':

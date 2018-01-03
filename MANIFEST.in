@@ -3,6 +3,7 @@ include LICENSE
 include *.py
 include examples/*.py
 include tests/*.py
+include tests/*.csv
 recursive-include simglucose *.py
 include README.md
 include tests/*.csv

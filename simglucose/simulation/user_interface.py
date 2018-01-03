@@ -1,4 +1,4 @@
-from simglucose.simulation.sim_engine import batch_sim
+from simglucose.simulation.sim_engine import SimObj, batch_sim
 from simglucose.simulation.env import T1DSimEnv
 from simglucose.controller.basal_bolus_ctrller import BBController
 from simglucose.sensor.cgm import CGMSensor
@@ -335,7 +335,7 @@ def simulate(sim_time=None,
     results = batch_sim(sim_instances, parallel=parallel)
 
     df = pd.concat(results, keys=[s.env.patient.name for s in sim_instances])
-    report(df, save_path)
+    results, ri_per_hour, zone_stats, figs, axes = report(df, save_path)
 
     return 0
 
