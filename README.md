@@ -1,7 +1,7 @@
 # simglucose
 A Type-1 Diabetes simulator implemented in Python for Reinforcement Learning purpose
 
-This simulator is a python implementation of [UVa/Padova Simulator (2008 version)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4454102/) for research purpose only. The simulator includes 30 virtual patients, 10 adolescents, 10 adults, 10 children. 
+This simulator is a python implementation of the FDA-approved [UVa/Padova Simulator (2008 version)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4454102/) for research purpose only. The simulator includes 30 virtual patients, 10 adolescents, 10 adults, 10 children. 
 
  - Note: simglucose only supports python3.
 
@@ -29,7 +29,7 @@ for t in range(100):
         break
 ```
 
-- Noticed issue: the patient name selection is not available in gym.make for now. The patient name has to be hard-coded in the constructor of simglucose.envs.T1DSimEnv.
+- Noticed issue: the patient name selection is not available in gym.make for now. The patient name has to be hard-coded in the constructor of `simglucose.envs.T1DSimEnv`.
 ## Release Notes, 12/31/2017
 - Simulation enviroment follows [OpenAI gym](https://github.com/openai/gym) and [rllab](https://github.com/rll/rllab) APIs. It returns observation, reward, done, info at each step, which means the simulator is "reinforcement-learning-ready".
 - The reward at each step is `risk[t-1] - risk[t]`. Customized reward is not supported for now. `risk[t]` is the risk index at time `t` defined in this [paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2903980/pdf/dia.2008.0138.pdf). 
