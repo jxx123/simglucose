@@ -2,8 +2,8 @@ from setuptools import setup
 
 
 setup(name='simglucose',
-      version='0.1.4',
-      description='A Type-1 Diabetes Simulator as a Reinforcement Learning Environment',
+      version='0.1.5',
+      description='A Type-1 Diabetes Simulator as a Reinforcement Learning Environment in OpenAI gym or rllab (python implementation of UVa/Padova Simulator)',
       url='https://github.com/jxx123/simglucose',
       author='Jinyu Xie',
       author_email='xjygr08@gmail.com',
@@ -14,7 +14,8 @@ setup(name='simglucose',
           'numpy',
           'scipy',
           'matplotlib',
-          'pathos'
+          'pathos',
+          'gym'
       ],
       include_package_data=True,
       zip_safe=False)

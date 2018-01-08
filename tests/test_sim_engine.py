@@ -35,7 +35,7 @@ class TestSimEngine(unittest.TestCase):
 
         # Put them together to create a simulation object
         s1 = SimObj(env, controller, timedelta(
-            days=2), animate=False, path=path)
+            days=2), animate=True, path=path)
         results1 = sim(s1)
 
         # --------- Create Custom Scenario --------------
@@ -59,6 +59,7 @@ class TestSimEngine(unittest.TestCase):
         # --------- batch simulation --------------
         s1.reset()
         s2.reset()
+        s1.animate = False
         s = [s1, s2]
         results_para = batch_sim(s, parallel=True)
 

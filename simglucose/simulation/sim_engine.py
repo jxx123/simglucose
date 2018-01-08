@@ -31,68 +31,15 @@ class SimObj(object):
         self.path = path
 
     def simulate(self):
-        if self.animate:
-            plt.ion()
-            fig, axes = plt.subplots(4)
-
-            axes[0].set_ylabel('BG (mg/dL)')
-            axes[1].set_ylabel('CHO (g/min)')
-            axes[2].set_ylabel('Insulin (U/min)')
-            axes[3].set_ylabel('Risk Index')
-
-            lineBG, = axes[0].plot([], [], label='BG')
-            lineCGM, = axes[0].plot([], [], label='CGM')
-            lineCHO, = axes[1].plot([], [], label='CHO')
-            lineIns, = axes[2].plot([], [], label='Insulin')
-            lineLBGI, = axes[3].plot([], [], label='Hypo Risk')
-            lineHBGI, = axes[3].plot([], [], label='Hyper Risk')
-            lineRI, = axes[3].plot([], [], label='Risk Index')
-
-            lines = [lineBG, lineCGM, lineCHO,
-                     lineIns, lineLBGI, lineHBGI, lineRI]
-
-            axes[0].set_ylim([70, 180])
-            axes[1].set_ylim([-5, 30])
-            axes[2].set_ylim([-0.5, 1])
-            axes[3].set_ylim([0, 5])
-
-            for ax in axes:
-                ax.set_xlim(
-                    [self.env.scenario.start_time,
-                     self.env.scenario.start_time + self.sim_time])
-                ax.legend()
-
-            # Plot zone patches
-            axes[0].axhspan(70, 180, alpha=0.3, color='limegreen', lw=0)
-            axes[0].axhspan(50, 70, alpha=0.3, color='red', lw=0)
-            axes[0].axhspan(0, 50, alpha=0.3, color='darkred', lw=0)
-            axes[0].axhspan(180, 250, alpha=0.3, color='red', lw=0)
-            axes[0].axhspan(250, 1000, alpha=0.3, color='darkred', lw=0)
-
-            axes[0].tick_params(labelbottom='off')
-            axes[1].tick_params(labelbottom='off')
-            axes[2].tick_params(labelbottom='off')
-            axes[3].xaxis.set_minor_locator(mdates.AutoDateLocator())
-            axes[3].xaxis.set_minor_formatter(mdates.DateFormatter('%H:%M\n'))
-            axes[3].xaxis.set_major_locator(mdates.DayLocator())
-            axes[3].xaxis.set_major_formatter(mdates.DateFormatter('\n%b %d'))
-
-            axes[0].set_title(self.env.patient.name)
-
-            fig.canvas.draw()
-            fig.canvas.flush_events()
-
-        basal = self.env.patient._params.u2ss * self.env.patient._params.BW / 6000
-        action = Action(basal=basal, bolus=0)
-
+        # basal = self.env.patient._params.u2ss * self.env.patient._params.BW / 6000
+        # action = Action(basal=basal, bolus=0)
+        obs, reward, done, info = self.env.reset()
         tic = time.time()
         while self.env.time < self.env.scenario.start_time + self.sim_time:
-            obs, reward, done, info = self.env.step(action)
             if self.animate:
-                self.env.render(axes, lines)
-                fig.canvas.draw()
-                fig.canvas.flush_events()
+                self.env.render()
             action = self.controller.policy(obs, reward, done, **info)
+            obs, reward, done, info = self.env.step(action)
         toc = time.time()
         logger.info('Simulation took {} seconds.'.format(toc - tic))
 

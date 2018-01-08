@@ -10,10 +10,7 @@ logger = logging.getLogger(__name__)
 class RandomScenario(Scenario):
     def __init__(self, start_time=None, seed=None):
         Scenario.__init__(self, start_time=start_time)
-        # self.init_seed = seed
-        # self.scenario = self.create_scenario(self.seed)
         self.seed = seed
-        self.reset()
 
     def get_action(self, t):
         # t must be datetime.datetime object
@@ -65,6 +62,15 @@ class RandomScenario(Scenario):
     def reset(self):
         self.random_gen = np.random.RandomState(self.seed)
         self.scenario = self.create_scenario()
+
+    @property
+    def seed(self):
+        return self._seed
+
+    @seed.setter
+    def seed(self, seed):
+        self._seed = seed
+        self.reset()
 
 
 if __name__ == '__main__':

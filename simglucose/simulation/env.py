@@ -5,6 +5,7 @@ import pandas as pd
 from datetime import timedelta
 import logging
 from collections import namedtuple
+from simglucose.simulation.rendering import Viewer
 
 rllab = True
 try:
@@ -36,7 +37,7 @@ except ImportError:
         def reset(self):
             raise NotImplementedError
 
-Observation = namedtuple('Observation', ['CHO', 'CGM'])
+Observation = namedtuple('Observation', ['CGM'])
 logger = logging.getLogger(__name__)
 
 
@@ -50,21 +51,7 @@ class T1DSimEnv(Env):
         self.sensor = sensor
         self.pump = pump
         self.scenario = scenario
-        self.sample_time = self.sensor.sample_time
-
-        # Initial Recording
-        BG = self.patient.observation.Gsub
-        horizon = 0
-        LBGI, HBGI, risk = risk_index([BG], horizon)
-        CGM = self.sensor.measure(self.patient)
-        self.time_hist = [self.scenario.start_time]
-        self.BG_hist = [BG]
-        self.CGM_hist = [CGM]
-        self.risk_hist = [risk]
-        self.LBGI_hist = [LBGI]
-        self.HBGI_hist = [HBGI]
-        self.CHO_hist = []
-        self.insulin_hist = []
+        self._reset()
 
     @property
     def time(self):
@@ -122,25 +109,22 @@ class T1DSimEnv(Env):
         self.HBGI_hist.append(HBGI)
 
         # Compute reward, and decide whether game is over
-        # reward = - np.log(risk)
-        # reward = 10 - risk
         if len(self.risk_hist) > 1:
             reward = self.risk_hist[-2] - self.risk_hist[-1]
         else:
             reward = - self.risk_hist[-1]
         done = BG < 70 or BG > 350
-        obs = Observation(CHO=CHO, CGM=CGM)
+        obs = Observation(CGM=CGM)
         return Step(observation=obs,
                     reward=reward,
                     done=done,
                     sample_time=self.sample_time,
-                    patient_name=self.patient.name)
+                    patient_name=self.patient.name,
+                    meal=CHO)
 
-    def reset(self):
-        self.patient.reset()
-        self.sensor.reset()
-        self.pump.reset()
-        self.scenario.reset()
+    def _reset(self):
+        self.sample_time = self.sensor.sample_time
+        self.viewer = None
 
         BG = self.patient.observation.Gsub
         horizon = 0
@@ -155,12 +139,27 @@ class T1DSimEnv(Env):
         self.CHO_hist = []
         self.insulin_hist = []
 
+    def reset(self):
+        self.patient.reset()
+        self.sensor.reset()
+        self.pump.reset()
+        self.scenario.reset()
+        self._reset()
+        CGM = self.sensor.measure(self.patient)
+        obs = Observation(CGM=CGM)
+        return Step(observation=obs,
+                    reward=0,
+                    done=False,
+                    sample_time=self.sample_time,
+                    patient_name=self.patient.name,
+                    meal=0)
+
     @property
     def action_space(self):
         if rllab:
-            ub = self.pump._params['max_basal'] + \
-                self.pump._params['max_bolus']
-            return Box(low=0, high=ub, shape=(1,))
+            ub = np.array([self.pump._params['max_basal'],
+                           self.pump._params['max_bolus']])
+            return Box(low=np.array([0, 0]), high=ub)
         else:
             pass
 
@@ -171,51 +170,17 @@ class T1DSimEnv(Env):
         else:
             pass
 
-    def render(self, axes, lines):
-        logger.info('Rendering ...')
+    def render(self, close=False):
+        if close:
+            if self.viewer is not None:
+                self.viewer.close()
+                self.viewer = None
+            return
 
-        lines[0].set_xdata(self.time_hist)
-        lines[0].set_ydata(self.BG_hist)
+        if self.viewer is None:
+            self.viewer = Viewer(self.scenario.start_time, self.patient.name)
 
-        lines[1].set_xdata(self.time_hist)
-        lines[1].set_ydata(self.CGM_hist)
-
-        axes[0].draw_artist(axes[0].patch)
-        axes[0].draw_artist(lines[0])
-        axes[0].draw_artist(lines[1])
-
-        adjust_ylim(axes[0], min(min(self.BG_hist), min(self.CGM_hist)), max(
-            max(self.BG_hist), max(self.CGM_hist)))
-
-        lines[2].set_xdata(self.time_hist[:-1])
-        lines[2].set_ydata(self.CHO_hist)
-
-        axes[1].draw_artist(axes[1].patch)
-        axes[1].draw_artist(lines[2])
-
-        adjust_ylim(axes[1], min(self.CHO_hist), max(self.CHO_hist))
-
-        lines[3].set_xdata(self.time_hist[:-1])
-        lines[3].set_ydata(self.insulin_hist)
-
-        axes[2].draw_artist(axes[2].patch)
-        axes[2].draw_artist(lines[3])
-        adjust_ylim(axes[2], min(self.insulin_hist), max(self.insulin_hist))
-
-        lines[4].set_xdata(self.time_hist)
-        lines[4].set_ydata(self.LBGI_hist)
-
-        lines[5].set_xdata(self.time_hist)
-        lines[5].set_ydata(self.HBGI_hist)
-
-        lines[6].set_xdata(self.time_hist)
-        lines[6].set_ydata(self.risk_hist)
-
-        axes[3].draw_artist(axes[3].patch)
-        axes[3].draw_artist(lines[4])
-        axes[3].draw_artist(lines[5])
-        axes[3].draw_artist(lines[6])
-        adjust_ylim(axes[3], min(self.risk_hist), max(self.risk_hist))
+        self.viewer.render(self.show_history())
 
     def show_history(self):
         df = pd.DataFrame()

@@ -22,10 +22,11 @@ class BBController(Controller):
     def policy(self, observation, reward, done, **kwargs):
         sample_time = kwargs.get('sample_time', 1)
         pname = kwargs.get('patient_name')
+        meal = kwargs.get('meal')
 
         action = self._bb_policy(
             pname,
-            observation.CHO,
+            meal,
             observation.CGM,
             sample_time)
         return action
