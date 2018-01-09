@@ -18,7 +18,7 @@ import gym
 import simglucose
 env = gym.make('simglucose-v0')
 
-observation = env.reset()
+observation, reward, done, info = env.reset()
 for t in range(100):
     env.render()
     print(observation)
