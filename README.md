@@ -10,27 +10,8 @@ This simulator is a python implementation of the FDA-approved [UVa/Padova Simula
 | ![animation screenshot](https://github.com/jxx123/simglucose/blob/master/screenshots/animate.png) | ![CVGA](https://github.com/jxx123/simglucose/blob/master/screenshots/CVGA.png) | ![BG Trace Plot](https://github.com/jxx123/simglucose/blob/master/screenshots/BG_trace_plot.png) | ![Risk Index Stats](https://github.com/jxx123/simglucose/blob/master/screenshots/risk_index.png) |
 
   <!-- ![Zone Stats](https://github.com/jxx123/simglucose/blob/master/screenshots/zone_stats.png) -->
-## Release Notes, 1/7/2017
-- Added OpenAI gym support, use `gym.make('simglucose-v0')` to make the enviroment.
-For example, 
-```python
-import gym
-import simglucose
-env = gym.make('simglucose-v0')
 
-observation, reward, done, info = env.reset()
-for t in range(100):
-    env.render()
-    print(observation)
-    action = env.action_space.sample()
-    observation, reward, done, info = env.step(action)
-    if done:
-        print("Episode finished after {} timesteps".format(t + 1))
-        break
-```
-
-- Noticed issue: the patient name selection is not available in gym.make for now. The patient name has to be hard-coded in the constructor of `simglucose.envs.T1DSimEnv`.
-## Release Notes, 12/31/2017
+## Main Features
 - Simulation enviroment follows [OpenAI gym](https://github.com/openai/gym) and [rllab](https://github.com/rll/rllab) APIs. It returns observation, reward, done, info at each step, which means the simulator is "reinforcement-learning-ready".
 - The reward at each step is `risk[t-1] - risk[t]`. Customized reward is not supported for now. `risk[t]` is the risk index at time `t` defined in this [paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2903980/pdf/dia.2008.0138.pdf). 
 - Supports parallel computing. The simulator simulates mutliple patients parallelly using [pathos multiprocessing package](https://github.com/uqfoundation/pathos) (you are free to turn parallel off by setting `parallel=False`).
@@ -67,6 +48,7 @@ If [rllab (optional)](https://github.com/rll/rllab) is installed, the package wi
 Note: there might be some minor differences between auto install version and manual install version. Use `git clone` and manual installation to get the latest version.
 
 ## Quick Start
+### Use simglucose as a simulator and test controllers
 Run the simulator user interface
 ```python
 from simglucose.simulation.user_interface import simulate
@@ -127,6 +109,40 @@ simulate(sim_time=my_sim_time,
          save_path=my_save_path,
          animate=False,
          parallel=True)
+```
+### OpenAI gym Usage
+```python
+import gym
+
+# Register gym environment. By specifying kwargs,
+# you are able to choose which patient to simulate.
+# patient_name must be 'adolescent#001' to 'adolescent#010',
+# or 'adult#001' to 'adult#010', or 'child#001' to 'child#010'
+from gym.envs.registration import register
+register(
+    id='simglucose-adolescent2-v0',
+    entry_point='simglucose.envs:T1DSimEnv',
+    kwargs={'patient_name': 'adolescent#002'}
+)
+
+env = gym.make('simglucose-adolescent2-v0')
+
+observation, reward, done, info = env.reset()
+for t in range(100):
+    env.render()
+    print(observation)
+    # Action in the gym environment is a scalar
+    # representing the basal insulin, which differs from
+    # the regular controller action outside the gym
+    # environment (a tuple (basal, bolus)).
+    # In the perfect situation, the agent should be able
+    # to control the glucose only through basal instead
+    # of asking patient to take bolus
+    action = env.action_space.sample()
+    observation, reward, done, info = env.step(action)
+    if done:
+        print("Episode finished after {} timesteps".format(t + 1))
+        break
 ```
 
 ## Advanced Usage
@@ -212,3 +228,8 @@ name = [_f[:-4] for _f in filename]   # get the filename without extension
 df = pd.concat([pd.read_csv(f, index_col=0) for f in filename], keys=name)
 report(df)
 ```
+## Release Notes, 1/10/2017
+- Added workaround to select patient when make gym environment: register gym environment by passing kwargs of patient_name.
+## Release Notes, 1/7/2017
+- Added OpenAI gym support, use `gym.make('simglucose-v0')` to make the enviroment.
+- Noticed issue: the patient name selection is not available in gym.make for now. The patient name has to be hard-coded in the constructor of `simglucose.envs.T1DSimEnv`.

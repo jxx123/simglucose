@@ -27,20 +27,23 @@ class T1DSimEnv(gym.Env):
         patient_name must be 'adolescent#001' to 'adolescent#010',
         or 'adult#001' to 'adult#010', or 'child#001' to 'child#010'
         '''
+        seeds = self._seed()
+        # have to hard code the patient_name, gym has some interesting
+        # error when choosing the patient
         if patient_name is None:
-            # patient_name = self.pick_patient()
-
-            # have to hard code the patient_name, gym has some interesting
-            # error when choosing the patient
             patient_name = 'adolescent#001'
         patient = T1DPatient.withName(patient_name)
-        sensor = CGMSensor.withName('Dexcom')
-        scenario = RandomScenario(start_time=datetime(2018, 1, 1, 0, 0, 0))
+        sensor = CGMSensor.withName('Dexcom', seed=seeds[1])
+        hour = self.np_random.randint(low=0.0, high=24.0)
+        start_time = datetime(2018, 1, 1, hour, 0, 0)
+        scenario = RandomScenario(start_time=start_time, seed=seeds[2])
         pump = InsulinPump.withName('Insulet')
         self.env = _T1DSimEnv(patient, sensor, pump, scenario)
 
     @staticmethod
     def pick_patient():
+        # TODO: cannot be used to pick patient at the env constructing space
+        # for now
         patient_params = pd.read_csv(PATIENT_PARA_FILE)
         while True:
             print('Select patient:')
@@ -67,14 +70,13 @@ class T1DSimEnv(gym.Env):
         return self.env.reset()
 
     def _seed(self, seed=None):
-        rng, seed1 = seeding.np_random(seed=seed)
+        self.np_random, seed1 = seeding.np_random(seed=seed)
         # Derive a random seed. This gets passed as a uint, but gets
         # checked as an int elsewhere, so we need to keep it below
         # 2**31.
         seed2 = seeding.hash_seed(seed1 + 1) % 2**31
-        self.env.sensor.seed = seed1
-        self.env.scenario.seed = seed2
-        return [seed1, seed2]
+        seed3 = seeding.hash_seed(seed2 + 1) % 2**31
+        return [seed1, seed2, seed3]
 
     def _render(self, mode='human', close=False):
         self.env.render(close=close)
