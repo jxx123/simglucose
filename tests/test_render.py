@@ -18,6 +18,7 @@ class TestRendering(unittest.TestCase):
         for i in range(len(self.df)):
             df_tmp = self.df.iloc[0:(i + 1), :]
             viewer.render(df_tmp)
+        viewer.close()
 
 
 if __name__ == '__main__':

@@ -12,8 +12,9 @@ class MyController(Controller):
         Every controller must have this implementation!
         ----
         Inputs:
-        observation - a namedtuple defined in simglucose.simulation.env. It has
-                      CHO and CGM two entries.
+        observation - a namedtuple defined in simglucose.simulation.env. For
+                      now, it only has one entry: blood glucose level measured
+                      by CGM sensor.
         reward      - current reward returned by environment
         done        - True, game over. False, game continues
         info        - additional information as key word arguments,

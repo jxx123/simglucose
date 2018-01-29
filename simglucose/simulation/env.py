@@ -1,4 +1,3 @@
-import numpy as np
 from simglucose.patient.t1dpatient import Action
 from simglucose.analysis.risk import risk_index
 import pandas as pd
@@ -7,15 +6,9 @@ import logging
 from collections import namedtuple
 from simglucose.simulation.rendering import Viewer
 
-rllab = True
 try:
-    from rllab.envs.base import Env
     from rllab.envs.base import Step
-    from rllab.spaces import Box
 except ImportError:
-    rllab = False
-    print('You could use rllab features, if you have rllab module.')
-
     _Step = namedtuple("Step",
                        ["observation", "reward", "done", "info"])
 
@@ -27,21 +20,11 @@ except ImportError:
         """
         return _Step(observation, reward, done, kwargs)
 
-    class Env(object):
-        def __init__():
-            pass
-
-        def step(self, action):
-            raise NotImplementedError
-
-        def reset(self):
-            raise NotImplementedError
-
 Observation = namedtuple('Observation', ['CGM'])
 logger = logging.getLogger(__name__)
 
 
-class T1DSimEnv(Env):
+class T1DSimEnv(object):
     def __init__(self,
                  patient,
                  sensor,
@@ -147,28 +130,7 @@ class T1DSimEnv(Env):
         self._reset()
         CGM = self.sensor.measure(self.patient)
         obs = Observation(CGM=CGM)
-        return Step(observation=obs,
-                    reward=0,
-                    done=False,
-                    sample_time=self.sample_time,
-                    patient_name=self.patient.name,
-                    meal=0)
-
-    @property
-    def action_space(self):
-        if rllab:
-            ub = np.array([self.pump._params['max_basal'],
-                           self.pump._params['max_bolus']])
-            return Box(low=np.array([0, 0]), high=ub)
-        else:
-            pass
-
-    @property
-    def observation_space(self):
-        if rllab:
-            return Box(low=0, high=np.inf, shape=(1,))
-        else:
-            pass
+        return obs
 
     def render(self, close=False):
         if close:
@@ -194,26 +156,3 @@ class T1DSimEnv(Env):
         df['Risk'] = pd.Series(self.risk_hist)
         df = df.set_index('Time')
         return df
-
-
-def adjust_ylim(ax, ymin, ymax):
-    ylim = ax.get_ylim()
-    update = False
-
-    if ymin < ylim[0]:
-        y1 = ymin - 0.1 * abs(ymin)
-        update = True
-    else:
-        y1 = ylim[0]
-
-    if ymax > ylim[1]:
-        y2 = ymax + 0.1 * abs(ymax)
-        update = True
-    else:
-        y2 = ylim[1]
-
-    if update:
-        ax.set_ylim([y1, y2])
-        for spine in ax.spines.values():
-            ax.draw_artist(spine)
-        ax.draw_artist(ax.yaxis)
