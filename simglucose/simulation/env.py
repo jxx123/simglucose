@@ -130,7 +130,12 @@ class T1DSimEnv(object):
         self._reset()
         CGM = self.sensor.measure(self.patient)
         obs = Observation(CGM=CGM)
-        return obs
+        return Step(observation=obs,
+                    reward=0,
+                    done=False,
+                    sample_time=self.sample_time,
+                    patient_name=self.patient.name,
+                    meal=0)
 
     def render(self, close=False):
         if close:

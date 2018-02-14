@@ -67,7 +67,8 @@ class T1DSimEnv(gym.Env):
         return self.env.step(act)
 
     def _reset(self):
-        return self.env.reset()
+        obs, _, _, _ = self.env.reset()
+        return obs
 
     def _seed(self, seed=None):
         self.np_random, seed1 = seeding.np_random(seed=seed)

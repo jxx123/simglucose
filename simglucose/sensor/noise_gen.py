@@ -46,8 +46,8 @@ class CGMNoise(object):
         noise = interp_f(t)
         noise2return = deque(noise[1:])
 
-        logger.debug('New noise sampled every 15 min:\n{}'.format(noise15))
-        logger.debug('New noise sequence:\n{}'.format(noise2return))
+        # logger.debug('New noise sampled every 15 min:\n{}'.format(noise15))
+        # logger.debug('New noise sequence:\n{}'.format(noise2return))
 
         # plt.plot(t15, noise15, 'o')
         # plt.plot(t, noise, '.-')

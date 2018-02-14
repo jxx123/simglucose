@@ -3,13 +3,15 @@ from datetime import datetime
 import pandas as pd
 import unittest
 import logging
+import os
 
 logger = logging.getLogger(__name__)
+TESTDATA_FILENAME = os.path.join(os.path.dirname(__file__), 'sim_results.csv')
 
 
 class TestRendering(unittest.TestCase):
     def setUp(self):
-        self.df = pd.read_csv('sim_results.csv', index_col=0)
+        self.df = pd.read_csv(TESTDATA_FILENAME, index_col=0)
         self.df.index = pd.to_datetime(self.df.index)
 
     def test_rendering(self):

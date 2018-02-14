@@ -36,9 +36,6 @@ class T1DPatient(Patient):
         self.t0 = t0
         self.reset()
 
-        logger.debug('\nparams:\n{}\nState x:\n{}'.format(
-            self._params, self.state))
-
     @classmethod
     def withID(cls, patient_id, **kwargs):
         '''
@@ -201,8 +198,6 @@ class T1DPatient(Patient):
         if action.insulin > basal:
             logger.debug('t = {}, injecting insulin: {}'.format(
                 t, action.insulin))
-            logger.debug('dxdt[10] = {}'.format(dxdt[10]))
-            logger.debug('dxdt = \n{}'.format(dxdt))
 
         return dxdt
 

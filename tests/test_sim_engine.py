@@ -11,6 +11,13 @@ from simglucose.simulation.scenario import CustomScenario
 from simglucose.simulation.sim_engine import SimObj, sim, batch_sim
 from datetime import timedelta
 from datetime import datetime
+import os
+import logging
+import shutil
+
+logger = logging.getLogger(__name__)
+
+TESTDATA_FILENAME = os.path.join(os.path.dirname(__file__), 'sim_results.csv')
 
 
 class TestSimEngine(unittest.TestCase):
@@ -75,7 +82,7 @@ class TestSimEngine(unittest.TestCase):
 
     def test_results_consistency(self):
         # Test data
-        results_exp = pd.read_csv('sim_results.csv', index_col=0)
+        results_exp = pd.read_csv(TESTDATA_FILENAME, index_col=0)
         results_exp.index = pd.to_datetime(results_exp.index)
 
         # specify start_time as the beginning of today
@@ -100,6 +107,10 @@ class TestSimEngine(unittest.TestCase):
             days=2), animate=False, path=path)
         results = sim(s)
         assert_frame_equal(results, results_exp)
+
+    def tearDown(self):
+        pass
+        # shutil.rmtree(os.path.join(os.path.dirname(__file__), 'results'))
 
 
 if __name__ == '__main__':

@@ -128,9 +128,9 @@ register(
 
 env = gym.make('simglucose-adolescent2-v0')
 
-observation, reward, done, info = env.reset()
+observation = env.reset()
 for t in range(100):
-    env.render()
+    env.render(mode='human')
     print(observation)
     # Action in the gym environment is a scalar
     # representing the basal insulin, which differs from

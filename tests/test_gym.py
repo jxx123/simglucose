@@ -15,9 +15,15 @@ class TestGym(unittest.TestCase):
         env = gym.make('simglucose-adolescent2-v0')
         ctrller = BBController()
 
-        observation, reward, done, info = env.reset()
+        reward = 0
+        done = False
+        info = {'sample_time': 3,
+                'patient_name': 'adolescent#002',
+                'meal': 0}
+
+        observation = env.reset()
         for t in range(200):
-            env.render()
+            env.render(mode='human')
             print(observation)
             # action = env.action_space.sample()
             ctrl_action = ctrller.policy(observation, reward, done, **info)
