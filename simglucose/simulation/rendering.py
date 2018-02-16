@@ -68,8 +68,6 @@ class Viewer(object):
         self.fig.canvas.flush_events()
 
     def render(self, data):
-        logger.info('Rendering ...')
-
         self.lines[0].set_xdata(data.index.values)
         self.lines[0].set_ydata(data['BG'].values)
 

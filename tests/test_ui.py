@@ -22,8 +22,7 @@ class testUI(unittest.TestCase):
         self.assertEqual(s, 0)
 
     def tearDown(self):
-        # shutil.rmtree(output_folder)
-        pass
+        shutil.rmtree(output_folder)
 
 
 if __name__ == '__main__':

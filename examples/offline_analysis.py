@@ -4,7 +4,8 @@ import os
 import glob
 
 # the path where results are saved
-path = os.path.join('.', 'results', '2017-12-31_17-46-32')
+path = os.path.join(os.path.dirname(__file__),
+                    'results', '2017-12-31_17-46-32')
 os.chdir(path)
 # find all csv with pattern *#*.csv, e.g. adolescent#001.csv
 filename = glob.glob('*#*.csv')

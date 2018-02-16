@@ -18,6 +18,7 @@ import shutil
 logger = logging.getLogger(__name__)
 
 TESTDATA_FILENAME = os.path.join(os.path.dirname(__file__), 'sim_results.csv')
+save_folder = os.path.join(os.path.dirname(__file__), 'results')
 
 
 class TestSimEngine(unittest.TestCase):
@@ -27,9 +28,6 @@ class TestSimEngine(unittest.TestCase):
         start_time = datetime.combine(now.date(), datetime.min.time())
 
         # --------- Create Random Scenario --------------
-        # Specify results saving path
-        path = './results'
-
         # Create a simulation environment
         patient = T1DPatient.withName('adolescent#001')
         sensor = CGMSensor.withName('Dexcom', seed=1)
@@ -42,7 +40,7 @@ class TestSimEngine(unittest.TestCase):
 
         # Put them together to create a simulation object
         s1 = SimObj(env, controller, timedelta(
-            days=2), animate=True, path=path)
+            days=2), animate=True, path=save_folder)
         results1 = sim(s1)
 
         # --------- Create Custom Scenario --------------
@@ -60,7 +58,7 @@ class TestSimEngine(unittest.TestCase):
 
         # Put them together to create a simulation object
         s2 = SimObj(env, controller, timedelta(
-            days=2), animate=False, path=path)
+            days=2), animate=False, path=save_folder)
         results2 = sim(s2)
 
         # --------- batch simulation --------------
@@ -89,9 +87,6 @@ class TestSimEngine(unittest.TestCase):
         start_time = datetime(2018, 1, 1, 0, 0, 0)
 
         # --------- Create Random Scenario --------------
-        # Specify results saving path
-        path = './results'
-
         # Create a simulation environment
         patient = T1DPatient.withName('adolescent#001')
         sensor = CGMSensor.withName('Dexcom', seed=1)
@@ -104,13 +99,12 @@ class TestSimEngine(unittest.TestCase):
 
         # Put them together to create a simulation object
         s = SimObj(env, controller, timedelta(
-            days=2), animate=False, path=path)
+            days=2), animate=False, path=save_folder)
         results = sim(s)
         assert_frame_equal(results, results_exp)
 
     def tearDown(self):
-        pass
-        # shutil.rmtree(os.path.join(os.path.dirname(__file__), 'results'))
+        shutil.rmtree(os.path.join(os.path.dirname(__file__), 'results'))
 
 
 if __name__ == '__main__':
