@@ -22,7 +22,7 @@ class T1DSimEnv(gym.Env):
     '''
     metadata = {'render.modes': ['human']}
 
-    def __init__(self, patient_name=None):
+    def __init__(self, patient_name=None, reward_fun=None):
         '''
         patient_name must be 'adolescent#001' to 'adolescent#010',
         or 'adult#001' to 'adult#010', or 'child#001' to 'child#010'
@@ -39,6 +39,7 @@ class T1DSimEnv(gym.Env):
         scenario = RandomScenario(start_time=start_time, seed=seeds[2])
         pump = InsulinPump.withName('Insulet')
         self.env = _T1DSimEnv(patient, sensor, pump, scenario)
+        self.reward_fun = reward_fun
 
     @staticmethod
     def pick_patient():
@@ -64,7 +65,10 @@ class T1DSimEnv(gym.Env):
     def _step(self, action):
         # This gym only controls basal insulin
         act = Action(basal=action, bolus=0)
-        return self.env.step(act)
+        if self.reward_fun is None:
+            return self.env.step(act)
+        else:
+            return self.env.step(act, reward_fun=self.reward_fun)
 
     def _reset(self):
         obs, _, _, _ = self.env.reset()

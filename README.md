@@ -13,7 +13,7 @@ This simulator is a python implementation of the FDA-approved [UVa/Padova Simula
 
 ## Main Features
 - Simulation enviroment follows [OpenAI gym](https://github.com/openai/gym) and [rllab](https://github.com/rll/rllab) APIs. It returns observation, reward, done, info at each step, which means the simulator is "reinforcement-learning-ready".
-- The reward at each step is `risk[t-1] - risk[t]`. Customized reward is not supported for now. `risk[t]` is the risk index at time `t` defined in this [paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2903980/pdf/dia.2008.0138.pdf). 
+- Supports customized reward function. The reward function is a function of blood glucose measurements in the last hour. By default, the reward at each step is `risk[t-1] - risk[t]`. `risk[t]` is the risk index at time `t` defined in this [paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2903980/pdf/dia.2008.0138.pdf). 
 - Supports parallel computing. The simulator simulates mutliple patients parallelly using [pathos multiprocessing package](https://github.com/uqfoundation/pathos) (you are free to turn parallel off by setting `parallel=False`).
 - The simulator provides a random scenario generator (`from simglucose.simulation.scenario_gen import RandomScenario`) and a customized scenario generator (`from simglucose.simulation.scenario import CustomScnenario`). Commandline user-interface will guide you through the scenario settings.
 - The simulator provides the most basic basal-bolus controller for now. It provides very simple syntax to implement your own controller, like Model Predictive Control, PID control, reinforcement learning control, etc. 
@@ -112,6 +112,7 @@ simulate(sim_time=my_sim_time,
          parallel=True)
 ```
 ### OpenAI Gym usage
+- Using default reward
 ```python
 import gym
 
@@ -141,6 +142,44 @@ for t in range(100):
     # of asking patient to take bolus
     action = env.action_space.sample()
     observation, reward, done, info = env.step(action)
+    if done:
+        print("Episode finished after {} timesteps".format(t + 1))
+        break
+```
+- Customized reward function
+```python
+import gym
+from gym.envs.registration import register
+
+
+def custom_reward(BG_last_hour):
+    if BG_last_hour[-1] > 180:
+        return -1
+    elif BG_last_hour[-1] < 70:
+        return -2
+    else:
+        return 1
+
+
+register(
+    id='simglucose-adolescent2-v0',
+    entry_point='simglucose.envs:T1DSimEnv',
+    kwargs={'patient_name': 'adolescent#002',
+            'reward_fun': custom_reward}
+)
+
+env = gym.make('simglucose-adolescent2-v0')
+
+reward = 1
+done = False
+
+observation = env.reset()
+for t in range(200):
+    env.render(mode='human')
+    action = env.action_space.sample()
+    observation, reward, done, info = env.step(action)
+    print(observation)
+    print("Reward = {}".format(reward))
     if done:
         print("Episode finished after {} timesteps".format(t + 1))
         break
@@ -276,6 +315,8 @@ name = [_f[:-4] for _f in filename]   # get the filename without extension
 df = pd.concat([pd.read_csv(f, index_col=0) for f in filename], keys=name)
 report(df)
 ```
+## Release Notes, 2/26/2017
+- Support customized reward function.
 ## Release Notes, 1/10/2017
 - Added workaround to select patient when make gym environment: register gym environment by passing kwargs of patient_name.
 ## Release Notes, 1/7/2017

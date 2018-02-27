@@ -24,6 +24,15 @@ Observation = namedtuple('Observation', ['CGM'])
 logger = logging.getLogger(__name__)
 
 
+def risk_diff(BG_last_hour):
+    if len(BG_last_hour) < 2:
+        return 0
+    else:
+        _, _, risk_current = risk_index([BG_last_hour[-1]], 1)
+        _, _, risk_prev = risk_index([BG_last_hour[-2]], 1)
+        return risk_prev - risk_current
+
+
 class T1DSimEnv(object):
     def __init__(self,
                  patient,
@@ -58,7 +67,7 @@ class T1DSimEnv(object):
 
         return CHO, insulin, BG, CGM
 
-    def step(self, action):
+    def step(self, action, reward_fun=risk_diff):
         '''
         action is a namedtuple with keys: basal, bolus
         '''
@@ -76,7 +85,7 @@ class T1DSimEnv(object):
             CGM += tmp_CGM / self.sample_time
 
         # Compute risk index
-        horizon = 0
+        horizon = 1
         LBGI, HBGI, risk = risk_index([BG], horizon)
 
         # Record current action
@@ -92,10 +101,9 @@ class T1DSimEnv(object):
         self.HBGI_hist.append(HBGI)
 
         # Compute reward, and decide whether game is over
-        if len(self.risk_hist) > 1:
-            reward = self.risk_hist[-2] - self.risk_hist[-1]
-        else:
-            reward = - self.risk_hist[-1]
+        window_size = int(60 / self.sample_time)
+        BG_last_hour = self.CGM_hist[- window_size:]
+        reward = reward_fun(BG_last_hour)
         done = BG < 70 or BG > 350
         obs = Observation(CGM=CGM)
         return Step(observation=obs,
@@ -110,7 +118,7 @@ class T1DSimEnv(object):
         self.viewer = None
 
         BG = self.patient.observation.Gsub
-        horizon = 0
+        horizon = 1
         LBGI, HBGI, risk = risk_index([BG], horizon)
         CGM = self.sensor.measure(self.patient)
         self.time_hist = [self.scenario.start_time]
