@@ -315,11 +315,14 @@ name = [_f[:-4] for _f in filename]   # get the filename without extension
 df = pd.concat([pd.read_csv(f, index_col=0) for f in filename], keys=name)
 report(df)
 ```
-## Release Notes, 2/26/2018
+## Release Notes
+### 9/10/2018
+- Controller `policy` method gets access to all the current patient state through `info['patient_state']`.
+### 2/26/2018
 - Support customized reward function.
-## Release Notes, 1/10/2018
+### 1/10/2018
 - Added workaround to select patient when make gym environment: register gym environment by passing kwargs of patient_name.
-## Release Notes, 1/7/2018
+### 1/7/2018
 - Added OpenAI gym support, use `gym.make('simglucose-v0')` to make the enviroment.
 - Noticed issue: the patient name selection is not available in gym.make for now. The patient name has to be hard-coded in the constructor of `simglucose.envs.T1DSimEnv`.
 
