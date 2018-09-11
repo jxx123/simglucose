@@ -9,8 +9,7 @@ from simglucose.simulation.rendering import Viewer
 try:
     from rllab.envs.base import Step
 except ImportError:
-    _Step = namedtuple("Step",
-                       ["observation", "reward", "done", "info"])
+    _Step = namedtuple("Step", ["observation", "reward", "done", "info"])
 
     def Step(observation, reward, done, **kwargs):
         """
@@ -19,6 +18,7 @@ except ImportError:
         Put extra diagnostic info in the kwargs
         """
         return _Step(observation, reward, done, kwargs)
+
 
 Observation = namedtuple('Observation', ['CGM'])
 logger = logging.getLogger(__name__)
@@ -34,11 +34,7 @@ def risk_diff(BG_last_hour):
 
 
 class T1DSimEnv(object):
-    def __init__(self,
-                 patient,
-                 sensor,
-                 pump,
-                 scenario):
+    def __init__(self, patient, sensor, pump, scenario):
         self.patient = patient
         self.sensor = sensor
         self.pump = pump
@@ -102,16 +98,19 @@ class T1DSimEnv(object):
 
         # Compute reward, and decide whether game is over
         window_size = int(60 / self.sample_time)
-        BG_last_hour = self.CGM_hist[- window_size:]
+        BG_last_hour = self.CGM_hist[-window_size:]
         reward = reward_fun(BG_last_hour)
         done = BG < 70 or BG > 350
         obs = Observation(CGM=CGM)
-        return Step(observation=obs,
-                    reward=reward,
-                    done=done,
-                    sample_time=self.sample_time,
-                    patient_name=self.patient.name,
-                    meal=CHO)
+
+        return Step(
+            observation=obs,
+            reward=reward,
+            done=done,
+            sample_time=self.sample_time,
+            patient_name=self.patient.name,
+            meal=CHO,
+            patient_state=self.patient.state)
 
     def _reset(self):
         self.sample_time = self.sensor.sample_time
@@ -138,12 +137,14 @@ class T1DSimEnv(object):
         self._reset()
         CGM = self.sensor.measure(self.patient)
         obs = Observation(CGM=CGM)
-        return Step(observation=obs,
-                    reward=0,
-                    done=False,
-                    sample_time=self.sample_time,
-                    patient_name=self.patient.name,
-                    meal=0)
+        return Step(
+            observation=obs,
+            reward=0,
+            done=False,
+            sample_time=self.sample_time,
+            patient_name=self.patient.name,
+            meal=0,
+            patient_state=self.patient.state)
 
     def render(self, close=False):
         if close:

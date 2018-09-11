@@ -30,8 +30,7 @@ class Viewer(object):
         lineHBGI, = axes[3].plot([], [], label='Hyper Risk')
         lineRI, = axes[3].plot([], [], label='Risk Index')
 
-        lines = [lineBG, lineCGM, lineCHO,
-                 lineIns, lineLBGI, lineHBGI, lineRI]
+        lines = [lineBG, lineCGM, lineCHO, lineIns, lineLBGI, lineHBGI, lineRI]
 
         axes[0].set_ylim([70, 180])
         axes[1].set_ylim([-5, 30])
@@ -40,8 +39,7 @@ class Viewer(object):
 
         for ax in axes:
             ax.set_xlim(
-                [self.start_time,
-                    self.start_time + timedelta(hours=3)])
+                [self.start_time, self.start_time + timedelta(hours=3)])
             ax.legend()
 
         # Plot zone patches
@@ -51,9 +49,9 @@ class Viewer(object):
         axes[0].axhspan(180, 250, alpha=0.3, color='red', lw=0)
         axes[0].axhspan(250, 1000, alpha=0.3, color='darkred', lw=0)
 
-        axes[0].tick_params(labelbottom='off')
-        axes[1].tick_params(labelbottom='off')
-        axes[2].tick_params(labelbottom='off')
+        axes[0].tick_params(labelbottom=False)
+        axes[1].tick_params(labelbottom=False)
+        axes[2].tick_params(labelbottom=False)
         axes[3].xaxis.set_minor_locator(mdates.AutoDateLocator())
         axes[3].xaxis.set_minor_formatter(mdates.DateFormatter('%H:%M\n'))
         axes[3].xaxis.set_major_locator(mdates.DayLocator())
@@ -78,8 +76,8 @@ class Viewer(object):
         self.axes[0].draw_artist(self.lines[0])
         self.axes[0].draw_artist(self.lines[1])
 
-        adjust_ylim(self.axes[0], min(min(data['BG']), min(data['CGM'])), max(
-            max(data['BG']), max(data['CGM'])))
+        adjust_ylim(self.axes[0], min(min(data['BG']), min(data['CGM'])),
+                    max(max(data['BG']), max(data['CGM'])))
         adjust_xlim(self.axes[0], data.index[-1])
 
         self.lines[2].set_xdata(data.index.values)
