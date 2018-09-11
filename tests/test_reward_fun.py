@@ -16,20 +16,19 @@ class TestCustomReward(unittest.TestCase):
     def test_custom_reward(self):
         from gym.envs.registration import register
         register(
-            id='simglucose-adolescent2-v0',
+            id='simglucose-adolescent3-v0',
             entry_point='simglucose.envs:T1DSimEnv',
-            kwargs={'patient_name': 'adolescent#002',
-                    'reward_fun': custom_reward}
-        )
+            kwargs={
+                'patient_name': 'adolescent#003',
+                'reward_fun': custom_reward
+            })
 
-        env = gym.make('simglucose-adolescent2-v0')
+        env = gym.make('simglucose-adolescent3-v0')
         ctrller = BBController()
 
         reward = 1
         done = False
-        info = {'sample_time': 3,
-                'patient_name': 'adolescent#002',
-                'meal': 0}
+        info = {'sample_time': 3, 'patient_name': 'adolescent#002', 'meal': 0}
 
         observation = env.reset()
         for t in range(200):

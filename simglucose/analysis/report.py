@@ -22,11 +22,11 @@ def ensemble_BG(BG, ax=None, plot_var=False, nstd=3):
     if ax is None:
         fig, ax = plt.subplots(1)
     if plot_var and not std_curve.isnull().all():
-        ax.fill_between(t, up_env, down_env, alpha=0.5,
-                        label='+/- {0}*std'.format(nstd))
+        ax.fill_between(
+            t, up_env, down_env, alpha=0.5, label='+/- {0}*std'.format(nstd))
     for p in BG:
-        ax.plot_date(t, BG[p], '-', color='grey',
-                     alpha=0.5, lw=0.5, label='_nolegend_')
+        ax.plot_date(
+            t, BG[p], '-', color='grey', alpha=0.5, lw=0.5, label='_nolegend_')
     ax.plot(t, mean_curve, lw=2, label='Mean Curve')
     ax.xaxis.set_minor_locator(mdates.HourLocator(interval=3))
     ax.xaxis.set_minor_formatter(mdates.DateFormatter('%H:%M\n'))
@@ -40,7 +40,7 @@ def ensemble_BG(BG, ax=None, plot_var=False, nstd=3):
     ax.set_ylim([BG.min().min() - 10, BG.max().max() + 10])
     ax.legend()
     ax.set_ylabel('Blood Glucose (mg/dl)')
-#     fig.autofmt_xdate()
+    #     fig.autofmt_xdate()
     return ax
 
 
@@ -58,8 +58,8 @@ def ensemblePlot(df):
     t = pd.to_datetime(df_CHO.index)
     ax3.plot(t, df_CHO)
 
-    ax1.tick_params(labelbottom='off')
-    ax2.tick_params(labelbottom='off')
+    ax1.tick_params(labelbottom=False)
+    ax2.tick_params(labelbottom=False)
     ax3.xaxis.set_minor_locator(mdates.AutoDateLocator())
     ax3.xaxis.set_minor_formatter(mdates.DateFormatter('%H:%M\n'))
     ax3.xaxis.set_major_locator(mdates.DayLocator())
@@ -88,15 +88,16 @@ def percent_stats(BG, ax=None):
     p_stats.plot(ax=ax, kind='bar')
     ax.set_ylabel('Percent of time in Range (%)')
     fig.tight_layout()
-#     p_stats.transpose().plot(kind='bar', legend=False)
+    #     p_stats.transpose().plot(kind='bar', legend=False)
     return p_stats, fig, ax
 
 
 def risk_index_trace(df_BG, visualize=False):
     chunk_BG = [df_BG.iloc[i:i + 60, :] for i in range(0, len(df_BG), 60)]
 
-    fBG = [np.mean(1.509 * (np.log(BG[BG > 0])**1.084 - 5.381))
-           for BG in chunk_BG]
+    fBG = [
+        np.mean(1.509 * (np.log(BG[BG > 0])**1.084 - 5.381)) for BG in chunk_BG
+    ]
 
     fBG_df = pd.concat(fBG, axis=1).transpose()
 
@@ -104,8 +105,10 @@ def risk_index_trace(df_BG, visualize=False):
     HBGI = 10 * (fBG_df * (fBG_df > 0))**2
     RI = LBGI + HBGI
 
-    ri_per_hour = pd.concat([LBGI.transpose(), HBGI.transpose(
-    ), RI.transpose()], keys=['LBGI', 'HBGI', 'Risk Index'])
+    ri_per_hour = pd.concat(
+        [LBGI.transpose(), HBGI.transpose(),
+         RI.transpose()],
+        keys=['LBGI', 'HBGI', 'Risk Index'])
 
     axes = []
     if visualize:
@@ -113,8 +116,8 @@ def risk_index_trace(df_BG, visualize=False):
         ri_per_hour_plot = pd.concat(
             [HBGI.transpose(), -LBGI.transpose()], keys=['HBGI', '-LBGI'])
         for i in range(len(ri_per_hour_plot.unstack(level=0))):
-            logger.debug(ri_per_hour_plot.unstack(
-                level=0).iloc[i].unstack(level=1))
+            logger.debug(
+                ri_per_hour_plot.unstack(level=0).iloc[i].unstack(level=1))
             axtmp = ri_per_hour_plot.unstack(level=0).iloc[i].unstack(
                 level=1).plot.bar(stacked=True)
             axes.append(axtmp)
@@ -140,7 +143,7 @@ def CVGA_background(ax=None):
     ax.set_yticks([110, 180, 300, 400])
     ax.set_xticklabels(['110', '90', '70', '<50'])
     ax.set_yticklabels(['110', '180', '300', '>400'])
-#     fig.suptitle('Control Variability Grid Analysis (CVGA)')
+    #     fig.suptitle('Control Variability Grid Analysis (CVGA)')
     ax.set_title('Control Variability Grid Analysis (CVGA)')
     ax.set_xlabel('Min BG (2.5th percentile)')
     ax.set_ylabel('Max BG (97.5th percentile)')
@@ -149,30 +152,45 @@ def CVGA_background(ax=None):
     ax.spines['bottom'].set_visible(False)
     ax.spines['left'].set_visible(False)
 
-    rectangles = {'A-Zone': plt.Rectangle((90, 110), 20, 70, color='limegreen'),
-                  'Lower B': plt.Rectangle((70, 110), 20, 70, color='green'),
-                  'Upper B': plt.Rectangle((90, 180), 20, 120, color='green'),
-                  'B-Zone': plt.Rectangle((70, 180), 20, 120, color='green'),
-                  'Lower C': plt.Rectangle((50, 110), 20, 70, color='yellow'),
-                  'Upper C': plt.Rectangle((90, 300), 20, 100, color='yellow'),
-                  'Lower D': plt.Rectangle((50, 180), 20, 120, color='orange'),
-                  'Upper D': plt.Rectangle((70, 300), 20, 100, color='orange'),
-                  'E-Zone': plt.Rectangle((50, 300), 20, 100, color='red')}
+    rectangles = {
+        'A-Zone': plt.Rectangle((90, 110), 20, 70, color='limegreen'),
+        'Lower B': plt.Rectangle((70, 110), 20, 70, color='green'),
+        'Upper B': plt.Rectangle((90, 180), 20, 120, color='green'),
+        'B-Zone': plt.Rectangle((70, 180), 20, 120, color='green'),
+        'Lower C': plt.Rectangle((50, 110), 20, 70, color='yellow'),
+        'Upper C': plt.Rectangle((90, 300), 20, 100, color='yellow'),
+        'Lower D': plt.Rectangle((50, 180), 20, 120, color='orange'),
+        'Upper D': plt.Rectangle((70, 300), 20, 100, color='orange'),
+        'E-Zone': plt.Rectangle((50, 300), 20, 100, color='red')
+    }
     facecolors = [rectangles[r].get_facecolor() for r in rectangles]
-    pc = PatchCollection(rectangles.values(),
-                         facecolor=facecolors,
-                         edgecolors='w', lw=2, alpha=1)
+    pc = PatchCollection(
+        rectangles.values(),
+        facecolor=facecolors,
+        edgecolors='w',
+        lw=2,
+        alpha=1)
     ax.add_collection(pc)
     for r in rectangles:
         rx, ry = rectangles[r].get_xy()
         cx = rx + rectangles[r].get_width() / 2.0
         cy = ry + rectangles[r].get_height() / 2.0
         if r in ['Lower B', 'Upper B', 'B-Zone']:
-            ax.annotate(r, (cx, cy), weight='bold', color='w',
-                        fontsize=10, ha='center', va='center')
+            ax.annotate(
+                r, (cx, cy),
+                weight='bold',
+                color='w',
+                fontsize=10,
+                ha='center',
+                va='center')
         else:
-            ax.annotate(r, (cx, cy), weight='bold', color='k',
-                        fontsize=10, ha='center', va='center')
+            ax.annotate(
+                r, (cx, cy),
+                weight='bold',
+                color='k',
+                fontsize=10,
+                ha='center',
+                va='center')
 
     return fig, ax
 
@@ -189,10 +207,12 @@ def CVGA_analysis(BG):
             & (BG_max < 180)).sum() / float(len(BG_min))
     perB = ((BG_min > 70) & (BG_min <= 110) & (BG_max >= 110)
             & (BG_max < 300)).sum() / float(len(BG_min)) - perA
-    perC = (((BG_min > 90) & (BG_min <= 110) & (BG_max >= 300)) | (
-        (BG_min <= 70) & (BG_max >= 110) & (BG_max < 180))).sum() / float(len(BG_min))
-    perD = (((BG_min > 70) & (BG_min <= 90) & (BG_max >= 300)) | (
-        (BG_min <= 70) & (BG_max >= 180) & (BG_max < 300))).sum() / float(len(BG_min))
+    perC = (((BG_min > 90) & (BG_min <= 110) & (BG_max >= 300)) |
+            ((BG_min <= 70) & (BG_max >= 110) &
+             (BG_max < 180))).sum() / float(len(BG_min))
+    perD = (((BG_min > 70) & (BG_min <= 90) & (BG_max >= 300)) |
+            ((BG_min <= 70) & (BG_max >= 180) &
+             (BG_max < 300))).sum() / float(len(BG_min))
     perE = ((BG_min <= 70) & (BG_max >= 300)).sum() / float(len(BG_min))
     return BG_min, BG_max, perA, perB, perC, perD, perE
 
@@ -208,12 +228,17 @@ def CVGA(BG_list, label=None):
     zone_stats = []
     for (BG, l) in zip(BG_list, label):
         BGmin, BGmax, A, B, C, D, E = CVGA_analysis(BG)
-        ax.scatter(BGmin, BGmax, edgecolors='k', zorder=4, label='%s (A: %d%%, B: %d%%, C: %d%%, D: %d%%, E: %d%%)' % (
-            l, 100 * A, 100 * B, 100 * C, 100 * D, 100 * E))
+        ax.scatter(
+            BGmin,
+            BGmax,
+            edgecolors='k',
+            zorder=4,
+            label='%s (A: %d%%, B: %d%%, C: %d%%, D: %d%%, E: %d%%)' %
+            (l, 100 * A, 100 * B, 100 * C, 100 * D, 100 * E))
         zone_stats.append((A, B, C, D, E))
 
     zone_stats = pd.DataFrame(zone_stats, columns=['A', 'B', 'C', 'D', 'E'])
-#     ax.legend(bbox_to_anchor=(1, 1.10), borderaxespad=0.5)
+    #     ax.legend(bbox_to_anchor=(1, 1.10), borderaxespad=0.5)
     ax.legend()
     return zone_stats, fig, ax
 
@@ -261,8 +286,8 @@ if __name__ == '__main__':
     # logger.addHandler(fh)
     logger.addHandler(ch)
     # For test only
-    path = os.path.join('..', '..', 'examples',
-                        'results', '2017-12-31_17-46-32')
+    path = os.path.join('..', '..', 'examples', 'results',
+                        '2017-12-31_17-46-32')
     os.chdir(path)
     filename = glob.glob('*#*.csv')
     name = [_f[:-4] for _f in filename]
