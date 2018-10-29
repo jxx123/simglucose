@@ -16,7 +16,9 @@ class testUI(unittest.TestCase):
         # animation, parallel, save_path, sim_time, scenario, scenario random
         # seed, start_time, patients, sensor, sensor seed, insulin pump,
         # controller
-        mock_input.side_effect = ['n', 'y', output_folder, '24', '1', '2',
+        # mock_input.side_effect = ['n', 'y', output_folder, '24', '1', '2',
+        #                           '6', '1', '1', '1', '2', '1']
+        mock_input.side_effect = ['n', 'n', output_folder, '24', '1', '2',
                                   '6', '1', '1', '1', '2', '1']
         s = simulate()
         self.assertEqual(s, 0)

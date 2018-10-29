@@ -5,6 +5,7 @@ from datetime import timedelta
 import logging
 from collections import namedtuple
 from simglucose.simulation.rendering import Viewer
+from simglucose.simulation.data_warehouse import InMemoryDataWarehouse
 
 try:
     from rllab.envs.base import Step
@@ -34,6 +35,11 @@ def risk_diff(BG_last_hour):
 
 
 class T1DSimEnv(object):
+    HORIZON = 1
+
+    COL_NAMES = ['BG', 'CGM', 'insulin', 'CHO', 'Risk', 'LBGI', 'HBGI']
+    INDEX_NAME = 'Time'
+
     def __init__(self, patient, sensor, pump, scenario):
         self.patient = patient
         self.sensor = sensor
@@ -44,6 +50,10 @@ class T1DSimEnv(object):
     @property
     def time(self):
         return self.scenario.start_time + timedelta(minutes=self.patient.t)
+
+    @property
+    def sample_time(self):
+        return self.sensor.sample_time
 
     def mini_step(self, action):
         # current action
@@ -67,40 +77,37 @@ class T1DSimEnv(object):
         '''
         action is a namedtuple with keys: basal, bolus
         '''
+        # Only compute the moving mean of CHO and insulin. BG and CGM use the
+        # sampled values.
         CHO = 0.0
         insulin = 0.0
-        BG = 0.0
-        CGM = 0.0
-
         for _ in range(int(self.sample_time)):
             # Compute moving average as the sample measurements
-            tmp_CHO, tmp_insulin, tmp_BG, tmp_CGM = self.mini_step(action)
+            tmp_CHO, tmp_insulin, BG, CGM = self.mini_step(action)
             CHO += tmp_CHO / self.sample_time
             insulin += tmp_insulin / self.sample_time
-            BG += tmp_BG / self.sample_time
-            CGM += tmp_CGM / self.sample_time
 
         # Compute risk index
-        horizon = 1
-        LBGI, HBGI, risk = risk_index([BG], horizon)
+        LBGI, HBGI, risk = risk_index([BG], self.HORIZON)
 
-        # Record current action
-        self.CHO_hist.append(CHO)
-        self.insulin_hist.append(insulin)
+        # Record action in the past sample interval (5 minutes)
+        self.db.put(self.time - timedelta(minutes=self.sample_time),
+                    CHO=CHO,
+                    insulin=insulin)
 
-        # Record next observation
-        self.time_hist.append(self.time)
-        self.BG_hist.append(BG)
-        self.CGM_hist.append(CGM)
-        self.risk_hist.append(risk)
-        self.LBGI_hist.append(LBGI)
-        self.HBGI_hist.append(HBGI)
+        # Record current observation
+        self.db.put(self.time,
+                    BG=BG,
+                    CGM=CGM,
+                    Risk=risk,
+                    LBGI=LBGI,
+                    HBGI=HBGI)
 
         # Compute reward, and decide whether game is over
         window_size = int(60 / self.sample_time)
-        BG_last_hour = self.CGM_hist[-window_size:]
+        BG_last_hour = self.db.get('CGM')[-window_size:]
         reward = reward_fun(BG_last_hour)
-        done = BG < 70 or BG > 350
+        done = BG < 70 or BG > 350  # Game over rule
         obs = Observation(CGM=CGM)
 
         return Step(
@@ -113,21 +120,21 @@ class T1DSimEnv(object):
             patient_state=self.patient.state)
 
     def _reset(self):
-        self.sample_time = self.sensor.sample_time
         self.viewer = None
 
         BG = self.patient.observation.Gsub
-        horizon = 1
-        LBGI, HBGI, risk = risk_index([BG], horizon)
+        LBGI, HBGI, risk = risk_index([BG], self.HORIZON)
         CGM = self.sensor.measure(self.patient)
-        self.time_hist = [self.scenario.start_time]
-        self.BG_hist = [BG]
-        self.CGM_hist = [CGM]
-        self.risk_hist = [risk]
-        self.LBGI_hist = [LBGI]
-        self.HBGI_hist = [HBGI]
-        self.CHO_hist = []
-        self.insulin_hist = []
+
+        # TODO: provide a factory in the future to support different types of
+        # data IO
+        self.db = InMemoryDataWarehouse(self.COL_NAMES, self.INDEX_NAME)
+        self.db.put(self.time,
+                    BG=BG,
+                    CGM=CGM,
+                    Risk=risk,
+                    LBGI=LBGI,
+                    HBGI=HBGI)
 
     def reset(self):
         self.patient.reset()
@@ -159,14 +166,4 @@ class T1DSimEnv(object):
         self.viewer.render(self.show_history())
 
     def show_history(self):
-        df = pd.DataFrame()
-        df['Time'] = pd.Series(self.time_hist)
-        df['BG'] = pd.Series(self.BG_hist)
-        df['CGM'] = pd.Series(self.CGM_hist)
-        df['CHO'] = pd.Series(self.CHO_hist)
-        df['insulin'] = pd.Series(self.insulin_hist)
-        df['LBGI'] = pd.Series(self.LBGI_hist)
-        df['HBGI'] = pd.Series(self.HBGI_hist)
-        df['Risk'] = pd.Series(self.risk_hist)
-        df = df.set_index('Time')
-        return df
+        return self.db.getAll()
