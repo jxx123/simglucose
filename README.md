@@ -1,4 +1,8 @@
 # simglucose
+[![Downloads](https://pepy.tech/badge/simglucose)](https://pepy.tech/project/simglucose)
+[![Downloads](https://pepy.tech/badge/simglucose/month)](https://pepy.tech/project/simglucose)
+[![Downloads](https://pepy.tech/badge/simglucose/week)](https://pepy.tech/project/simglucose)
+
 A Type-1 Diabetes simulator implemented in Python for Reinforcement Learning purpose
 
 This simulator is a python implementation of the FDA-approved [UVa/Padova Simulator (2008 version)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4454102/) for research purpose only. The simulator includes 30 virtual patients, 10 adolescents, 10 adults, 10 children. 
