@@ -6,8 +6,11 @@
 A Type-1 Diabetes simulator implemented in Python for Reinforcement Learning purpose
 
 This simulator is a python implementation of the FDA-approved [UVa/Padova Simulator (2008 version)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4454102/) for research purpose only. The simulator includes 30 virtual patients, 10 adolescents, 10 adults, 10 children. 
+ 
+ **HOW TO CITE**: Jinyu Xie. Simglucose v0.2.1 (2018) \[Online\]. Avaible: https://github.com/jxx123/simglucose. Accessed on: Month-Date-Year.
 
  - Note: simglucose only supports python3.
+
 
 | Animation                                                                                         | CVGA Plot                                                                      | BG Trace Plot                                                                                    | Risk Index Stats                                                                                                 |
 |---------------------------------------------------------------------------------------------------|:-------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
