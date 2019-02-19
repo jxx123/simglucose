@@ -1,10 +1,12 @@
 from simglucose.patient.t1dpatient import Action
 from simglucose.analysis.risk import risk_index
 import pandas as pd
+import numpy as np
 from datetime import timedelta
 import logging
 from collections import namedtuple
 from simglucose.simulation.rendering import Viewer
+from gym import spaces
 
 try:
     from rllab.envs.base import Step
@@ -34,7 +36,58 @@ def risk_diff(BG_last_hour):
 
 
 class T1DSimEnv(object):
+    '''
+    Observation:
+        Type: Box(4)
+        Num     Observation                 Min         Max
+        0       BG                          69.         351.
+        1       Insulin                     0.0         Inf
+        2       CHO                         0.0         Inf
+        3       CGM                         0.0         Inf
+
+    Actions:
+        Type: Discrete(2)
+        Num     Action
+        0       Adjust Insulin Bolus Down
+        1       Adjust Insulin Bolus Up
+
+    Reward:
+        The default reward function is the risk_diff function which takes the
+        previous risk and subtracts it from the current risk
+        (as computed in the risk index)
+
+    Episode Termination:
+        Our episode will terminate in the event that our blood sugar goes
+        above 350 or below 70
+    '''
+
     def __init__(self, patient, sensor, pump, scenario):
+        # Define our gym space param
+        low = np.array([
+            # BG
+            69.0,
+            # Insulin
+            0.0,
+            # CHO
+            0.0,
+            # CGM
+            0.0
+        ])
+
+        high = np.array([
+            # BG
+            351.0,
+            # Insulin
+            np.finfo(np.float32).max,
+            # CHO
+            np.finfo(np.float32).max,
+            # CGM
+            np.finfo(np.float32).max,
+        ])
+
+        self.observation_space = spaces.Box(low, high, dtype=np.float32)
+        self.action_space = spaces.Discrete(2)
+
         self.patient = patient
         self.sensor = sensor
         self.pump = pump
