@@ -1,14 +1,16 @@
 from simglucose.analysis.report import report
 import pandas as pd
-import os
-import glob
+from pathlib import Path
 
-# the path where results are saved
-path = os.path.join(os.path.dirname(__file__),
-                    'results', '2017-12-31_17-46-32')
-os.chdir(path)
+
+# get the path to the example folder
+exmaple_pth = Path(__file__).parent
+
 # find all csv with pattern *#*.csv, e.g. adolescent#001.csv
-filename = glob.glob('*#*.csv')
-name = [_f[:-4] for _f in filename]   # get the filename without extension
-df = pd.concat([pd.read_csv(f, index_col=0) for f in filename], keys=name)
+result_filenames = list(exmaple_pth.glob(
+    'results/2017-12-31_17-46-32/*#*.csv'))
+patient_names = [f.stem for f in result_filenames]
+df = pd.concat(
+        [pd.read_csv(str(f), index_col=0) for f in result_filenames],
+        keys=patient_names)
 report(df)

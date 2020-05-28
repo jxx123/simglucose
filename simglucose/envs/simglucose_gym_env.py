@@ -4,11 +4,10 @@ from simglucose.sensor.cgm import CGMSensor
 from simglucose.actuator.pump import InsulinPump
 from simglucose.simulation.scenario_gen import RandomScenario
 from simglucose.controller.base import Action
-import pandas as pd
 import numpy as np
 import pkg_resources
 import gym
-from gym import error, spaces, utils
+from gym import spaces
 from gym.utils import seeding
 from datetime import datetime
 
@@ -40,27 +39,6 @@ class T1DSimEnv(gym.Env):
         pump = InsulinPump.withName('Insulet')
         self.env = _T1DSimEnv(patient, sensor, pump, scenario)
         self.reward_fun = reward_fun
-
-    @staticmethod
-    def pick_patient():
-        # TODO: cannot be used to pick patient at the env constructing space
-        # for now
-        patient_params = pd.read_csv(PATIENT_PARA_FILE)
-        while True:
-            print('Select patient:')
-            for j in range(len(patient_params)):
-                print('[{0}] {1}'.format(j + 1, patient_params['Name'][j]))
-            try:
-                select = int(input('>>> '))
-            except ValueError:
-                print('Please input a number.')
-                continue
-
-            if select < 1 or select > len(patient_params):
-                print('Please input 1 to {}'.format(len(patient_params)))
-                continue
-
-            return select
 
     def _step(self, action):
         # This gym only controls basal insulin

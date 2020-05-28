@@ -150,7 +150,7 @@ class T1DPatient(Patient):
 
         # renal excretion
         if x[3] > params.ke2:
-            Et = params.ke1 * (x[3] - params.ke2)  # equazione 27
+            Et = params.ke1 * (x[3] - params.ke2)
         else:
             Et = 0
 
