@@ -318,7 +318,7 @@ def simulate(sim_time=None,
             else:
                 continue
 
-    if platform.system() is 'Darwin':
+    if platform.system() == 'Darwin':
         if animate is True and parallel is True:
             raise ValueError(
                 """animate and parallel cannot be turned on at the same time in macOS.""")
@@ -356,23 +356,4 @@ if __name__ == '__main__':
     # add ch to logger
     root.addHandler(ch)
 
-    # sim_time = timedelta(days=1)
     simulate()
-    # simulate(animate=True, parallel=True)
-    # sim_instances = create_sim_instance(sim_time, animate=False)
-    # for s in sim_instances:
-    #     s.set_controller_kwargs(patient_name=s.env.patient.name,
-    #                             sample_time=s.env.sample_time)
-    # results = simulate(sim_instances, parallel=True)
-    # print(sim_instances)
-    # print([s.controller for s in sim_instances])
-    # print([s.env.scenario for s in sim_instances])
-    # parallel = False
-    # tic = time.time()
-    # if parallel:
-    #     p = Pool(nodes=4)
-    #     results = p.map(sim, sim_instances)
-    # else:
-    #     results = map(sim, sim_instances)
-    # toc = time.time()
-    # print('Simulation took {} sec.'.format(toc - tic))
