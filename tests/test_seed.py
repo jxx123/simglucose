@@ -2,18 +2,18 @@ import gym
 import unittest
 from simglucose.controller.basal_bolus_ctrller import BBController
 from datetime import datetime
+from gym.envs.registration import register
 
 
 class TestSeed(unittest.TestCase):
     def test_changing_seed_generates_different_results(self):
-        from gym.envs.registration import register
         register(
-            id='simglucose-adolescent1-v0',
+            id='simglucose-adult1-v0',
             entry_point='simglucose.envs:T1DSimEnv',
-            kwargs={'patient_name': 'adolescent#001'}
+            kwargs={'patient_name': 'adult#001'}
         )
 
-        env = gym.make('simglucose-adolescent1-v0')
+        env = gym.make('simglucose-adult1-v0')
 
         env.seed(0)
         observation_seed0 = env.reset()
