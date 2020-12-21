@@ -8,12 +8,12 @@ class TestSeed(unittest.TestCase):
     def test_changing_seed_generates_different_results(self):
         from gym.envs.registration import register
         register(
-            id='simglucose-adolescent2-v0',
+            id='simglucose-adolescent1-v0',
             entry_point='simglucose.envs:T1DSimEnv',
-            kwargs={'patient_name': 'adolescent#002'}
+            kwargs={'patient_name': 'adolescent#001'}
         )
 
-        env = gym.make('simglucose-adolescent2-v0')
+        env = gym.make('simglucose-adolescent1-v0')
 
         env.seed(0)
         observation_seed0 = env.reset()
