@@ -1,5 +1,4 @@
 # simglucose
-![Upload Python Package](https://github.com/jxx123/simglucose/workflows/Upload%20Python%20Package/badge.svg)
 [![Downloads](https://pepy.tech/badge/simglucose)](https://pepy.tech/project/simglucose)
 [![Downloads](https://pepy.tech/badge/simglucose/month)](https://pepy.tech/project/simglucose)
 [![Downloads](https://pepy.tech/badge/simglucose/week)](https://pepy.tech/project/simglucose)
