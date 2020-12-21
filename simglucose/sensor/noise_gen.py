@@ -95,32 +95,3 @@ class noise15_iter:
                                    self.e)
         self.count += 1
         return eps
-
-
-if __name__ == '__main__':
-    # logger.setLevel(logging.INFO)
-    logger.setLevel(logging.DEBUG)
-    # create console handler and set level to debug
-    ch = logging.StreamHandler()
-    ch.setLevel(logging.INFO)
-    # ch.setLevel(logging.INFO)
-    # create formatter
-    formatter = logging.Formatter(
-        '%(name)s: %(levelname)s: %(message)s')
-    # add formatter to ch
-    ch.setFormatter(formatter)
-    # add ch to logger
-    logger.addHandler(ch)
-
-    params = {'PACF': 0.7,
-              'gamma': -0.5444,
-              'lambda': 15.9574,
-              'delta': 1.6898,
-              'xi': -5.47,
-              'sample_time': 3,
-              'min': 39.0,
-              'max': 600.0}
-    cgm = CGMNoiseGenerator(params, seed=1)
-    noise = [n for n in cgm.gen_noise(num=1000)]
-    plt.plot(noise)
-    plt.show()
