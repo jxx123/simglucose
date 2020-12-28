@@ -3,15 +3,15 @@ import unittest
 from gym.envs.registration import register
 
 register(
-        id='simglucose-adult1-v0',
+        id='simglucose-adult2-v0',
         entry_point='simglucose.envs:T1DSimEnv',
-        kwargs={'patient_name': 'adult#001'}
+        kwargs={'patient_name': 'adult#002'}
         )
 
 
 class TestReset(unittest.TestCase):
     def test_reset_changes_observation_when_seed_is_fixed(self):
-        env = gym.make('simglucose-adult1-v0')
+        env = gym.make('simglucose-adult2-v0')
 
         env.seed(0)
         observation0 = env.reset()
@@ -27,7 +27,7 @@ class TestReset(unittest.TestCase):
         self.assertNotEqual(scenario0, scenario1)
 
     def test_reset_change_is_deterministic_when_seed_is_fixed(self):
-        env = gym.make('simglucose-adult1-v0')
+        env = gym.make('simglucose-adult2-v0')
 
         env.seed(0)
         observation0 = env.reset()
@@ -56,9 +56,10 @@ class TestReset(unittest.TestCase):
         self.assertEqual(scenario0, scenario2)
         self.assertEqual(scenario1, scenario3)
 
-    def test_reset_change_is_random_when_seed_is_none(self):
-        env = gym.make('simglucose-adult1-v0')
+    def test_reset_change_is_random_when_seed_is_different(self):
+        env = gym.make('simglucose-adult2-v0')
 
+        env.seed(0)
         observation0 = env.reset()
         start_time0 = env.env.scenario.start_time
         scenario0 = env.env.scenario.scenario
@@ -67,7 +68,7 @@ class TestReset(unittest.TestCase):
         start_time1 = env.env.scenario.start_time
         scenario1 = env.env.scenario.scenario
         
-        env = gym.make('simglucose-adult1-v0')
+        env.seed(1)
         observation2 = env.reset()
         start_time2 = env.env.scenario.start_time
         scenario2 = env.env.scenario.scenario
