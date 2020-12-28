@@ -1,6 +1,5 @@
 import gym
 import unittest
-from simglucose.controller.basal_bolus_ctrller import BBController
 from datetime import datetime
 from gym.envs.registration import register
 
@@ -17,11 +16,11 @@ class TestSeed(unittest.TestCase):
 
         env.seed(0)
         observation_seed0 = env.reset()
-        self.assertEqual(env.env.scenario.start_time, datetime(2018, 1, 1, 16, 0, 0))
+        self.assertEqual(env.env.scenario.start_time, datetime(2018, 1, 1, 23, 0, 0))
 
         env.seed(1000)
         observation_seed1 = env.reset()
-        self.assertEqual(env.env.scenario.start_time, datetime(2018, 1, 1, 10, 0, 0))
+        self.assertEqual(env.env.scenario.start_time, datetime(2018, 1, 1, 14, 0, 0))
 
         self.assertNotEqual(observation_seed0, observation_seed1)
 
