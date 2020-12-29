@@ -19,7 +19,7 @@ class T1DPatient(Patient):
     SAMPLE_TIME = 1  # min
     EAT_RATE = 5    # g/min CHO
 
-    def __init__(self, params, init_state=None, t0=0):
+    def __init__(self, params, init_state=None, random_init_bg=False, seed=None, t0=0):
         '''
         T1DPatient constructor.
         Inputs:
@@ -30,9 +30,9 @@ class T1DPatient(Patient):
             - t0: simulation start time, it is 0 by default
         '''
         self._params = params
-        if init_state is None:
-            init_state = self._params.iloc[2:15]
-        self.init_state = init_state
+        self._init_state = init_state
+        self.random_init_bg = random_init_bg
+        self._seed = seed
         self.t0 = t0
         self.reset()
 
@@ -229,10 +229,38 @@ class T1DPatient(Patient):
             to_eat = 0
         return to_eat
 
+    @property
+    def seed(self):
+        return self._seed
+
+    @seed.setter
+    def seed(self, seed):
+        self._seed = seed
+        self.reset()
+
     def reset(self):
         '''
         Reset the patient state to default intial state
         '''
+        if self._init_state is None:
+            self.init_state = self._params.iloc[2:15]
+        else:
+            self.init_state = self._init_state
+
+        self.random_state = np.random.RandomState(self.seed)
+        if self.random_init_bg:
+            # Only randomize glucose related states, x4, x5, and x13
+            mean = [1.0 * self.init_state[3], 
+                    1.0 * self.init_state[4], 
+                    1.0 * self.init_state[12]]
+            cov = np.diag([0.1 * self.init_state[3], 
+                           0.1 * self.init_state[4], 
+                           0.1 * self.init_state[12]]) 
+            bg_init = self.random_state.multivariate_normal(mean, cov)
+            self.init_state[3] = 1.0 * bg_init[0]
+            self.init_state[4] = 1.0 * bg_init[1]
+            self.init_state[12] = 1.0 * bg_init[2]
+
         self._last_Qsto = self.init_state[0] + self.init_state[1]
         self._last_foodtaken = 0
         self.name = self._params.Name
