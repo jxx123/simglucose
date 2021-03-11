@@ -326,6 +326,8 @@ df = pd.concat(
 report(df)
 ```
 ## Release Notes
+### 03/10/2021
+- Fixed some random seed issues.
 ### 5/27/2020
 - Add PIDController at simglucose/controller/pid_ctrller. There is an example at examples/run_pid_controller.py showing how to use it.
 ### 9/10/2018
