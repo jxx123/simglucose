@@ -6,8 +6,8 @@ import pkg_resources
 import logging
 
 logger = logging.getLogger(__name__)
-CONTROL_QUEST = pkg_resources.resource_filename(
-    'simglucose', 'params/Quest.csv')
+CONTROL_QUEST = pkg_resources.resource_filename('simglucose',
+                                                'params/Quest.csv')
 PATIENT_PARA_FILE = pkg_resources.resource_filename(
     'simglucose', 'params/vpatient_params.csv')
 
@@ -20,8 +20,7 @@ class BBController(Controller):
     """
     def __init__(self, target=140):
         self.quest = pd.read_csv(CONTROL_QUEST)
-        self.patient_params = pd.read_csv(
-            PATIENT_PARA_FILE)
+        self.patient_params = pd.read_csv(PATIENT_PARA_FILE)
         self.target = target
 
     def policy(self, observation, reward, done, **kwargs):
@@ -29,11 +28,7 @@ class BBController(Controller):
         pname = kwargs.get('patient_name')
         meal = kwargs.get('meal')
 
-        action = self._bb_policy(
-            pname,
-            meal,
-            observation.CGM,
-            sample_time)
+        action = self._bb_policy(pname, meal, observation.CGM, sample_time)
         return action
 
     def _bb_policy(self, name, meal, glucose, env_sample_time):
@@ -59,23 +54,25 @@ class BBController(Controller):
             params = self.patient_params[self.patient_params.Name.str.match(
                 name)]
             u2ss = params.u2ss.values.item()  # unit: pmol/(L*kg)
-            BW = params.BW.values.item()      # unit: kg
+            BW = params.BW.values.item()  # unit: kg
         else:
             quest = pd.DataFrame([['Average', 1 / 15, 1 / 50, 50, 30]],
-                             columns=['Name', 'CR', 'CF', 'TDI', 'Age'])
-            u2ss = 1.43   # unit: pmol/(L*kg)
-            BW = 57.0     # unit: kg
+                                 columns=['Name', 'CR', 'CF', 'TDI', 'Age'])
+            u2ss = 1.43  # unit: pmol/(L*kg)
+            BW = 57.0  # unit: kg
 
         basal = u2ss * BW / 6000  # unit: U/min
         if meal > 0:
             logger.info('Calculating bolus ...')
             logger.debug('glucose = {}'.format(glucose))
-            bolus = (meal / quest.CR.values + (glucose > 150)
-                    * (glucose - self.target) / quest.CF.values).item()  # unit: U
+            print(f'meal = {meal*env_sample_time}')
+            bolus = (
+                (meal * env_sample_time) / quest.CR.values + (glucose > 150) *
+                (glucose - self.target) / quest.CF.values).item()  # unit: U
         else:
-            bolus = 0 # unit: U
+            bolus = 0  # unit: U
 
-        # This is to convert bolus in total amount (U) to insulin rate (U/min). 
+        # This is to convert bolus in total amount (U) to insulin rate (U/min).
         # The simulation environment does not treat basal and bolus
         # differently. The unit of Action.basal and Action.bolus are the same
         # (U/min).

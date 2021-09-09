@@ -1,5 +1,5 @@
 import unittest
-from pandas.util.testing import assert_frame_equal
+from pandas.testing import assert_frame_equal
 import pandas as pd
 from simglucose.simulation.env import T1DSimEnv
 from simglucose.controller.basal_bolus_ctrller import BBController
@@ -39,8 +39,11 @@ class TestSimEngine(unittest.TestCase):
         controller = BBController()
 
         # Put them together to create a simulation object
-        s1 = SimObj(env, controller, timedelta(
-            days=2), animate=True, path=save_folder)
+        s1 = SimObj(env,
+                    controller,
+                    timedelta(days=2),
+                    animate=True,
+                    path=save_folder)
         results1 = sim(s1)
 
         # --------- Create Custom Scenario --------------
@@ -57,8 +60,11 @@ class TestSimEngine(unittest.TestCase):
         controller = BBController()
 
         # Put them together to create a simulation object
-        s2 = SimObj(env, controller, timedelta(
-            days=2), animate=False, path=save_folder)
+        s2 = SimObj(env,
+                    controller,
+                    timedelta(days=2),
+                    animate=False,
+                    path=save_folder)
         results2 = sim(s2)
 
         # --------- batch simulation --------------
@@ -98,8 +104,11 @@ class TestSimEngine(unittest.TestCase):
         controller = BBController()
 
         # Put them together to create a simulation object
-        s = SimObj(env, controller, timedelta(
-            days=2), animate=False, path=save_folder)
+        s = SimObj(env,
+                   controller,
+                   timedelta(days=2),
+                   animate=False,
+                   path=save_folder)
         results = sim(s)
         assert_frame_equal(results, results_exp)
 
