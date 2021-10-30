@@ -3,6 +3,7 @@ from unittest.mock import patch
 from simglucose.simulation.user_interface import simulate
 import shutil
 import os
+import pandas as pd
 
 output_folder = os.path.join(os.path.dirname(__file__), 'results')
 
@@ -16,10 +17,12 @@ class testUI(unittest.TestCase):
         # animation, parallel, save_path, sim_time, scenario, scenario random
         # seed, start_time, patients, sensor, sensor seed, insulin pump,
         # controller
-        mock_input.side_effect = ['n', 'y', output_folder, '24', '1', '2',
-                                  '6', '1', '1', '1', '2', '1']
-        s = simulate()
-        self.assertEqual(s, 0)
+        mock_input.side_effect = [
+            'n', 'y', output_folder, '24', '1', '2', '6', '1', '1', '1', '2',
+            '1'
+        ]
+        results = simulate()
+        self.assertIsInstance(results, pd.DataFrame)
 
     def tearDown(self):
         shutil.rmtree(output_folder)
