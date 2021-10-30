@@ -7,7 +7,7 @@ A Type-1 Diabetes simulator implemented in Python for Reinforcement Learning pur
 
 This simulator is a python implementation of the FDA-approved [UVa/Padova Simulator (2008 version)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4454102/) for research purpose only. The simulator includes 30 virtual patients, 10 adolescents, 10 adults, 10 children. 
  
- **HOW TO CITE**: Jinyu Xie. Simglucose v0.2.1 (2018) \[Online\]. Avaible: https://github.com/jxx123/simglucose. Accessed on: Month-Date-Year.
+ **HOW TO CITE**: Jinyu Xie. Simglucose v0.2.1 (2018) \[Online\]. Available: https://github.com/jxx123/simglucose. Accessed on: Month-Date-Year.
 
  - Note: simglucose only supports python3.
 
@@ -19,9 +19,9 @@ This simulator is a python implementation of the FDA-approved [UVa/Padova Simula
   <!-- ![Zone Stats](https://github.com/jxx123/simglucose/blob/master/screenshots/zone_stats.png) -->
 
 ## Main Features
-- Simulation enviroment follows [OpenAI gym](https://github.com/openai/gym) and [rllab](https://github.com/rll/rllab) APIs. It returns observation, reward, done, info at each step, which means the simulator is "reinforcement-learning-ready".
+- Simulation environment follows [OpenAI gym](https://github.com/openai/gym) and [rllab](https://github.com/rll/rllab) APIs. It returns observation, reward, done, info at each step, which means the simulator is "reinforcement-learning-ready".
 - Supports customized reward function. The reward function is a function of blood glucose measurements in the last hour. By default, the reward at each step is `risk[t-1] - risk[t]`. `risk[t]` is the risk index at time `t` defined in this [paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2903980/pdf/dia.2008.0138.pdf). 
-- Supports parallel computing. The simulator simulates mutliple patients parallelly using [pathos multiprocessing package](https://github.com/uqfoundation/pathos) (you are free to turn parallel off by setting `parallel=False`).
+- Supports parallel computing. The simulator simulates multiple patients in parallel using [pathos multiprocessing package](https://github.com/uqfoundation/pathos) (you are free to turn parallel off by setting `parallel=False`).
 - The simulator provides a random scenario generator (`from simglucose.simulation.scenario_gen import RandomScenario`) and a customized scenario generator (`from simglucose.simulation.scenario import CustomScenario`). Commandline user-interface will guide you through the scenario settings.
 - The simulator provides the most basic basal-bolus controller for now. It provides very simple syntax to implement your own controller, like Model Predictive Control, PID control, reinforcement learning control, etc. 
 - You can specify random seed in case you want to repeat your experiments.
@@ -29,7 +29,7 @@ This simulator is a python implementation of the FDA-approved [UVa/Padova Simula
 - NOTE: `animate` and `parallel` cannot be set to `True` at the same time in macOS. Most backends of matplotlib in macOS is not thread-safe. Windows has not been tested. Let me know the results if anybody has tested it out.
 
 ## Installation
-It is highly recommended to use `pip` to install `simglucose`, follow this [link](https://pip.pypa.io/en/stable/installing/) to install pip.
+It is highly recommended using `pip` to install `simglucose`, follow this [link](https://pip.pypa.io/en/stable/installing/) to install pip.
 
 Auto installation:
 ```bash
@@ -337,7 +337,7 @@ report(df)
 ### 1/10/2018
 - Added workaround to select patient when make gym environment: register gym environment by passing kwargs of patient_name.
 ### 1/7/2018
-- Added OpenAI gym support, use `gym.make('simglucose-v0')` to make the enviroment.
+- Added OpenAI gym support, use `gym.make('simglucose-v0')` to make the environment.
 - Noticed issue: the patient name selection is not available in gym.make for now. The patient name has to be hard-coded in the constructor of `simglucose.envs.T1DSimEnv`.
 
 ## Reporting issues
@@ -384,7 +384,7 @@ GitHub, clone, and develop on a branch. Steps:
    ```
 
 5. Follow [these instructions](https://help.github.com/articles/creating-a-pull-request-from-a-fork)
-to create a pull request from your fork. This will send an email to the committers.
+to create a pull request from your fork. This will email the committers.
 
 (If any of the above seems like magic to you, please look up the
 [Git documentation](https://git-scm.com/documentation) on the web, or ask a friend or another contributor for help.)
