@@ -103,14 +103,18 @@ class T1DSimEnv(object):
         done = BG < 70 or BG > 350
         obs = Observation(CGM=CGM)
 
-        return Step(
-            observation=obs,
-            reward=reward,
-            done=done,
-            sample_time=self.sample_time,
-            patient_name=self.patient.name,
-            meal=CHO,
-            patient_state=self.patient.state)
+        return Step(observation=obs,
+                    reward=reward,
+                    done=done,
+                    sample_time=self.sample_time,
+                    patient_name=self.patient.name,
+                    meal=CHO,
+                    patient_state=self.patient.state,
+                    time=self.time,
+                    bg=BG,
+                    lbgi=LBGI,
+                    hbgi=HBGI,
+                    risk=risk)
 
     def _reset(self):
         self.sample_time = self.sensor.sample_time
@@ -137,14 +141,18 @@ class T1DSimEnv(object):
         self._reset()
         CGM = self.sensor.measure(self.patient)
         obs = Observation(CGM=CGM)
-        return Step(
-            observation=obs,
-            reward=0,
-            done=False,
-            sample_time=self.sample_time,
-            patient_name=self.patient.name,
-            meal=0,
-            patient_state=self.patient.state)
+        return Step(observation=obs,
+                    reward=0,
+                    done=False,
+                    sample_time=self.sample_time,
+                    patient_name=self.patient.name,
+                    meal=0,
+                    patient_state=self.patient.state,
+                    time=self.time,
+                    bg=self.BG_hist[0],
+                    lbgi=self.LBGI_hist[0],
+                    hbgi=self.HBGI_hist[0],
+                    risk=self.risk_hist[0])
 
     def render(self, close=False):
         if close:

@@ -26,7 +26,7 @@ class BBController(Controller):
     def policy(self, observation, reward, done, **kwargs):
         sample_time = kwargs.get('sample_time', 1)
         pname = kwargs.get('patient_name')
-        meal = kwargs.get('meal')
+        meal = kwargs.get('meal')  # unit: g/min
 
         action = self._bb_policy(pname, meal, observation.CGM, sample_time)
         return action
@@ -64,8 +64,8 @@ class BBController(Controller):
         basal = u2ss * BW / 6000  # unit: U/min
         if meal > 0:
             logger.info('Calculating bolus ...')
-            logger.debug('glucose = {}'.format(glucose))
-            print(f'meal = {meal*env_sample_time}')
+            logger.info(f'Meal = {meal} g/min')
+            logger.info(f'glucose = {glucose}')
             bolus = (
                 (meal * env_sample_time) / quest.CR.values + (glucose > 150) *
                 (glucose - self.target) / quest.CF.values).item()  # unit: U

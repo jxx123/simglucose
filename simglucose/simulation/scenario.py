@@ -8,14 +8,7 @@ Action = namedtuple('scenario_action', ['meal'])
 
 
 class Scenario(object):
-    def __init__(self, start_time=None):
-        if start_time is None:
-            now = datetime.now()
-            start_hour = timedelta(hours=float(
-                input('Input simulation start time (hr): ')))
-            start_time = datetime.combine(now.date(),
-                                          datetime.min.time()) + start_hour
-            print('Simulation start time is set to {}.'.format(start_time))
+    def __init__(self, start_time):
         self.start_time = start_time
 
     def get_action(self, t):
@@ -26,7 +19,7 @@ class Scenario(object):
 
 
 class CustomScenario(Scenario):
-    def __init__(self, start_time=None, scenario=None):
+    def __init__(self, start_time, scenario):
         '''
         scenario - a list of tuples (time, action), where time is a datetime or
                    timedelta or double, action is a namedtuple defined by
@@ -35,8 +28,6 @@ class CustomScenario(Scenario):
                    type is interpreted as time in timedelta with unit of hours
         '''
         Scenario.__init__(self, start_time=start_time)
-        if scenario is None:
-            scenario = self.input_scenario()
         self.scenario = scenario
 
     def get_action(self, t):
@@ -50,37 +41,6 @@ class CustomScenario(Scenario):
 
     def reset(self):
         pass
-
-    @staticmethod
-    def input_scenario():
-        scenario = []
-
-        print('Input a custom scenario ...')
-        breakfast_time = float(input('Input breakfast time (hr): '))
-        breakfast_size = float(input('Input breakfast size (g): '))
-        scenario.append((breakfast_time, breakfast_size))
-
-        lunch_time = float(input('Input lunch time (hr): '))
-        lunch_size = float(input('Input lunch size (g): '))
-        scenario.append((lunch_time, lunch_size))
-
-        dinner_time = float(input('Input dinner time (hr): '))
-        dinner_size = float(input('Input dinner size (g): '))
-        scenario.append((dinner_time, dinner_size))
-
-        while True:
-            snack_time = float(input('Input snack time (hr): '))
-            snack_size = float(input('Input snack size (g): '))
-            scenario.append((snack_time, snack_size))
-
-            go_on = input('Continue input snack (y/n)? ')
-            if go_on == 'n':
-                break
-            elif go_on == 'y':
-                continue
-            else:
-                go_on = input('Continue input snack (y/n)? ')
-        return scenario
 
 
 def parseTime(time, start_time):

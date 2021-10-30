@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 
 class RandomScenario(Scenario):
-    def __init__(self, start_time=None, seed=None):
+    def __init__(self, start_time, seed=None):
         Scenario.__init__(self, start_time=start_time)
         self.seed = seed
 
@@ -31,8 +31,7 @@ class RandomScenario(Scenario):
             return Action(meal=0)
 
     def create_scenario(self):
-        scenario = {'meal': {'time': [],
-                             'amount': []}}
+        scenario = {'meal': {'time': [], 'amount': []}}
 
         # Probability of taking each meal
         # [breakfast, snack1, lunch, snack2, dinner, snack3]
@@ -44,15 +43,16 @@ class RandomScenario(Scenario):
         amount_mu = [45, 10, 70, 10, 80, 10]
         amount_sigma = [10, 5, 10, 5, 10, 5]
 
-        for p, tlb, tub, tbar, tsd, mbar, msd in zip(
-                prob, time_lb, time_ub, time_mu, time_sigma,
-                amount_mu, amount_sigma):
+        for p, tlb, tub, tbar, tsd, mbar, msd in zip(prob, time_lb, time_ub,
+                                                     time_mu, time_sigma,
+                                                     amount_mu, amount_sigma):
             if self.random_gen.rand() < p:
-                tmeal = np.round(truncnorm.rvs(a=(tlb - tbar) / tsd,
-                                               b=(tub - tbar) / tsd,
-                                               loc=tbar,
-                                               scale=tsd,
-                                               random_state=self.random_gen))
+                tmeal = np.round(
+                    truncnorm.rvs(a=(tlb - tbar) / tsd,
+                                  b=(tub - tbar) / tsd,
+                                  loc=tbar,
+                                  scale=tsd,
+                                  random_state=self.random_gen))
                 scenario['meal']['time'].append(tmeal)
                 scenario['meal']['amount'].append(
                     max(round(self.random_gen.normal(mbar, msd)), 0))
