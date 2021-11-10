@@ -31,12 +31,14 @@ class CustomScenario(Scenario):
         self.scenario = scenario
 
     def get_action(self, t):
-        times, actions = tuple(zip(*self.scenario))
-        times2compare = [parseTime(time, self.start_time) for time in times]
-        if t in times2compare:
-            idx = times2compare.index(t)
-            return Action(meal=actions[idx])
+        if not self.scenario:
+            return Action(meal=0)
         else:
+            times, actions = tuple(zip(*self.scenario))
+            times2compare = [parseTime(time, self.start_time) for time in times]
+            if t in times2compare:
+                idx = times2compare.index(t)
+                return Action(meal=actions[idx])
             return Action(meal=0)
 
     def reset(self):
