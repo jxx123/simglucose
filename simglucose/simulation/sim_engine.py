@@ -27,6 +27,7 @@ class SimObj(object):
         self.path = path
 
     def simulate(self):
+        self.controller.reset()
         obs, reward, done, info = self.env.reset()
         tic = time.time()
         while self.env.time < self.env.scenario.start_time + self.sim_time:
