@@ -87,12 +87,11 @@ class T1DPatient(Patient):
         # Detect eating or not and update last digestion amount
         if action.CHO > 0 and self._last_action.CHO <= 0:
             logger.info('t = {}, patient starts eating ...'.format(self.t))
-            self._last_Qsto = self.state[0] + self.state[1]
-            self._last_foodtaken = 0
+            self._last_Qsto = self.state[0] + self.state[1]  # unit: mg
+            self._last_foodtaken = 0  # unit: g
             self.is_eating = True
 
         if to_eat > 0:
-            # print(action.CHO)
             logger.debug('t = {}, patient eats {} g'.format(
                 self.t, action.CHO))
 
@@ -108,8 +107,6 @@ class T1DPatient(Patient):
         self._last_action = action
 
         # ODE solver
-        # print('Current simulation time: {}'.format(self.t))
-        # print(self._last_Qsto)
         self._odesolver.set_f_params(action, self._params, self._last_Qsto,
                                      self._last_foodtaken)
         if self._odesolver.successful():
@@ -127,7 +124,10 @@ class T1DPatient(Patient):
 
         # Glucose in the stomach
         qsto = x[0] + x[1]
-        Dbar = last_Qsto + last_foodtaken
+        # NOTE: Dbar is in unit mg, hence last_foodtaken needs to be converted
+        # from mg to g. See https://github.com/jxx123/simglucose/issues/41 for
+        # details.
+        Dbar = last_Qsto + last_foodtaken * 1000  # unit: mg
 
         # Stomach solid
         dxdt[0] = -params.kmax * x[0] + d
