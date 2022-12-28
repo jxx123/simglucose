@@ -54,7 +54,7 @@ class T1DSimEnv(gym.Env):
 
     def _seed(self, seed=None):
         self.np_random, seed1 = seeding.np_random(seed=seed)
-        self.env, seed2, seed3, seed4 = self._create_env_from_random_state()
+        self.env, seed2, seed3, seed4 = self._create_env()
         return [seed1, seed2, seed3, seed4]
 
     def _create_env(self):
@@ -66,8 +66,7 @@ class T1DSimEnv(gym.Env):
         seed4 = seeding.hash_seed(seed3 + 1) % 2**31
 
         hour = self.np_random.randint(low=0.0, high=24.0)
-        start_time = datetime(2018, 1, 1, hour, 0, 0)
-        
+        start_time = datetime(2018, 1, 1, hour, 0, 0)    
 
         if isinstance(self.patient_name, list):
             patient_name = self.np_random.choice(self.patient_name)
