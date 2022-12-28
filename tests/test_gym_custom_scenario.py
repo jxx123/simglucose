@@ -30,7 +30,7 @@ class TestCustomScenario(unittest.TestCase):
         reward = 0
         done = False
 
-        sample_step = 3
+        sample_step = env.env.sensor.sample_time
 
         info = {'sample_time': sample_step,
                 'patient_name': 'adolescent#002',
