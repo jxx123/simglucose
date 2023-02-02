@@ -13,7 +13,7 @@ class SysIDController(Controller):
         assert len(insulin_time) == len(insulin_amount)
         self.insulin_time = insulin_time
         self.insulin_amount = insulin_amount
-        self.basal = None
+        self.reset()
 
     def policy(self, observation, reward, done, **info):
         time = info['time']
@@ -29,3 +29,6 @@ class SysIDController(Controller):
                 basal=self.basal,
                 bolus=self.insulin_amount[self.insulin_time.index(time)])
         return action
+
+    def reset(self):
+        self.basal = None
