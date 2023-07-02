@@ -1,7 +1,7 @@
-import gym
+import gymnasium as gym
 import unittest
 from datetime import datetime
-from gym.envs.registration import register
+from gymnasium.envs.registration import register
 
 register(
     id='simglucose-adult1-v0',

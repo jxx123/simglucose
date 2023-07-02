@@ -6,8 +6,8 @@ from simglucose.simulation.scenario_gen import RandomScenario
 from simglucose.controller.base import Action
 import numpy as np
 import pkg_resources
-import gym
-from gym import spaces
+import gymnasium as gym
+from gymnasium import spaces
 from gym.utils import seeding
 from datetime import datetime
 
@@ -19,12 +19,12 @@ class T1DSimEnv(gym.Env):
     '''
     A wrapper of simglucose.simulation.env.T1DSimEnv to support gym API
     '''
-    metadata = {'render.modes': ['human']}
+    metadata = {'render_modes': ['human']}
 
     SENSOR_HARDWARE = 'Dexcom'
     INSULIN_PUMP_HARDWARE = 'Insulet'
 
-    def __init__(self, patient_name=None, custom_scenario=None, reward_fun=None, seed=None):
+    def __init__(self, patient_name=None, custom_scenario=None, reward_fun=None, seed=None, render_mode=None):
         '''
         patient_name must be 'adolescent#001' to 'adolescent#010',
         or 'adult#001' to 'adult#010', or 'child#001' to 'child#010'
@@ -33,23 +33,25 @@ class T1DSimEnv(gym.Env):
         # error when choosing the patient
         if patient_name is None:
             patient_name = 'adolescent#001'
+        self.render_mode = render_mode
         self.patient_name = patient_name
         self.reward_fun = reward_fun
         self.np_random, _ = seeding.np_random(seed=seed)
         self.custom_scenario = custom_scenario
         self.env, _, _, _ = self._create_env_from_random_state(custom_scenario)
 
-    def _step(self, action):
+    def step(self, action):
         # This gym only controls basal insulin
         act = Action(basal=action, bolus=0)
         if self.reward_fun is None:
             return self.env.step(act)
         return self.env.step(act, reward_fun=self.reward_fun)
 
-    def _reset(self):
+    def reset(self, seed=None, options=None):
         self.env, _, _, _ = self._create_env_from_random_state(self.custom_scenario)
-        obs, _, _, _ = self.env.reset()
-        return obs
+        obs, _, _, _, _ = self.env.reset()
+        info = {}
+        return obs, info
 
     def _seed(self, seed=None):
         self.np_random, seed1 = seeding.np_random(seed=seed)

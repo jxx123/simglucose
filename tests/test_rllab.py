@@ -1,5 +1,5 @@
 import unittest
-from gym.envs.registration import register
+from gymnasium.envs.registration import register
 
 register(
     id='simglucose-adolescent1-v0',

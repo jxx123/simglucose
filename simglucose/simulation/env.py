@@ -9,15 +9,15 @@ from simglucose.simulation.rendering import Viewer
 try:
     from rllab.envs.base import Step
 except ImportError:
-    _Step = namedtuple("Step", ["observation", "reward", "done", "info"])
+    _Step = namedtuple("Step", ["observation", "reward", "terminated", "truncated", "info"])
 
-    def Step(observation, reward, done, **kwargs):
+    def Step(observation, reward, terminated, truncated, **kwargs):
         """
         Convenience method creating a namedtuple with the results of the
         environment.step method.
         Put extra diagnostic info in the kwargs
         """
-        return _Step(observation, reward, done, kwargs)
+        return _Step(observation, reward, terminated, truncated, kwargs)
 
 
 Observation = namedtuple('Observation', ['CGM'])
@@ -100,12 +100,13 @@ class T1DSimEnv(object):
         window_size = int(60 / self.sample_time)
         BG_last_hour = self.CGM_hist[-window_size:]
         reward = reward_fun(BG_last_hour)
-        done = BG < 70 or BG > 350
+        terminated = BG < 70 or BG > 350
         obs = Observation(CGM=CGM)
 
         return Step(observation=obs,
                     reward=reward,
-                    done=done,
+                    terminated=terminated,
+                    truncated=False,
                     sample_time=self.sample_time,
                     patient_name=self.patient.name,
                     meal=CHO,
@@ -143,7 +144,8 @@ class T1DSimEnv(object):
         obs = Observation(CGM=CGM)
         return Step(observation=obs,
                     reward=0,
-                    done=False,
+                    terminated=False,
+                    truncated=False,
                     sample_time=self.sample_time,
                     patient_name=self.patient.name,
                     meal=0,
