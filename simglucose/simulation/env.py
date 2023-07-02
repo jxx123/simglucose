@@ -156,17 +156,16 @@ class T1DSimEnv(object):
                     hbgi=self.HBGI_hist[0],
                     risk=self.risk_hist[0])
 
-    def render(self, close=False):
-        if close:
-            if self.viewer is not None:
-                self.viewer.close()
-                self.viewer = None
-            return
-
+    def render(self):
         if self.viewer is None:
             self.viewer = Viewer(self.scenario.start_time, self.patient.name)
 
         self.viewer.render(self.show_history())
+
+    def close(self):
+        if self.viewer is not None:
+            self.viewer.close()
+            self.viewer = None
 
     def show_history(self):
         df = pd.DataFrame()

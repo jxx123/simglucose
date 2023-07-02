@@ -19,7 +19,7 @@ class T1DSimEnv(gym.Env):
     '''
     A wrapper of simglucose.simulation.env.T1DSimEnv to support gym API
     '''
-    metadata = {'render_modes': ['human']}
+    metadata = {'render_modes': ['human'], "render_fps": 4}
 
     SENSOR_HARDWARE = 'Dexcom'
     INSULIN_PUMP_HARDWARE = 'Insulet'
@@ -75,8 +75,12 @@ class T1DSimEnv(gym.Env):
         env = _T1DSimEnv(patient, sensor, pump, scenario)
         return env, seed2, seed3, seed4
 
-    def _render(self, mode='human', close=False):
-        self.env.render(close=close)
+    def render(self):
+        if self.render_mode == "human":
+            self.env.render()
+
+    def close(self):
+        self.env.close()
 
     @property
     def action_space(self):

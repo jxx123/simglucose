@@ -4,9 +4,9 @@ from rllab.exploration_strategies.ou_strategy import OUStrategy
 from rllab.policies.deterministic_mlp_policy import DeterministicMLPPolicy
 from rllab.q_functions.continuous_mlp_q_function import ContinuousMLPQFunction
 from rllab.envs.gym_env import GymEnv
-from gym.envs.registration import register
+from gymnasium import gym
 
-register(
+gym.register(
     id='simglucose-adolescent2-v0',
     entry_point='simglucose.envs:T1DSimEnv',
     kwargs={'patient_name': 'adolescent#002'}

@@ -1,6 +1,4 @@
 import gymnasium as gym
-from gymnasium.envs.registration import register
-
 
 def custom_reward(BG_last_hour):
     if BG_last_hour[-1] > 180:
@@ -11,25 +9,26 @@ def custom_reward(BG_last_hour):
         return 1
 
 
-register(
+gym.register(
     id='simglucose-adolescent2-v0',
     entry_point='simglucose.envs:T1DSimEnv',
     kwargs={'patient_name': 'adolescent#002',
             'reward_fun': custom_reward}
 )
 
-env = gym.make('simglucose-adolescent2-v0')
+env = gym.make('simglucose-adolescent2-v0', render_mode='human')
 
 reward = 1
-done = False
 
-observation = env.reset()
+observation, info = env.reset()
 for t in range(200):
-    env.render(mode='human')
+    env.render()
     action = env.action_space.sample()
-    observation, reward, done, info = env.step(action)
+    observation, reward, terminated, truncated, info = env.step(action)
     print(observation)
     print("Reward = {}".format(reward))
-    if done:
+    if terminated or truncated:
         print("Episode finished after {} timesteps".format(t + 1))
         break
+
+env.close()
