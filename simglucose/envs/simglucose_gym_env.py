@@ -32,12 +32,13 @@ class T1DSimEnv(gym.Env):
         # have to hard code the patient_name, gym has some interesting
         # error when choosing the patient
         if patient_name is None:
-            patient_name = 'adolescent#001'
+            patient_name = ['adolescent#001']
+
         self.patient_name = patient_name
         self.reward_fun = reward_fun
         self.np_random, _ = seeding.np_random(seed=seed)
         self.custom_scenario = custom_scenario
-        self.env, _, _, _ = self._create_env_from_random_state(custom_scenario)
+        self.env, _, _, _ = self._create_env()
 
     def _step(self, action):
         # This gym only controls basal insulin
@@ -47,16 +48,16 @@ class T1DSimEnv(gym.Env):
         return self.env.step(act, reward_fun=self.reward_fun)
 
     def _reset(self):
-        self.env, _, _, _ = self._create_env_from_random_state(self.custom_scenario)
+        self.env, _, _, _ = self._create_env()
         obs, _, _, _ = self.env.reset()
         return obs
 
     def _seed(self, seed=None):
         self.np_random, seed1 = seeding.np_random(seed=seed)
-        self.env, seed2, seed3, seed4 = self._create_env_from_random_state()
+        self.env, seed2, seed3, seed4 = self._create_env()
         return [seed1, seed2, seed3, seed4]
 
-    def _create_env_from_random_state(self, custom_scenario=None):
+    def _create_env(self):
         # Derive a random seed. This gets passed as a uint, but gets
         # checked as an int elsewhere, so we need to keep it below
         # 2**31.
@@ -65,10 +66,20 @@ class T1DSimEnv(gym.Env):
         seed4 = seeding.hash_seed(seed3 + 1) % 2**31
 
         hour = self.np_random.randint(low=0.0, high=24.0)
-        start_time = datetime(2018, 1, 1, hour, 0, 0)
-        patient = T1DPatient.withName(self.patient_name, random_init_bg=True, seed=seed4)
+        start_time = datetime(2018, 1, 1, hour, 0, 0)    
+
+        if isinstance(self.patient_name, list):
+            patient_name = self.np_random.choice(self.patient_name)
+            patient = T1DPatient.withName(patient_name, random_init_bg=True, seed=seed4)
+        else:
+            patient = T1DPatient.withName(self.patient_name, random_init_bg=True, seed=seed4)
+
+        if isinstance(self.custom_scenario, list):
+           scenario = self.np_random.choice(self.custom_scenario)
+        else:
+            scenario = RandomScenario(start_time=start_time, seed=seed3) if self.custom_scenario is None else self.custom_scenario
+        
         sensor = CGMSensor.withName(self.SENSOR_HARDWARE, seed=seed2)
-        scenario = RandomScenario(start_time=start_time, seed=seed3) if custom_scenario is None else custom_scenario
         pump = InsulinPump.withName(self.INSULIN_PUMP_HARDWARE)
         env = _T1DSimEnv(patient, sensor, pump, scenario)
         return env, seed2, seed3, seed4
