@@ -7,9 +7,8 @@ from simglucose.controller.base import Action
 import numpy as np
 import pkg_resources
 import gymnasium as gym
-from gymnasium import spaces
-from gym.utils import seeding
 from datetime import datetime
+import simglucose.seed.seeding as seeding
 
 PATIENT_PARA_FILE = pkg_resources.resource_filename(
     'simglucose', 'params/vpatient_params.csv')
@@ -85,8 +84,8 @@ class T1DSimEnv(gym.Env):
     @property
     def action_space(self):
         ub = self.env.pump._params['max_basal']
-        return spaces.Box(low=0, high=ub, shape=(1,))
+        return gym.spaces.Box(low=0, high=ub, shape=(1,))
 
     @property
     def observation_space(self):
-        return spaces.Box(low=0, high=np.inf, shape=(1,))
+        return gym.spaces.Box(low=0, high=np.inf, shape=(1,))
