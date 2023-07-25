@@ -93,16 +93,20 @@ def percent_stats(BG, ax=None):
 
 
 def risk_index_trace(df_BG, visualize=False):
-    chunk_BG = [df_BG.iloc[i:i + 60, :] for i in range(0, len(df_BG), 60)]
+    chunk_BG = [df_BG.iloc[i:i + 20, :] for i in range(0, len(df_BG), 20)]
+
+    if len(chunk_BG[-1]) != 20:  # Remove the last chunk which is not full
+        chunk_BG.pop()
 
     fBG = [
-        np.mean(1.509 * (np.log(BG[BG > 0])**1.084 - 5.381)) for BG in chunk_BG
+        1.509 * (np.log(BG[BG > 0]) ** 1.084 - 5.381) for BG in chunk_BG
     ]
 
-    fBG_df = pd.concat(fBG, axis=1).transpose()
+    rl = [(10 * (fbg * (fbg < 0))**2).mean() for fbg in fBG]
+    rh = [(10 * (fbg * (fbg > 0))**2).mean() for fbg in fBG]
 
-    LBGI = 10 * (fBG_df * (fBG_df < 0))**2
-    HBGI = 10 * (fBG_df * (fBG_df > 0))**2
+    LBGI = pd.concat(rl, axis=1).transpose()
+    HBGI = pd.concat(rh, axis=1).transpose()
     RI = LBGI + HBGI
 
     ri_per_hour = pd.concat(
