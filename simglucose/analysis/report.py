@@ -92,18 +92,18 @@ def percent_stats(BG, ax=None):
     return p_stats, fig, ax
 
 
-def risk_index_trace(df_BG, visualize=False):
-    chunk_BG = [df_BG.iloc[i:i + 20, :] for i in range(0, len(df_BG), 20)]
+def risk_index_trace(df_BG, sample_rate, visualize=False):
+    chunk_BG = [df_BG.iloc[i:i + sample_rate, :] for i in range(0, len(df_BG), sample_rate)]
 
-    if len(chunk_BG[-1]) != 20:  # Remove the last chunk which is not full
+    if len(chunk_BG[-1]) != sample_rate:  # Remove the last chunk which is not full
         chunk_BG.pop()
 
     fBG = [
         1.509 * (np.log(BG[BG > 0]) ** 1.084 - 5.381) for BG in chunk_BG
     ]
 
-    rl = [(10 * (fbg * (fbg < 0))**2).mean() for fbg in fBG]
-    rh = [(10 * (fbg * (fbg > 0))**2).mean() for fbg in fBG]
+    rl = [(10 * (fbg * (fbg < 0)) ** 2).mean() for fbg in fBG]
+    rh = [(10 * (fbg * (fbg > 0)) ** 2).mean() for fbg in fBG]
 
     LBGI = pd.concat(rl, axis=1).transpose()
     HBGI = pd.concat(rh, axis=1).transpose()
@@ -238,7 +238,7 @@ def CVGA(BG_list, label=None):
             edgecolors='k',
             zorder=4,
             label='%s (A: %d%%, B: %d%%, C: %d%%, D: %d%%, E: %d%%)' %
-            (l, 100 * A, 100 * B, 100 * C, 100 * D, 100 * E))
+                  (l, 100 * A, 100 * B, 100 * C, 100 * D, 100 * E))
         zone_stats.append((A, B, C, D, E))
 
     zone_stats = pd.DataFrame(zone_stats, columns=['A', 'B', 'C', 'D', 'E'])
@@ -247,12 +247,16 @@ def CVGA(BG_list, label=None):
     return zone_stats, fig, ax
 
 
-def report(df, save_path=None):
+def report(df, cgm_sensor=None, save_path=None):
     BG = df.unstack(level=0).BG
+
+    sample_rate = 20  # Use 20 as default sample rate in one hour
+    if cgm_sensor is not None:
+        sample_rate = int(60 / cgm_sensor.sample_time)
 
     fig_ensemble, ax1, ax2, ax3 = ensemblePlot(df)
     pstats, fig_percent, ax4 = percent_stats(BG)
-    ri_per_hour, ri_mean, fig_ri, ax5 = risk_index_trace(BG, visualize=False)
+    ri_per_hour, ri_mean, fig_ri, ax5 = risk_index_trace(BG, sample_rate, visualize=False)
     zone_stats, fig_cvga, ax6 = CVGA(BG, label='')
     axes = [ax1, ax2, ax3, ax4, ax5, ax6]
     figs = [fig_ensemble, fig_percent, fig_ri, fig_cvga]
