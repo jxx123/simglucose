@@ -361,9 +361,10 @@ def simulate(sim_time=None,
     if controller is None:
         controller = pick_controller()
 
+    cgm_sensor = CGMSensor.withName(cgm_name, seed=cgm_seed)
+
     def local_build_env(pname):
         patient = T1DPatient.withName(pname)
-        cgm_sensor = CGMSensor.withName(cgm_name, seed=cgm_seed)
         insulin_pump = InsulinPump.withName(insulin_pump_name)
         scen = copy.deepcopy(scenario)
         env = T1DSimEnv(patient, cgm_sensor, insulin_pump, scen)
@@ -380,7 +381,7 @@ def simulate(sim_time=None,
     results = batch_sim(sim_instances, parallel=parallel)
 
     df = pd.concat(results, keys=[s.env.patient.name for s in sim_instances])
-    results, ri_per_hour, zone_stats, figs, axes = report(df, save_path)
+    results, ri_per_hour, zone_stats, figs, axes = report(df, cgm_sensor, save_path)
 
     return results
 
