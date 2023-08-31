@@ -11,6 +11,7 @@ This simulator is a python implementation of the FDA-approved [UVa/Padova Simula
 **HOW TO CITE**: Jinyu Xie. Simglucose v0.2.1 (2018) \[Online\]. Available: https://github.com/jxx123/simglucose. Accessed on: Month-Date-Year.
 
 **Notice**: simglucose no longer supports python 3.7 and 3.8, please update to >=3.9 verison. Thanks!
+
 **Announcement (08/20/2023)**: simglucose now supports gymnasium! Check [examples/run_gymnasium.py](examples/run_gymnasium.py) for usage.
 
 | Animation                                        | CVGA Plot                     | BG Trace Plot                                   | Risk Index Stats                                |
