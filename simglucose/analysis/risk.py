@@ -13,5 +13,8 @@ def risk_index(BG, horizon):
         rh = 10 * fBG[fBG > 0]**2
         LBGI = np.nan_to_num(np.mean(rl))
         HBGI = np.nan_to_num(np.mean(rh))
-        RI = LBGI + HBGI
+        weight_rl = len(rl) / horizon
+        weight_rh = len(rh) / horizon
+        
+        RI = weight_rl * LBGI + weight_rh * HBGI
     return (LBGI, HBGI, RI)
