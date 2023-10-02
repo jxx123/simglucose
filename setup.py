@@ -12,7 +12,7 @@ reqs = parse_requirements("requirements.txt")
 
 setup(
     name="simglucose",
-    version="0.2.4",
+    version="0.2.6",
     description="A Type-1 Diabetes Simulator as a Reinforcement Learning Environment in OpenAI gym or rllab (python implementation of UVa/Padova Simulator)",
     url="https://github.com/jxx123/simglucose",
     author="Jinyu Xie",
