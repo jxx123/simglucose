@@ -6,7 +6,7 @@ cycler~=0.11.0
 dill~=0.3.7
 Farama-Notifications~=0.0.4
 fonttools~=4.42.0
-gym~=0.9.4
+gym==0.9.4
 gymnasium~=0.29.1
 idna~=3.4
 iniconfig~=2.0.0
