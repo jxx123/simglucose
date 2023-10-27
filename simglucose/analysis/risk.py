@@ -12,7 +12,7 @@ def risk_index(BG, horizon):
 
 def risk(BG):
     """
-    Risk is to be a percentage - ranging from 0 to 100%.
+    Risk is a percentage - ranging from 0 to 100%.
     The 20 and 600 mg/dl are just the values to which the risk formula was fit. 
     The aim is to make the risk maximum when it is either 20 or 600.
     The units in the paper below are different (mmol/l), but in our units (mg/dl) these limits are 20 and 600.
