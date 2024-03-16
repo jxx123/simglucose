@@ -1,51 +1,61 @@
 # simglucose
-[![Downloads](https://pepy.tech/badge/simglucose)](https://pepy.tech/project/simglucose)
-[![Downloads](https://pepy.tech/badge/simglucose/month)](https://pepy.tech/project/simglucose)
-[![Downloads](https://pepy.tech/badge/simglucose/week)](https://pepy.tech/project/simglucose)
+
+[![Downloads](https://static.pepy.tech/badge/simglucose)](https://pepy.tech/project/simglucose)
+[![Downloads](https://static.pepy.tech/badge/simglucose/month)](https://pepy.tech/project/simglucose)
+[![Downloads](https://static.pepy.tech/badge/simglucose/week)](https://pepy.tech/project/simglucose)
 
 A Type-1 Diabetes simulator implemented in Python for Reinforcement Learning purpose
 
-This simulator is a python implementation of the FDA-approved [UVa/Padova Simulator (2008 version)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4454102/) for research purpose only. The simulator includes 30 virtual patients, 10 adolescents, 10 adults, 10 children. 
- 
- **HOW TO CITE**: Jinyu Xie. Simglucose v0.2.1 (2018) \[Online\]. Available: https://github.com/jxx123/simglucose. Accessed on: Month-Date-Year.
+This simulator is a python implementation of the FDA-approved [UVa/Padova Simulator (2008 version)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4454102/) for research purpose only. The simulator includes 30 virtual patients, 10 adolescents, 10 adults, 10 children.
 
- - Note: simglucose only supports python3.
+**HOW TO CITE**: Jinyu Xie. Simglucose v0.2.1 (2018) \[Online\]. Available: https://github.com/jxx123/simglucose. Accessed on: Month-Date-Year.
 
+**Notice**: simglucose no longer supports python 3.7 and 3.8, please update to >=3.9 verison. Thanks!
 
-| Animation                                                                                         | CVGA Plot                                                                      | BG Trace Plot                                                                                    | Risk Index Stats                                                                                                 |
-|---------------------------------------------------------------------------------------------------|:-------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------|
-| ![animation screenshot](https://github.com/jxx123/simglucose/blob/master/screenshots/animate.png) | ![CVGA](https://github.com/jxx123/simglucose/blob/master/screenshots/CVGA.png) | ![BG Trace Plot](https://github.com/jxx123/simglucose/blob/master/screenshots/BG_trace_plot.png) | ![Risk Index Stats](https://github.com/jxx123/simglucose/blob/master/screenshots/risk_index.png) |
+**Announcement (08/20/2023)**: simglucose now supports gymnasium! Check [examples/run_gymnasium.py](examples/run_gymnasium.py) for usage.
+
+| Animation                                        | CVGA Plot                     | BG Trace Plot                                   | Risk Index Stats                                |
+| ------------------------------------------------ | :---------------------------- | ----------------------------------------------- | ----------------------------------------------- |
+| ![animation screenshot](screenshots/animate.png) | ![CVGA](screenshots/CVGA.png) | ![BG Trace Plot](screenshots/BG_trace_plot.png) | ![Risk Index Stats](screenshots/risk_index.png) |
 
   <!-- ![Zone Stats](https://github.com/jxx123/simglucose/blob/master/screenshots/zone_stats.png) -->
 
 ## Main Features
+
 - Simulation environment follows [OpenAI gym](https://github.com/openai/gym) and [rllab](https://github.com/rll/rllab) APIs. It returns observation, reward, done, info at each step, which means the simulator is "reinforcement-learning-ready".
-- Supports customized reward function. The reward function is a function of blood glucose measurements in the last hour. By default, the reward at each step is `risk[t-1] - risk[t]`. `risk[t]` is the risk index at time `t` defined in this [paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2903980/pdf/dia.2008.0138.pdf). 
+- Supports customized reward function. The reward function is a function of blood glucose measurements in the last hour. By default, the reward at each step is `risk[t-1] - risk[t]`. `risk[t]` is the risk index at time `t` defined in this [paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2903980/pdf/dia.2008.0138.pdf).
 - Supports parallel computing. The simulator simulates multiple patients in parallel using [pathos multiprocessing package](https://github.com/uqfoundation/pathos) (you are free to turn parallel off by setting `parallel=False`).
 - The simulator provides a random scenario generator (`from simglucose.simulation.scenario_gen import RandomScenario`) and a customized scenario generator (`from simglucose.simulation.scenario import CustomScenario`). Commandline user-interface will guide you through the scenario settings.
-- The simulator provides the most basic basal-bolus controller for now. It provides very simple syntax to implement your own controller, like Model Predictive Control, PID control, reinforcement learning control, etc. 
+- The simulator provides the most basic basal-bolus controller for now. It provides very simple syntax to implement your own controller, like Model Predictive Control, PID control, reinforcement learning control, etc.
 - You can specify random seed in case you want to repeat your experiments.
 - The simulator will generate several plots for performance analysis after simulation. The plots include blood glucose trace plot, Control Variability Grid Analysis (CVGA) plot, statistics plot of blood glucose in different zones, risk indices statistics plot.
 - NOTE: `animate` and `parallel` cannot be set to `True` at the same time in macOS. Most backends of matplotlib in macOS is not thread-safe. Windows has not been tested. Let me know the results if anybody has tested it out.
 
 ## Installation
+
 It is highly recommended using `pip` to install `simglucose`, follow this [link](https://pip.pypa.io/en/stable/installing/) to install pip.
 
 Auto installation:
+
 ```bash
 pip install simglucose
 ```
 
-Manual installation: 
+Manual installation:
+
 ```bash
 git clone https://github.com/jxx123/simglucose.git
 cd simglucose
 ```
+
 If you have `pip` installed, then
+
 ```bash
 pip install -e .
 ```
+
 If you do not have `pip`, then
+
 ```bash
 python setup.py install
 ```
@@ -55,14 +65,18 @@ If [rllab (optional)](https://github.com/rll/rllab) is installed, the package wi
 Note: there might be some minor differences between auto install version and manual install version. Use `git clone` and manual installation to get the latest version.
 
 ## Quick Start
+
 ### Use simglucose as a simulator and test controllers
+
 Run the simulator user interface
+
 ```python
 from simglucose.simulation.user_interface import simulate
 simulate()
 ```
 
 You are free to implement your own controller, and test it in the simulator. For example,
+
 ```python
 from simglucose.simulation.user_interface import simulate
 from simglucose.controller.base import Controller, Action
@@ -109,6 +123,7 @@ simulate(controller=ctrller)
 These two examples can also be found in examples\ folder.
 
 In fact, you can specify a lot more simulation parameters through `simulation`:
+
 ```python
 simulate(sim_time=my_sim_time,
          scenario=my_scenario,
@@ -118,20 +133,37 @@ simulate(sim_time=my_sim_time,
          animate=False,
          parallel=True)
 ```
+
 ### OpenAI Gym usage
+
 - Using default reward
+
 ```python
 import gym
 
 # Register gym environment. By specifying kwargs,
-# you are able to choose which patient to simulate.
+# you are able to choose which patient or patients to simulate.
 # patient_name must be 'adolescent#001' to 'adolescent#010',
 # or 'adult#001' to 'adult#010', or 'child#001' to 'child#010'
+# It can also be a list of patient names
+# You can also specify a custom scenario or a list of custom scenarios
+# If you chose a list of patient names or a list of custom scenarios,
+# every time the environment is reset, a random patient and scenario will be
+# chosen from the list
+
 from gym.envs.registration import register
+from simglucose.simulation.scenario import CustomScenario
+from datetime import datetime
+
+start_time = datetime(2018, 1, 1, 0, 0, 0)
+meal_scenario = CustomScenario(start_time=start_time, scenario=[(1,20)])
+
+
 register(
     id='simglucose-adolescent2-v0',
     entry_point='simglucose.envs:T1DSimEnv',
-    kwargs={'patient_name': 'adolescent#002'}
+    kwargs={'patient_name': 'adolescent#002',
+            'custom_scenario': meal_scenario}
 )
 
 env = gym.make('simglucose-adolescent2-v0')
@@ -153,7 +185,9 @@ for t in range(100):
         print("Episode finished after {} timesteps".format(t + 1))
         break
 ```
+
 - Customized reward function
+
 ```python
 import gym
 from gym.envs.registration import register
@@ -193,6 +227,7 @@ for t in range(200):
 ```
 
 ### rllab usage
+
 ```python
 from rllab.algos.ddpg import DDPG
 from rllab.envs.normalized_env import normalize
@@ -240,7 +275,9 @@ algo.train()
 ```
 
 ## Advanced Usage
+
 You can create the simulation objects, and run batch simulation. For example,
+
 ```python
 from simglucose.simulation.env import T1DSimEnv
 from simglucose.controller.basal_bolus_ctrller import BBController
@@ -307,6 +344,7 @@ print(results)
 ```
 
 Run analysis offline (example/offline_analysis.py):
+
 ```python
 from simglucose.analysis.report import report
 import pandas as pd
@@ -325,25 +363,47 @@ df = pd.concat(
         keys=patient_names)
 report(df)
 ```
+
 ## Release Notes
+
+### 08/20/2023
+
+- Fixed numpy compatibility issues for risk index computation (thanks to @yihuicai)
+- Support Gymnasium.
+  - **NOTE**: the observation in gymnasium version is no longer a namedtuple with a CGM field. It is a numpy array instead (to be consistent with its space definition).
+- **NOTE**: Python 3.7 and 3.8 are no longer supported. Please update to >3.9 version.
+
 ### 03/10/2021
+
 - Fixed some random seed issues.
+
 ### 5/27/2020
+
 - Add PIDController at simglucose/controller/pid_ctrller. There is an example at examples/run_pid_controller.py showing how to use it.
+
 ### 9/10/2018
+
 - Controller `policy` method gets access to all the current patient state through `info['patient_state']`.
+
 ### 2/26/2018
+
 - Support customized reward function.
+
 ### 1/10/2018
+
 - Added workaround to select patient when make gym environment: register gym environment by passing kwargs of patient_name.
+
 ### 1/7/2018
+
 - Added OpenAI gym support, use `gym.make('simglucose-v0')` to make the environment.
 - Noticed issue: the patient name selection is not available in gym.make for now. The patient name has to be hard-coded in the constructor of `simglucose.envs.T1DSimEnv`.
 
 ## Reporting issues
+
 Shoot me any bugs, enhancements or even discussion by [creating issues](https://github.com/jxx123/simglucose/issues/new).
 
 ## How to contribute
+
 The following instruction is originally from the [contribution instructions of sklearn](https://github.com/scikit-learn/scikit-learn/blob/master/CONTRIBUTING.md).
 
 The preferred workflow for contributing to simglucose is to fork the
@@ -362,15 +422,15 @@ GitHub, clone, and develop on a branch. Steps:
    $ cd simglucose
    ```
 
-3. Create a ``feature`` branch to hold your development changes:
+3. Create a `feature` branch to hold your development changes:
 
    ```bash
    $ git checkout -b my-feature
    ```
 
-   Always use a ``feature`` branch. It's good practice to **never work on the ``master`` branch**!
+   Always use a `feature` branch. It's good practice to **never work on the `master` branch**!
 
-4. Develop the feature on your feature branch. Add changed files using ``git add`` and then ``git commit`` files:
+4. Develop the feature on your feature branch. Add changed files using `git add` and then `git commit` files:
 
    ```bash
    $ git add modified_files
@@ -384,7 +444,7 @@ GitHub, clone, and develop on a branch. Steps:
    ```
 
 5. Follow [these instructions](https://help.github.com/articles/creating-a-pull-request-from-a-fork)
-to create a pull request from your fork. This will email the committers.
+   to create a pull request from your fork. This will email the committers.
 
 (If any of the above seems like magic to you, please look up the
 [Git documentation](https://git-scm.com/documentation) on the web, or ask a friend or another contributor for help.)

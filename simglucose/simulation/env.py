@@ -20,7 +20,7 @@ except ImportError:
         return _Step(observation, reward, done, kwargs)
 
 
-Observation = namedtuple('Observation', ['CGM'])
+Observation = namedtuple("Observation", ["CGM"])
 logger = logging.getLogger(__name__)
 
 
@@ -64,9 +64,9 @@ class T1DSimEnv(object):
         return CHO, insulin, BG, CGM
 
     def step(self, action, reward_fun=risk_diff):
-        '''
+        """
         action is a namedtuple with keys: basal, bolus
-        '''
+        """
         CHO = 0.0
         insulin = 0.0
         BG = 0.0
@@ -100,21 +100,23 @@ class T1DSimEnv(object):
         window_size = int(60 / self.sample_time)
         BG_last_hour = self.CGM_hist[-window_size:]
         reward = reward_fun(BG_last_hour)
-        done = BG < 70 or BG > 350
+        done = BG < 10 or BG > 600
         obs = Observation(CGM=CGM)
 
-        return Step(observation=obs,
-                    reward=reward,
-                    done=done,
-                    sample_time=self.sample_time,
-                    patient_name=self.patient.name,
-                    meal=CHO,
-                    patient_state=self.patient.state,
-                    time=self.time,
-                    bg=BG,
-                    lbgi=LBGI,
-                    hbgi=HBGI,
-                    risk=risk)
+        return Step(
+            observation=obs,
+            reward=reward,
+            done=done,
+            sample_time=self.sample_time,
+            patient_name=self.patient.name,
+            meal=CHO,
+            patient_state=self.patient.state,
+            time=self.time,
+            bg=BG,
+            lbgi=LBGI,
+            hbgi=HBGI,
+            risk=risk,
+        )
 
     def _reset(self):
         self.sample_time = self.sensor.sample_time
@@ -141,24 +143,24 @@ class T1DSimEnv(object):
         self._reset()
         CGM = self.sensor.measure(self.patient)
         obs = Observation(CGM=CGM)
-        return Step(observation=obs,
-                    reward=0,
-                    done=False,
-                    sample_time=self.sample_time,
-                    patient_name=self.patient.name,
-                    meal=0,
-                    patient_state=self.patient.state,
-                    time=self.time,
-                    bg=self.BG_hist[0],
-                    lbgi=self.LBGI_hist[0],
-                    hbgi=self.HBGI_hist[0],
-                    risk=self.risk_hist[0])
+        return Step(
+            observation=obs,
+            reward=0,
+            done=False,
+            sample_time=self.sample_time,
+            patient_name=self.patient.name,
+            meal=0,
+            patient_state=self.patient.state,
+            time=self.time,
+            bg=self.BG_hist[0],
+            lbgi=self.LBGI_hist[0],
+            hbgi=self.HBGI_hist[0],
+            risk=self.risk_hist[0],
+        )
 
     def render(self, close=False):
         if close:
-            if self.viewer is not None:
-                self.viewer.close()
-                self.viewer = None
+            self._close_viewer()
             return
 
         if self.viewer is None:
@@ -166,15 +168,20 @@ class T1DSimEnv(object):
 
         self.viewer.render(self.show_history())
 
+    def _close_viewer(self):
+        if self.viewer is not None:
+            self.viewer.close()
+            self.viewer = None
+
     def show_history(self):
         df = pd.DataFrame()
-        df['Time'] = pd.Series(self.time_hist)
-        df['BG'] = pd.Series(self.BG_hist)
-        df['CGM'] = pd.Series(self.CGM_hist)
-        df['CHO'] = pd.Series(self.CHO_hist)
-        df['insulin'] = pd.Series(self.insulin_hist)
-        df['LBGI'] = pd.Series(self.LBGI_hist)
-        df['HBGI'] = pd.Series(self.HBGI_hist)
-        df['Risk'] = pd.Series(self.risk_hist)
-        df = df.set_index('Time')
+        df["Time"] = pd.Series(self.time_hist)
+        df["BG"] = pd.Series(self.BG_hist)
+        df["CGM"] = pd.Series(self.CGM_hist)
+        df["CHO"] = pd.Series(self.CHO_hist)
+        df["insulin"] = pd.Series(self.insulin_hist)
+        df["LBGI"] = pd.Series(self.LBGI_hist)
+        df["HBGI"] = pd.Series(self.HBGI_hist)
+        df["Risk"] = pd.Series(self.risk_hist)
+        df = df.set_index("Time")
         return df

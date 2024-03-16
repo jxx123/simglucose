@@ -92,17 +92,22 @@ def percent_stats(BG, ax=None):
     return p_stats, fig, ax
 
 
-def risk_index_trace(df_BG, visualize=False):
-    chunk_BG = [df_BG.iloc[i:i + 60, :] for i in range(0, len(df_BG), 60)]
+def risk_index_trace(df_BG, sample_time=3, window_length=60, visualize=False):
+    step_size = int(window_length / sample_time)  # window size set to 1 hour for calculating Risk Index
+    chunk_BG = [df_BG.iloc[i:i + step_size, :] for i in range(0, len(df_BG), step_size)]
+
+    if len(chunk_BG[-1]) != step_size:  # Remove the last chunk which is not full
+        chunk_BG.pop()
 
     fBG = [
-        np.mean(1.509 * (np.log(BG[BG > 0])**1.084 - 5.381)) for BG in chunk_BG
+        1.509 * (np.log(BG[BG > 0]) ** 1.084 - 5.381) for BG in chunk_BG
     ]
 
-    fBG_df = pd.concat(fBG, axis=1).transpose()
+    rl = [(10 * (fbg * (fbg < 0)) ** 2).mean() for fbg in fBG]
+    rh = [(10 * (fbg * (fbg > 0)) ** 2).mean() for fbg in fBG]
 
-    LBGI = 10 * (fBG_df * (fBG_df < 0))**2
-    HBGI = 10 * (fBG_df * (fBG_df > 0))**2
+    LBGI = pd.concat(rl, axis=1).transpose()
+    HBGI = pd.concat(rh, axis=1).transpose()
     RI = LBGI + HBGI
 
     ri_per_hour = pd.concat(
@@ -234,7 +239,7 @@ def CVGA(BG_list, label=None):
             edgecolors='k',
             zorder=4,
             label='%s (A: %d%%, B: %d%%, C: %d%%, D: %d%%, E: %d%%)' %
-            (l, 100 * A, 100 * B, 100 * C, 100 * D, 100 * E))
+                  (l, 100 * A, 100 * B, 100 * C, 100 * D, 100 * E))
         zone_stats.append((A, B, C, D, E))
 
     zone_stats = pd.DataFrame(zone_stats, columns=['A', 'B', 'C', 'D', 'E'])
@@ -243,12 +248,15 @@ def CVGA(BG_list, label=None):
     return zone_stats, fig, ax
 
 
-def report(df, save_path=None):
+def report(df, cgm_sensor=None, save_path=None):
     BG = df.unstack(level=0).BG
 
     fig_ensemble, ax1, ax2, ax3 = ensemblePlot(df)
     pstats, fig_percent, ax4 = percent_stats(BG)
-    ri_per_hour, ri_mean, fig_ri, ax5 = risk_index_trace(BG, visualize=False)
+    if cgm_sensor is not None:
+        ri_per_hour, ri_mean, fig_ri, ax5 = risk_index_trace(BG, sample_time=cgm_sensor.sample_time, visualize=False)
+    else:
+        ri_per_hour, ri_mean, fig_ri, ax5 = risk_index_trace(BG, visualize=False)
     zone_stats, fig_cvga, ax6 = CVGA(BG, label='')
     axes = [ax1, ax2, ax3, ax4, ax5, ax6]
     figs = [fig_ensemble, fig_percent, fig_ri, fig_cvga]
