@@ -126,8 +126,8 @@ class T1DPatient(Patient):
         dxdt[0] = -params.kmax * x[0] + d
 
         if Dbar > 0:
-            aa = 5 / 2 / (1 - params.b) / Dbar
-            cc = 5 / 2 / params.d / Dbar
+            aa = 5 / (2 * Dbar * (1 - params.b))
+            cc = 5 / (2 * Dbar * params.d)
             kgut = params.kmin + (params.kmax - params.kmin) / 2 * (
                 np.tanh(aa * (qsto - params.b * Dbar))
                 - np.tanh(cc * (qsto - params.d * Dbar))
