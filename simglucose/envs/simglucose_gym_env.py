@@ -12,10 +12,8 @@ from gym.utils import seeding
 from datetime import datetime
 import gymnasium
 
-
 PATIENT_PARA_FILE = pkg_resources.resource_filename(
-    "simglucose", "params/vpatient_params.csv"
-)
+    "simglucose", "params/vpatient_params.csv")
 
 
 class T1DSimEnv(gym.Env):
@@ -28,9 +26,11 @@ class T1DSimEnv(gym.Env):
     SENSOR_HARDWARE = "Dexcom"
     INSULIN_PUMP_HARDWARE = "Insulet"
 
-    def __init__(
-        self, patient_name=None, custom_scenario=None, reward_fun=None, seed=None
-    ):
+    def __init__(self,
+                 patient_name=None,
+                 custom_scenario=None,
+                 reward_fun=None,
+                 seed=None):
         """
         patient_name must be 'adolescent#001' to 'adolescent#010',
         or 'adult#001' to 'adult#010', or 'child#001' to 'child#010'
@@ -79,20 +79,19 @@ class T1DSimEnv(gym.Env):
 
         if isinstance(self.patient_name, list):
             patient_name = self.np_random.choice(self.patient_name)
-            patient = T1DPatient.withName(patient_name, random_init_bg=True, seed=seed4)
+            patient = T1DPatient.withName(patient_name,
+                                          random_init_bg=True,
+                                          seed=seed4)
         else:
-            patient = T1DPatient.withName(
-                self.patient_name, random_init_bg=True, seed=seed4
-            )
+            patient = T1DPatient.withName(self.patient_name,
+                                          random_init_bg=True,
+                                          seed=seed4)
 
         if isinstance(self.custom_scenario, list):
             scenario = self.np_random.choice(self.custom_scenario)
         else:
-            scenario = (
-                RandomScenario(start_time=start_time, seed=seed3)
-                if self.custom_scenario is None
-                else self.custom_scenario
-            )
+            scenario = (RandomScenario(start_time=start_time, seed=seed3) if
+                        self.custom_scenario is None else self.custom_scenario)
 
         sensor = CGMSensor.withName(self.SENSOR_HARDWARE, seed=seed2)
         pump = InsulinPump.withName(self.INSULIN_PUMP_HARDWARE)
@@ -109,11 +108,11 @@ class T1DSimEnv(gym.Env):
     @property
     def action_space(self):
         ub = self.env.pump._params["max_basal"]
-        return spaces.Box(low=0, high=ub, shape=(1,))
+        return spaces.Box(low=0, high=ub, shape=(1, ))
 
     @property
     def observation_space(self):
-        return spaces.Box(low=0, high=1000, shape=(1,))
+        return spaces.Box(low=0, high=1000, shape=(1, ))
 
     @property
     def max_basal(self):
@@ -121,7 +120,7 @@ class T1DSimEnv(gym.Env):
 
 
 class T1DSimGymnaisumEnv(gymnasium.Env):
-    metadata = {"render_modes": ["human"]}
+    metadata = {"render_modes": ["human"], "render_fps": 60}
     MAX_BG = 1000
 
     def __init__(
@@ -140,12 +139,14 @@ class T1DSimGymnaisumEnv(gymnasium.Env):
             reward_fun=reward_fun,
             seed=seed,
         )
-        self.observation_space = gymnasium.spaces.Box(
-            low=0, high=self.MAX_BG, shape=(1,), dtype=np.float32
-        )
-        self.action_space = gymnasium.spaces.Box(
-            low=0, high=self.env.max_basal, shape=(1,), dtype=np.float32
-        )
+        self.observation_space = gymnasium.spaces.Box(low=0,
+                                                      high=self.MAX_BG,
+                                                      shape=(1, ),
+                                                      dtype=np.float32)
+        self.action_space = gymnasium.spaces.Box(low=0,
+                                                 high=self.env.max_basal,
+                                                 shape=(1, ),
+                                                 dtype=np.float32)
 
     def step(self, action):
         obs, reward, done, info = self.env.step(action)
@@ -159,7 +160,8 @@ class T1DSimGymnaisumEnv(gymnasium.Env):
         # )
         # Once the max_episode_steps is set, the truncated value will be overridden.
         truncated = False
-        return np.array([obs.CGM], dtype=np.float32), reward, done, truncated, info
+        return np.array([obs.CGM],
+                        dtype=np.float32), reward, done, truncated, info
 
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
