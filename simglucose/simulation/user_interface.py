@@ -19,30 +19,39 @@ import platform
 logger = logging.getLogger(__name__)
 
 PATIENT_PARA_FILE = pkg_resources.resource_filename(
-    'simglucose', 'params/vpatient_params.csv')
-SENSOR_PARA_FILE = pkg_resources.resource_filename('simglucose',
-                                                   'params/sensor_params.csv')
+    "simglucose", "params/vpatient_params.csv"
+)
+SENSOR_PARA_FILE = pkg_resources.resource_filename(
+    "simglucose", "params/sensor_params.csv"
+)
 INSULIN_PUMP_PARA_FILE = pkg_resources.resource_filename(
-    'simglucose', 'params/pump_params.csv')
+    "simglucose", "params/pump_params.csv"
+)
 
 
 def pick_patients():
     patient_params = pd.read_csv(PATIENT_PARA_FILE)
-    patient_names = list(patient_params['Name'].values)
+    patient_names = list(patient_params["Name"].values)
     while True:
-        select1 = input('Select virtual patients:\n' + '[1] All\n' +
-                        '[2] All Adolescents\n' + '[3] All Adults\n' +
-                        '[4] All Children\n' + '[5] By ID\n' + '>>> ')
+        select1 = input(
+            "Select virtual patients:\n"
+            + "[1] All\n"
+            + "[2] All Adolescents\n"
+            + "[3] All Adults\n"
+            + "[4] All Children\n"
+            + "[5] By ID\n"
+            + ">>> "
+        )
         try:
             select1 = int(select1)
         except ValueError:
-            print('Please input an integer. Try again')
-            input('Press any key to continue ...')
+            print("Please input an integer. Try again")
+            input("Press any key to continue ...")
             continue
 
         if select1 < 1 or select1 > 5:
-            print('Input 1 to 5 please!')
-            input('Press any key to continue ...')
+            print("Input 1 to 5 please!")
+            input("Press any key to continue ...")
             continue
         else:
             break
@@ -59,122 +68,120 @@ def pick_patients():
         patients = []
         select_hist = []
         while True:
-            print('Select patient:')
+            print("Select patient:")
             for i, p in enumerate(patient_names):
-                print('[{0}] {1}'.format(i + 1, p))
-            print('[D] Done')
-            select2 = input('>>> ')
+                print("[{0}] {1}".format(i + 1, p))
+            print("[D] Done")
+            select2 = input(">>> ")
 
-            if select2 == 'D' or select2 == 'd':
+            if select2 == "D" or select2 == "d":
                 break
 
             try:
                 select2 = int(select2)
             except ValueError:
                 print("Please input a number or 'D' or 'd'.")
-                input('Press any key to continue ...')
+                input("Press any key to continue ...")
                 continue
 
             if select2 < 1 or select2 > 30:
-                print("Please input an number from 1 to {0}.".format(
-                    len(patient_names)))
-                input('Press any key to continue ...')
+                print(
+                    "Please input an number from 1 to {0}.".format(len(patient_names))
+                )
+                input("Press any key to continue ...")
                 continue
 
             if select2 in select_hist:
-                print("{0} is already selected!".format(patient_names[select2 -
-                                                                      1]))
-                input('Press any key to continue ...')
+                print("{0} is already selected!".format(patient_names[select2 - 1]))
+                input("Press any key to continue ...")
                 continue
             else:
                 select_hist.append(select2)
                 patients.append(patient_names[select2 - 1])
-    logger.info('Selected patients:\n{}'.format(patients))
+    logger.info("Selected patients:\n{}".format(patients))
     return patients
 
 
 def pick_cgm_sensor():
     sensor_params = pd.read_csv(SENSOR_PARA_FILE)
-    sensor_names = list(sensor_params['Name'].values)
+    sensor_names = list(sensor_params["Name"].values)
     total_sensor_num = len(sensor_params.index)
     while True:
-        print('Select the CGM sensor:')
+        print("Select the CGM sensor:")
         for i in range(total_sensor_num):
-            print('[{0}] {1}'.format(i + 1, sensor_names[i]))
-        input_value = input('>>> ')
+            print("[{0}] {1}".format(i + 1, sensor_names[i]))
+        input_value = input(">>> ")
         try:
             selection = int(input_value)
         except ValueError:
             print("Oops! Please input a number.")
-            input('Press any key to continue ...')
+            input("Press any key to continue ...")
             continue
         if selection < 1 or selection > total_sensor_num:
-            print("Please input an integer from 1 to {0}!".format(
-                total_sensor_num))
-            input('Press any key to continue ...')
+            print("Please input an integer from 1 to {0}!".format(total_sensor_num))
+            input("Press any key to continue ...")
             continue
         else:
             break
     sensor = sensor_names[selection - 1]
-    logger.info('Selected sensor:\n{}'.format(sensor))
+    logger.info("Selected sensor:\n{}".format(sensor))
     return sensor
 
 
 def pick_cgm_seed():
     while True:
-        input_value = input('Select Random Seed for Sensor Noise [None]: ')
+        input_value = input("Select Random Seed for Sensor Noise [None]: ")
         try:
             seed = int(input_value)
             break
         except ValueError:
-            if input_value == '' or input_value == 'None':
+            if input_value == "" or input_value == "None":
                 seed = None
                 break
             else:
-                print('Please input an integer!')
+                print("Please input an integer!")
                 continue
-    logger.info('Sensor Random Seed: {}'.format(seed))
+    logger.info("Sensor Random Seed: {}".format(seed))
     return seed
 
 
 def pick_insulin_pump():
     pump_params = pd.read_csv(INSULIN_PUMP_PARA_FILE)
-    pump_names = list(pump_params['Name'].values)
+    pump_names = list(pump_params["Name"].values)
     while True:
-        print('Select the insulin pump:')
+        print("Select the insulin pump:")
         for i, pump in enumerate(pump_names):
-            print('[{}] {}'.format(i + 1, pump))
-        input_value = input('>>> ')
+            print("[{}] {}".format(i + 1, pump))
+        input_value = input(">>> ")
         try:
             selection = int(input_value)
         except ValueError:
             print("Oops! Please input a number.")
-            input('Press any key to continue ...')
+            input("Press any key to continue ...")
             continue
         if selection < 1 or selection > len(pump_names):
-            print("Please input an integer from 1 to {0}!".format(
-                len(pump_names)))
-            input('Press any key to continue ...')
+            print("Please input an integer from 1 to {0}!".format(len(pump_names)))
+            input("Press any key to continue ...")
             continue
         break
     pump = pump_names[selection - 1]
-    logger.info('Selected Pumps:\n{}'.format(pump))
+    logger.info("Selected Pumps:\n{}".format(pump))
     return pump
 
 
 def pick_scenario(start_time=None):
     while True:
-        print('Select scnenario:')
-        print('[1] Random Scnenario')
-        print('[2] Custom Scnenario')
-        input_value = input('>>>')
+        print("Select scnenario:")
+        print("[1] Random Scnenario")
+        print("[2] Custom Scnenario")
+        input_value = input(">>>")
         try:
             selection = int(input_value)
         except ValueError:
-            print('Please input an integer!')
+            print("Please input an integer!")
             continue
         if selection < 1 or selection > 2:
-            print('Please input a number from the list!')
+            print("Please input a number from the list!")
         else:
             break
 
@@ -183,16 +190,15 @@ def pick_scenario(start_time=None):
 
     if selection == 1:
         while True:
-            input_value = input(
-                'Select random seed for random scenario [None]: ')
+            input_value = input("Select random seed for random scenario [None]: ")
             try:
                 seed = int(input_value)
                 break
             except ValueError:
-                if input_value in ('', 'None'):
+                if input_value in ("", "None"):
                     seed = None
                     break
-                print('Please input an integer!')
+                print("Please input an integer!")
                 continue
         scenario = RandomScenario(start_time, seed=seed)
     else:
@@ -204,57 +210,56 @@ def pick_scenario(start_time=None):
 
 def pick_start_time():
     now = datetime.now()
-    start_hour = timedelta(
-        hours=float(input('Input simulation start time (hr): ')))
+    start_hour = timedelta(hours=float(input("Input simulation start time (hr): ")))
     start_time = datetime.combine(now.date(), datetime.min.time()) + start_hour
-    print('Simulation start time is set to {}.'.format(start_time))
+    print("Simulation start time is set to {}.".format(start_time))
     return start_time
 
 
 def input_custom_scenario():
     scenario = []
 
-    print('Input a custom scenario ...')
-    breakfast_time = float(input('Input breakfast time (hr): '))
-    breakfast_size = float(input('Input breakfast size (g): '))
+    print("Input a custom scenario ...")
+    breakfast_time = float(input("Input breakfast time (hr): "))
+    breakfast_size = float(input("Input breakfast size (g): "))
     scenario.append((breakfast_time, breakfast_size))
 
-    lunch_time = float(input('Input lunch time (hr): '))
-    lunch_size = float(input('Input lunch size (g): '))
+    lunch_time = float(input("Input lunch time (hr): "))
+    lunch_size = float(input("Input lunch size (g): "))
     scenario.append((lunch_time, lunch_size))
 
-    dinner_time = float(input('Input dinner time (hr): '))
-    dinner_size = float(input('Input dinner size (g): '))
+    dinner_time = float(input("Input dinner time (hr): "))
+    dinner_size = float(input("Input dinner size (g): "))
     scenario.append((dinner_time, dinner_size))
 
     while True:
-        snack_time = float(input('Input snack time (hr): '))
-        snack_size = float(input('Input snack size (g): '))
+        snack_time = float(input("Input snack time (hr): "))
+        snack_size = float(input("Input snack size (g): "))
         scenario.append((snack_time, snack_size))
 
-        go_on = input('Continue input snack (y/n)? ')
-        if go_on == 'n':
+        go_on = input("Continue input snack (y/n)? ")
+        if go_on == "n":
             break
-        elif go_on == 'y':
+        elif go_on == "y":
             continue
         else:
-            go_on = input('Continue input snack (y/n)? ')
+            go_on = input("Continue input snack (y/n)? ")
     return scenario
 
 
 def pick_controller():
     controller = None
     while True:
-        print('Select controller:')
-        print('[1] Basal-Bolus Controller')
-        input_value = input('>>>')
+        print("Select controller:")
+        print("[1] Basal-Bolus Controller")
+        input_value = input(">>>")
         try:
             selection = int(input_value)
         except ValueError:
-            print('Please input an integer!')
+            print("Please input an integer!")
             continue
         if selection < 1 or selection > 1:
-            print('Please input a number from the list!')
+            print("Please input a number from the list!")
         else:
             break
     if selection == 1:
@@ -264,24 +269,24 @@ def pick_controller():
 
 def pick_save_path(use_default=False):
     if not use_default:
-        foldername = input('Folder name to save results [default]: ')
-        if foldername == 'default' or foldername == '':
-            foldername = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+        foldername = input("Folder name to save results [default]: ")
+        if foldername == "default" or foldername == "":
+            foldername = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     else:
-        foldername = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+        foldername = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
-    save_path = os.path.join(os.path.abspath('./results/'), foldername)
-    print('Results will be saved in {}'.format(save_path))
+    save_path = os.path.join(os.path.abspath("./results/"), foldername)
+    print("Results will be saved in {}".format(save_path))
     return save_path
 
 
 def pick_animate():
     while True:
-        select = input('Show animation? (y/n) ')
-        if select == 'y':
+        select = input("Show animation? (y/n) ")
+        if select == "y":
             animate = True
             break
-        elif select == 'n':
+        elif select == "n":
             animate = False
             break
         else:
@@ -291,11 +296,11 @@ def pick_animate():
 
 def pick_parallel():
     while True:
-        select = input('Use multiple processes? (y/n) ')
-        if select == 'y':
+        select = input("Use multiple processes? (y/n) ")
+        if select == "y":
             parallel = True
             break
-        elif select == 'n':
+        elif select == "n":
             parallel = False
             break
         else:
@@ -303,18 +308,20 @@ def pick_parallel():
     return parallel
 
 
-def simulate(sim_time=None,
-             scenario=None,
-             controller=None,
-             patient_names=[],
-             cgm_name=None,
-             cgm_seed=None,
-             insulin_pump_name=None,
-             start_time=None,
-             save_path='default',
-             animate=None,
-             parallel=None):
-    '''
+def simulate(
+    sim_time=None,
+    scenario=None,
+    controller=None,
+    patient_names=[],
+    cgm_name=None,
+    cgm_seed=None,
+    insulin_pump_name=None,
+    start_time=None,
+    save_path=None,
+    animate=None,
+    parallel=None,
+):
+    """
     Main user interface.
     ----
     Inputs:
@@ -327,28 +334,27 @@ def simulate(sim_time=None,
     save_path  - a string representing the directory to save simulation results.
     animate    - switch for animation. True/False.
     parallel   - switch for parallel computing. True/False.
-    '''
+    """
     if animate is None:
         animate = pick_animate()
 
     if parallel is None:
         parallel = pick_parallel()
 
-    if platform.system() == 'Darwin' and (animate and parallel):
+    if platform.system() == "Darwin" and (animate and parallel):
         raise ValueError(
             """animate and parallel cannot be turned on at the same time in macOS."""
         )
 
     if save_path is None:
         save_path = pick_save_path()
-    elif save_path == 'default':
+    elif save_path == "default":
         save_path = pick_save_path(use_default=True)
-    elif save_path == 'None':
+    elif save_path == "None":
         save_path = None
 
     if sim_time is None:
-        sim_time = timedelta(
-            hours=float(input('Input simulation time (hr): ')))
+        sim_time = timedelta(hours=float(input("Input simulation time (hr): ")))
 
     if scenario is None:
         scenario = pick_scenario(start_time=start_time)
@@ -393,7 +399,7 @@ def simulate(sim_time=None,
     return results
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     root = logging.getLogger()
     root.setLevel(logging.DEBUG)
     # logger.setLevel(logging.INFO)
@@ -402,8 +408,7 @@ if __name__ == '__main__':
     # ch.setLevel(logging.DEBUG)
     ch.setLevel(logging.INFO)
     # create formatter
-    formatter = logging.Formatter(
-        '%(process)d: %(name)s: %(levelname)s: %(message)s')
+    formatter = logging.Formatter("%(process)d: %(name)s: %(levelname)s: %(message)s")
     # add formatter to ch
     ch.setFormatter(formatter)
     # add ch to logger
