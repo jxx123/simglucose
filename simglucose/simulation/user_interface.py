@@ -262,12 +262,9 @@ def pick_controller():
     return controller
 
 
-def pick_save_path(use_default=False):
-    if not use_default:
-        foldername = input('Folder name to save results [default]: ')
-        if foldername == 'default' or foldername == '':
-            foldername = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
-    else:
+def pick_save_path():
+    foldername = input('Folder name to save results [default]: ')
+    if foldername == 'default' or foldername == '':
         foldername = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
 
     save_path = os.path.join(os.path.abspath('./results/'), foldername)
@@ -311,7 +308,7 @@ def simulate(sim_time=None,
              cgm_seed=None,
              insulin_pump_name=None,
              start_time=None,
-             save_path='default',
+             save_path=None,
              animate=None,
              parallel=None):
     '''
@@ -341,10 +338,6 @@ def simulate(sim_time=None,
 
     if save_path is None:
         save_path = pick_save_path()
-    elif save_path == 'default':
-        save_path = pick_save_path(use_default=True)
-    elif save_path == 'None':
-        save_path = None
 
     if sim_time is None:
         sim_time = timedelta(
