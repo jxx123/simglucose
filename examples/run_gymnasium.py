@@ -4,7 +4,7 @@ from gymnasium.envs.registration import register
 register(
     id="simglucose/adolescent2-v0",
     entry_point="simglucose.envs:T1DSimGymnaisumEnv",
-    max_episode_steps=10,
+    max_episode_steps=1000,
     kwargs={"patient_name": "adolescent#002"},
 )
 

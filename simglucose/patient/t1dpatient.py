@@ -124,10 +124,7 @@ class T1DPatient(Patient):
 
         # Glucose in the stomach
         qsto = x[0] + x[1]
-        # NOTE: Dbar is in unit mg, hence last_foodtaken needs to be converted
-        # from mg to g. See https://github.com/jxx123/simglucose/issues/41 for
-        # details.
-        Dbar = last_Qsto + last_foodtaken * 1000  # unit: mg
+        Dbar = last_Qsto + last_foodtaken
 
         # Stomach solid
         dxdt[0] = -params.kmax * x[0] + d
@@ -249,7 +246,7 @@ class T1DPatient(Patient):
         Reset the patient state to default intial state
         '''
         if self._init_state is None:
-            self.init_state = self._params.iloc[2:15]
+            self.init_state = np.copy(self._params.iloc[2:15].values)
         else:
             self.init_state = self._init_state
 
