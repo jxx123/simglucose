@@ -249,7 +249,7 @@ class T1DPatient(Patient):
         Reset the patient state to default intial state
         """
         if self._init_state is None:
-            self.init_state = self._params.iloc[2:15]
+            self.init_state = np.copy(self._params.iloc[2:15].values)
         else:
             self.init_state = self._init_state
 
