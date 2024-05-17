@@ -121,7 +121,7 @@ class T1DSimEnv(gym.Env):
 
 
 class T1DSimGymnaisumEnv(gymnasium.Env):
-    metadata = {"render_modes": ["human"]}
+    metadata = {"render_modes": ["human"], "render_fps": 60}
     MAX_BG = 1000
 
     def __init__(
