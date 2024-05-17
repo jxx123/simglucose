@@ -17,8 +17,8 @@ import shutil
 
 logger = logging.getLogger(__name__)
 
-TESTDATA_FILENAME = os.path.join(os.path.dirname(__file__), 'sim_results.csv')
-save_folder = os.path.join(os.path.dirname(__file__), 'results')
+TESTDATA_FILENAME = os.path.join(os.path.dirname(__file__), "sim_results.csv")
+save_folder = os.path.join(os.path.dirname(__file__), "results")
 
 
 class TestSimEngine(unittest.TestCase):
@@ -29,9 +29,9 @@ class TestSimEngine(unittest.TestCase):
 
         # --------- Create Random Scenario --------------
         # Create a simulation environment
-        patient = T1DPatient.withName('adolescent#001')
-        sensor = CGMSensor.withName('Dexcom', seed=1)
-        pump = InsulinPump.withName('Insulet')
+        patient = T1DPatient.withName("adolescent#001")
+        sensor = CGMSensor.withName("Dexcom", seed=1)
+        pump = InsulinPump.withName("Insulet")
         scenario = RandomScenario(start_time=start_time, seed=1)
         env = T1DSimEnv(patient, sensor, pump, scenario)
 
@@ -39,18 +39,14 @@ class TestSimEngine(unittest.TestCase):
         controller = BBController()
 
         # Put them together to create a simulation object
-        s1 = SimObj(env,
-                    controller,
-                    timedelta(days=2),
-                    animate=True,
-                    path=save_folder)
+        s1 = SimObj(env, controller, timedelta(days=2), animate=True, path=save_folder)
         results1 = sim(s1)
 
         # --------- Create Custom Scenario --------------
         # Create a simulation environment
-        patient = T1DPatient.withName('adolescent#001')
-        sensor = CGMSensor.withName('Dexcom', seed=1)
-        pump = InsulinPump.withName('Insulet')
+        patient = T1DPatient.withName("adolescent#001")
+        sensor = CGMSensor.withName("Dexcom", seed=1)
+        pump = InsulinPump.withName("Insulet")
         # custom scenario is a list of tuples (time, meal_size)
         scen = [(7, 45), (12, 70), (16, 15), (18, 80), (23, 10)]
         scenario = CustomScenario(start_time=start_time, scenario=scen)
@@ -60,11 +56,7 @@ class TestSimEngine(unittest.TestCase):
         controller = BBController()
 
         # Put them together to create a simulation object
-        s2 = SimObj(env,
-                    controller,
-                    timedelta(days=2),
-                    animate=False,
-                    path=save_folder)
+        s2 = SimObj(env, controller, timedelta(days=2), animate=False, path=save_folder)
         results2 = sim(s2)
 
         # --------- batch simulation --------------
@@ -94,9 +86,9 @@ class TestSimEngine(unittest.TestCase):
 
         # --------- Create Random Scenario --------------
         # Create a simulation environment
-        patient = T1DPatient.withName('adolescent#001')
-        sensor = CGMSensor.withName('Dexcom', seed=1)
-        pump = InsulinPump.withName('Insulet')
+        patient = T1DPatient.withName("adolescent#001")
+        sensor = CGMSensor.withName("Dexcom", seed=1)
+        pump = InsulinPump.withName("Insulet")
         scenario = RandomScenario(start_time=start_time, seed=1)
         env = T1DSimEnv(patient, sensor, pump, scenario)
 
@@ -104,17 +96,13 @@ class TestSimEngine(unittest.TestCase):
         controller = BBController()
 
         # Put them together to create a simulation object
-        s = SimObj(env,
-                   controller,
-                   timedelta(days=2),
-                   animate=False,
-                   path=save_folder)
+        s = SimObj(env, controller, timedelta(days=2), animate=False, path=save_folder)
         results = sim(s)
         assert_frame_equal(results, results_exp)
 
     def tearDown(self):
-        shutil.rmtree(os.path.join(os.path.dirname(__file__), 'results'))
+        shutil.rmtree(os.path.join(os.path.dirname(__file__), "results"))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
