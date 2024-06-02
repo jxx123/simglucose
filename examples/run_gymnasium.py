@@ -2,15 +2,15 @@ import gymnasium
 from gymnasium.envs.registration import register
 
 register(
-    id="simglucose/adolescent2-v0",
+    id="simglucose/adolescent2",
     entry_point="simglucose.envs:T1DSimGymnaisumEnv",
-    max_episode_steps=10,
+    max_episode_steps=10000,
     kwargs={"patient_name": "adolescent#002"},
 )
 
-env = gymnasium.make("simglucose/adolescent2-v0", render_mode="human")
+env = gymnasium.make("simglucose/adolescent2", render_mode="human")
 observation, info = env.reset()
-for t in range(200):
+for t in range(10):
     env.render()
     action = env.action_space.sample()
     observation, reward, terminated, truncated, info = env.step(action)

@@ -23,13 +23,18 @@ class T1DSimEnv(gym.Env):
     A wrapper of simglucose.simulation.env.T1DSimEnv to support gym API
     """
 
-    metadata = {"render.modes": ["human"]}
+    metadata = {"render.modes": ["human", "rgb_array"]}
 
     SENSOR_HARDWARE = "Dexcom"
     INSULIN_PUMP_HARDWARE = "Insulet"
 
     def __init__(
-        self, patient_name=None, custom_scenario=None, reward_fun=None, seed=None
+        self,
+        patient_name=None,
+        custom_scenario=None,
+        reward_fun=None,
+        seed=None,
+        **kwargs,
     ):
         """
         patient_name must be 'adolescent#001' to 'adolescent#010',
@@ -45,20 +50,30 @@ class T1DSimEnv(gym.Env):
         self.np_random, _ = seeding.np_random(seed=seed)
         self.custom_scenario = custom_scenario
         self.env, _, _, _ = self._create_env()
+        # Set custom metadata
+        for k, v in kwargs.items():
+            if k in ["render.modes"]:
+                continue
+            self.metadata[k] = v
 
-    def _step(self, action: float):
-        # This gym only controls basal insulin
-        act = Action(basal=action, bolus=0)
-        if self.reward_fun is None:
-            return self.env.step(act)
-        return self.env.step(act, reward_fun=self.reward_fun)
+    def _step(self, action: np.ndarray):
+        if not self.action_space.contains(action):
+            raise ValueError(f"Action {action} is invalid.")
+
+        act = Action(basal=action[0], bolus=action[1])
+        obs_tuple, reward, done, info = self.env.step(act, reward_fun=self.reward_fun)
+        obs = np.array([obs_tuple.CGM, obs_tuple.CHO], dtype=np.float32)
+        return obs, reward, done, info
 
     def _raw_reset(self):
-        return self.env.reset()
+        obs_tuple, reward, done, info = self.env.reset()
+        obs = np.array([obs_tuple.CGM, obs_tuple.CHO], dtype=np.float32)
+        return obs, reward, done, info
 
     def _reset(self):
         self.env, _, _, _ = self._create_env()
-        obs, _, _, _ = self.env.reset()
+        obs_tuple, _, _, _ = self.env.reset()
+        obs = np.array([obs_tuple.CGM, obs_tuple.CHO], dtype=np.float32)
         return obs
 
     def _seed(self, seed=None):
@@ -100,7 +115,7 @@ class T1DSimEnv(gym.Env):
         return env, seed2, seed3, seed4
 
     def _render(self, mode="human", close=False):
-        self.env.render(close=close)
+        return self.env.render(mode=mode, close=close)
 
     def _close(self):
         super()._close()
@@ -108,21 +123,25 @@ class T1DSimEnv(gym.Env):
 
     @property
     def action_space(self):
-        ub = self.env.pump._params["max_basal"]
-        return spaces.Box(low=0, high=ub, shape=(1,))
+        basal_ub = self.max_basal
+        bolus_ub = self.max_bolus
+        return spaces.Box(low=np.array([0.0, 0.0]), high=np.array([basal_ub, bolus_ub]))
 
     @property
     def observation_space(self):
-        return spaces.Box(low=0, high=1000, shape=(1,))
+        return spaces.Box(low=0, high=10000, shape=(2,))
 
     @property
     def max_basal(self):
         return self.env.pump._params["max_basal"]
 
+    @property
+    def max_bolus(self):
+        return self.env.pump._params["max_bolus"]
+
 
 class T1DSimGymnaisumEnv(gymnasium.Env):
-    metadata = {"render_modes": ["human"], "render_fps": 60}
-    MAX_BG = 1000
+    metadata = {"render_modes": ["human", "rgb_array"], "render_fps": 60}
 
     def __init__(
         self,
@@ -131,6 +150,7 @@ class T1DSimGymnaisumEnv(gymnasium.Env):
         reward_fun=None,
         seed=None,
         render_mode=None,
+        **kwargs,
     ) -> None:
         super().__init__()
         self.render_mode = render_mode
@@ -139,12 +159,25 @@ class T1DSimGymnaisumEnv(gymnasium.Env):
             custom_scenario=custom_scenario,
             reward_fun=reward_fun,
             seed=seed,
+            **kwargs,
         )
+
+        # Set custom metadata
+        for k, v in kwargs.items():
+            if k in ["render_modes", "render_fps"]:
+                continue
+            self.metadata[k] = v
+
         self.observation_space = gymnasium.spaces.Box(
-            low=0, high=self.MAX_BG, shape=(1,), dtype=np.float32
+            low=self.env.observation_space.low,
+            high=self.env.observation_space.high,
+            shape=self.env.observation_space.shape,
+            dtype=np.float32,
         )
         self.action_space = gymnasium.spaces.Box(
-            low=0, high=self.env.max_basal, shape=(1,), dtype=np.float32
+            low=self.env.action_space.low,
+            high=self.env.action_space.high,
+            dtype=np.float32,
         )
 
     def step(self, action):
@@ -159,16 +192,15 @@ class T1DSimGymnaisumEnv(gymnasium.Env):
         # )
         # Once the max_episode_steps is set, the truncated value will be overridden.
         truncated = False
-        return np.array([obs.CGM], dtype=np.float32), reward, done, truncated, info
+        return obs, reward, done, truncated, info
 
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
         obs, _, _, info = self.env._raw_reset()
-        return np.array([obs.CGM], dtype=np.float32), info
+        return obs, info
 
     def render(self):
-        if self.render_mode == "human":
-            self.env.render()
+        return self.env.render(mode=self.render_mode)
 
     def close(self):
         self.env.close()

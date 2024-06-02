@@ -1,6 +1,6 @@
 from collections import namedtuple
 
-Action = namedtuple('ctrller_action', ['basal', 'bolus'])
+Action = namedtuple("ctrller_action", ["basal", "bolus"])
 
 
 class Controller(object):
@@ -9,7 +9,7 @@ class Controller(object):
         self.state = init_state
 
     def policy(self, observation, reward, done, **info):
-        '''
+        """
         Every controller must have this implementation!
         ----
         Inputs:
@@ -23,12 +23,12 @@ class Controller(object):
         ----
         Output:
         action - a namedtuple defined at the beginning of this file. The
-                 controller action contains two entries: basal, bolus
-        '''
+                 controller action contains two entries: basal (U/min), bolus (U)
+        """
         raise NotImplementedError
 
     def reset(self):
-        '''
+        """
         Reset the controller state to inital state, must be implemented
-        '''
+        """
         raise NotImplementedError

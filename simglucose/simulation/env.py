@@ -1,4 +1,5 @@
-from simglucose.patient.t1dpatient import Action
+from simglucose.patient.t1dpatient import Action as PatientAction
+from simglucose.controller.base import Action as ControllerAction
 from simglucose.analysis.risk import risk_index
 import pandas as pd
 from datetime import timedelta
@@ -20,7 +21,7 @@ except ImportError:
         return _Step(observation, reward, done, kwargs)
 
 
-Observation = namedtuple("Observation", ["CGM"])
+Observation = namedtuple("Observation", ["CGM", "CHO"])
 logger = logging.getLogger(__name__)
 
 
@@ -45,14 +46,19 @@ class T1DSimEnv(object):
     def time(self):
         return self.scenario.start_time + timedelta(minutes=self.patient.t)
 
-    def mini_step(self, action):
+    def mini_step(self, basal, bolus):
+        """
+        Inputs:
+        basal - basal insulin rate (U/min)
+        bolus - bolus insulin amount (U)
+        """
         # current action
         patient_action = self.scenario.get_action(self.time)
-        basal = self.pump.basal(action.basal)
-        bolus = self.pump.bolus(action.bolus)
+        basal = self.pump.basal(basal)
+        bolus = self.pump.bolus(bolus)
         insulin = basal + bolus
         CHO = patient_action.meal
-        patient_mdl_act = Action(insulin=insulin, CHO=CHO)
+        patient_mdl_act = PatientAction(insulin=insulin, CHO=CHO)
 
         # State update
         self.patient.step(patient_mdl_act)
@@ -63,18 +69,25 @@ class T1DSimEnv(object):
 
         return CHO, insulin, BG, CGM
 
-    def step(self, action, reward_fun=risk_diff):
+    def step(self, action: ControllerAction, reward_fun=None):
         """
         action is a namedtuple with keys: basal, bolus
         """
+        if reward_fun is None:
+            reward_fun = risk_diff
         CHO = 0.0
         insulin = 0.0
         BG = 0.0
         CGM = 0.0
 
-        for _ in range(int(self.sample_time)):
-            # Compute moving average as the sample measurements
-            tmp_CHO, tmp_insulin, tmp_BG, tmp_CGM = self.mini_step(action)
+        for i in range(int(self.sample_time)):
+            if i == 0:
+                # Compute moving average as the sample measurements
+                tmp_CHO, tmp_insulin, tmp_BG, tmp_CGM = self.mini_step(
+                    action.basal, action.bolus
+                )
+            else:
+                tmp_CHO, tmp_insulin, tmp_BG, tmp_CGM = self.mini_step(action.basal, 0)
             CHO += tmp_CHO / self.sample_time
             insulin += tmp_insulin / self.sample_time
             BG += tmp_BG / self.sample_time
@@ -101,7 +114,7 @@ class T1DSimEnv(object):
         BG_last_hour = self.CGM_hist[-window_size:]
         reward = reward_fun(BG_last_hour)
         done = BG < 10 or BG > 600
-        obs = Observation(CGM=CGM)
+        obs = Observation(CGM=CGM, CHO=CHO)
 
         return Step(
             observation=obs,
@@ -142,7 +155,7 @@ class T1DSimEnv(object):
         self.scenario.reset()
         self._reset()
         CGM = self.sensor.measure(self.patient)
-        obs = Observation(CGM=CGM)
+        obs = Observation(CGM=CGM, CHO=0)
         return Step(
             observation=obs,
             reward=0,
@@ -158,15 +171,17 @@ class T1DSimEnv(object):
             risk=self.risk_hist[0],
         )
 
-    def render(self, close=False):
+    def render(self, mode="human", close=False):
         if close:
             self._close_viewer()
             return
 
         if self.viewer is None:
-            self.viewer = Viewer(self.scenario.start_time, self.patient.name)
+            self.viewer = Viewer(self.scenario.start_time, self.patient.name, mode=mode)
 
-        self.viewer.render(self.show_history())
+        render_output = self.viewer.render(self.show_history())
+        if mode == "rgb_array":
+            return render_output
 
     def _close_viewer(self):
         if self.viewer is not None:
