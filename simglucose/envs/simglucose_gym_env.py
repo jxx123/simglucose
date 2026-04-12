@@ -123,6 +123,7 @@ class T1DSimEnv(gym.Env):
 class T1DSimGymnaisumEnv(gymnasium.Env):
     metadata = {"render_modes": ["human"], "render_fps": 60}
     MAX_BG = 1000
+    MAX_CHO = 200  # max carbohydrate intake in grams
 
     def __init__(
         self,
@@ -140,31 +141,43 @@ class T1DSimGymnaisumEnv(gymnasium.Env):
             reward_fun=reward_fun,
             seed=seed,
         )
-        self.observation_space = gymnasium.spaces.Box(
-            low=0, high=self.MAX_BG, shape=(1,), dtype=np.float32
-        )
-        self.action_space = gymnasium.spaces.Box(
-            low=0, high=self.env.max_basal, shape=(1,), dtype=np.float32
-        )
+        sample_time = self.env.env.sensor.sample_time
+        max_basal_u_hr = self.env.max_basal * 60  # convert U/min to U/hr
+        max_bolus_u = self.env.env.pump._params["max_bolus"] * sample_time  # convert U/min to U per step
+        self.observation_space = gymnasium.spaces.Dict({
+            "CGM": gymnasium.spaces.Box(low=0.0, high=self.MAX_BG, shape=(), dtype=np.float32),
+            "CHO": gymnasium.spaces.Box(low=0.0, high=self.MAX_CHO, shape=(), dtype=np.float32),
+        })
+        self.action_space = gymnasium.spaces.Dict({
+            "basal": gymnasium.spaces.Box(low=0.0, high=max_basal_u_hr, shape=(), dtype=np.float32),
+            "bolus": gymnasium.spaces.Box(low=0.0, high=max_bolus_u, shape=(), dtype=np.float32),
+        })
+        self._sample_time = sample_time
+
+    @property
+    def sample_time(self):
+        return self._sample_time
 
     def step(self, action):
-        obs, reward, done, info = self.env.step(action)
-        # Truncated will be controlled by TimeLimit wrapper when registering the env.
-        # For example,
-        # register(
-        #     id="simglucose/adolescent2-v0",
-        #     entry_point="simglucose.envs:T1DSimGymnaisumEnv",
-        #     max_episode_steps=10,
-        #     kwargs={"patient_name": "adolescent#002"},
-        # )
-        # Once the max_episode_steps is set, the truncated value will be overridden.
+        # Convert basal from U/hr to U/min, bolus from U to U/min
+        basal_u_min = float(action["basal"]) / 60.0
+        bolus_u_min = float(action["bolus"]) / self._sample_time
+        act = Action(basal=basal_u_min, bolus=bolus_u_min)
+        if self.env.reward_fun is None:
+            obs, reward, done, info = self.env.env.step(act)
+        else:
+            obs, reward, done, info = self.env.env.step(act, reward_fun=self.env.reward_fun)
         truncated = False
-        return np.array([obs.CGM], dtype=np.float32), reward, done, truncated, info
+        # info["meal"] is in g/min (averaged over mini_steps), convert to grams
+        cho_grams = info["meal"] * self._sample_time
+        observation = {"CGM": np.float32(obs.CGM), "CHO": np.float32(cho_grams)}
+        return observation, reward, done, truncated, info
 
     def reset(self, seed=None, options=None):
         super().reset(seed=seed)
         obs, _, _, info = self.env._raw_reset()
-        return np.array([obs.CGM], dtype=np.float32), info
+        observation = {"CGM": np.float32(obs.CGM), "CHO": np.float32(0.0)}
+        return observation, info
 
     def render(self):
         if self.render_mode == "human":
