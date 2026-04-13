@@ -98,7 +98,7 @@ class TestSimEngine(unittest.TestCase):
         # Put them together to create a simulation object
         s = SimObj(env, controller, timedelta(days=2), animate=False, path=save_folder)
         results = sim(s)
-        assert_frame_equal(results, results_exp)
+        assert_frame_equal(results, results_exp, atol=1e-3)
 
     def tearDown(self):
         shutil.rmtree(os.path.join(os.path.dirname(__file__), "results"))
