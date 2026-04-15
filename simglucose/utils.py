@@ -1,8 +1,18 @@
 import importlib.resources
 import pandas as pd
+import os
 
-CONTROL_QUEST = str(importlib.resources.files("simglucose") / "params/Quest.csv")
-PATIENT_PARA_FILE = str(importlib.resources.files("simglucose") / "params/vpatient_params.csv")
+# Compatibility helper for Python < 3.9
+def _get_resource_path(package, resource):
+    if hasattr(importlib.resources, 'files'):
+        return str(importlib.resources.files(package) / resource)
+    else:
+        # Fallback for Python 3.8
+        with importlib.resources.path(package, '__init__.py') as p:
+            return str(p.parent / resource)
+
+CONTROL_QUEST = _get_resource_path("simglucose", "params/Quest.csv")
+PATIENT_PARA_FILE = _get_resource_path("simglucose", "params/vpatient_params.csv")
 
 
 def fetch_patient_params(patient_name: str):

@@ -19,7 +19,7 @@ patient_name : None
 import numpy as np
 import torch
 import pandas as pd
-import importlib.resources
+from simglucose.utils import _get_resource_path
 import gymnasium
 from gymnasium.vector import VectorEnv
 from gymnasium.vector.utils import batch_space
@@ -31,7 +31,7 @@ from simglucose.sensor.cgm_batch import CGMSensorBatch
 from simglucose.simulation.scenario_batch import BatchScenario
 from simglucose.analysis.risk import risk_diff_batch
 
-PUMP_PARA_FILE = str(importlib.resources.files("simglucose") / "params/pump_params.csv")
+PUMP_PARA_FILE = _get_resource_path("simglucose", "params/pump_params.csv")
 
 U2PMOL = 6000.0
 SENSOR_HARDWARE = "Dexcom"
@@ -114,7 +114,7 @@ class T1DSimVectorEnv(VectorEnv):
 
         # --- sensor sample_time ----------------------------------------
         sensor_df = pd.read_csv(
-            str(importlib.resources.files("simglucose") / "params/sensor_params.csv")
+            _get_resource_path("simglucose", "params/sensor_params.csv")
         )
         sp = sensor_df.loc[sensor_df.Name == SENSOR_HARDWARE].squeeze()
         self._sample_time = int(sp["sample_time"])
@@ -185,35 +185,43 @@ class T1DSimVectorEnv(VectorEnv):
             ]
 
     # ------------------------------------------------------------------
-    def reset(self, *, seed=None, options=None):
+    def reset(self, *, seed=None, options=None, indices=None):
         if seed is not None:
             self._rng = np.random.RandomState(seed)
 
-        all_idx = list(range(self.num_envs))
-        names = self._sample_names(all_idx)
+        if indices is None:
+            indices = list(range(self.num_envs))
+        
+        names = self._sample_names(indices)
 
         if self._patient is None:
-            # First ever reset — create components
+            # First ever reset — create components (ignores indices, creates all)
             self._patient = T1DPatientBatch(
-                names, device=self.device, random_init_bg=True,
-                seed=seed, dtype=self.dtype,
+                self._sample_names(list(range(self.num_envs))), 
+                device=self.device, random_init_bg=True,
+                seed=self.seed, dtype=self.dtype,
             )
             self._sensor = CGMSensorBatch(
                 SENSOR_HARDWARE, self.num_envs,
-                device=self.device, seed=seed, dtype=self.dtype
+                device=self.device, seed=self.seed, dtype=self.dtype
             )
             self._scenario = BatchScenario(
-                self.num_envs, device=self.device, seed=seed, dtype=self.dtype
+                self.num_envs, device=self.device, seed=self.seed, dtype=self.dtype
             )
-        else:
-            # Reassign patient slots if using a pool
-            if self._name_pool is not None:
-                self._patient.update_patient_slots(all_idx, names)
+            # Full reset for all
             self._patient.reset()
             self._sensor.reset()
             self._scenario.reset()
+        else:
+            # Reassign patient slots if using a pool
+            if self._name_pool is not None:
+                self._patient.update_patient_slots(indices, names)
+            self._patient.reset(indices=indices)
+            self._sensor.reset(indices=indices)
+            self._scenario.reset(indices=indices)
 
-        self._t = 0
+        if indices == list(range(self.num_envs)):
+            self._t = 0
 
         # Initial CGM measurement
         cgm = self._sensor.measure(self._patient.observation, self._t)  # (N,)
@@ -302,7 +310,7 @@ class T1DSimVectorEnv(VectorEnv):
             # Save final observations before resetting
             final_cgm = cgm_np.copy()
             final_cho = cho_np.copy()
-            info["final_observation"] = {"CGM": final_cgm, "CHO": final_cho}
+            info["final_observation"] = [{"CGM": final_cgm[i], "CHO": final_cho[i]} for i in done_idx]
             info["_final_observation"] = term_np.copy()
 
             # Resample patient names for done slots (pool semantics)

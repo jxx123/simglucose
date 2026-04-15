@@ -10,10 +10,10 @@ statistically appropriate.
 import torch
 import pandas as pd
 import numpy as np
-import importlib.resources
 from typing import Optional, Union
+from simglucose.utils import _get_resource_path
 
-SENSOR_PARA_FILE = str(importlib.resources.files("simglucose") / "params/sensor_params.csv")
+SENSOR_PARA_FILE = _get_resource_path("simglucose", "params/sensor_params.csv")
 
 
 class CGMSensorBatch:
@@ -60,41 +60,55 @@ class CGMSensorBatch:
     # ------------------------------------------------------------------
     def reset(self, indices=None):
         if indices is None:
-            # Full reset — reinitialise all AR(1) states
             self._rng = np.random.RandomState(self.seed)
-            e_np = self._rng.randn(self.n)
-            self.e = torch.tensor(e_np, dtype=self.dtype, device=self.device)
+            # Initialise AR(1) state
+            self.e = torch.tensor(self._rng.randn(self.n), dtype=self.dtype, device=self.device)
             self.last_cgm = torch.zeros(self.n, dtype=self.dtype, device=self.device)
+            
+            # 15-min noise buffer for interpolation
+            self.noise15_prev = self._gen_noise15()
+            self.noise15_next = self._gen_noise15()
         else:
-            # Partial reset for terminated sub-envs
-            e_np = self._rng.randn(len(indices))
             idx_t = torch.tensor(indices, dtype=torch.long, device=self.device)
-            self.e[idx_t] = torch.tensor(e_np, dtype=self.dtype, device=self.device)
+            self.e[idx_t] = torch.tensor(self._rng.randn(len(indices)), dtype=self.dtype, device=self.device)
             self.last_cgm[idx_t] = 0.0
+            
+            # Reset buffers for specific indices
+            n_idx = len(indices)
+            self.noise15_prev[idx_t] = self._gen_noise15_idx(indices)
+            self.noise15_next[idx_t] = self._gen_noise15_idx(indices)
+
+    def _gen_noise15(self) -> torch.Tensor:
+        """Advance AR(1) and apply Johnson SU for all N."""
+        z = torch.tensor(self._rng.randn(self.n), dtype=self.dtype, device=self.device)
+        self.e = self._PACF * (self.e + z)
+        return self._xi + self._lam * torch.sinh((self.e - self._gamma) / self._delta)
+
+    def _gen_noise15_idx(self, indices) -> torch.Tensor:
+        """Advance AR(1) and apply Johnson SU for specific indices."""
+        z = torch.tensor(self._rng.randn(len(indices)), dtype=self.dtype, device=self.device)
+        self.e[indices] = self._PACF * (self.e[indices] + z)
+        return self._xi + self._lam * torch.sinh((self.e[indices] - self._gamma) / self._delta)
 
     # ------------------------------------------------------------------
     def measure(self, gsub: torch.Tensor, t: int) -> torch.Tensor:
         """
-        Measure CGM for all N patients at minute t.
-
-        Parameters
-        ----------
-        gsub : (N,) subcutaneous glucose values (mg/dL)
-        t    : current simulation minute (int)
-
-        Returns
-        -------
-        cgm : (N,) clipped CGM readings
+        Measure CGM for all N patients at minute t with linear interpolation
+        between 15-minute AR(1) samples.
         """
+        MDL_SAMPLE_TIME = 15
+        
+        # Update 15-min targets
+        if t > 0 and t % MDL_SAMPLE_TIME == 0:
+            self.noise15_prev = self.noise15_next.clone()
+            self.noise15_next = self._gen_noise15()
+
         if t % self.sample_time == 0:
-            # AR(1) step
-            z_np = self._rng.randn(self.n)
-            z = torch.tensor(z_np, dtype=self.dtype, device=self.device)
-            self.e = self._PACF * (self.e + z)
-            # Johnson SU transform
-            noise = self._xi + self._lam * torch.sinh(
-                (self.e - self._gamma) / self._delta
-            )
+            # Linear interpolation
+            alpha = (t % MDL_SAMPLE_TIME) / float(MDL_SAMPLE_TIME)
+            noise = (1.0 - alpha) * self.noise15_prev + alpha * self.noise15_next
+            
             cgm = (gsub + noise).clamp(min=self._cgm_min, max=self._cgm_max)
             self.last_cgm = cgm
+            
         return self.last_cgm

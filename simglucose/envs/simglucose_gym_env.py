@@ -4,7 +4,7 @@ from simglucose.sensor.cgm import CGMSensor
 from simglucose.actuator.pump import InsulinPump
 from simglucose.simulation.scenario_gen import RandomScenario
 from simglucose.controller.base import Action
-import importlib.resources
+from simglucose.utils import _get_resource_path
 import numpy as np
 from datetime import datetime
 import gymnasium
@@ -230,10 +230,21 @@ class T1DSimGymnaisumEnv(gymnasium.Env):
         observation = {"CGM": np.float32(obs.CGM), "CHO": np.float32(cho_grams)}
         return observation, reward, done, truncated, info
 
+    @property
+    def scenario(self):
+        """Expose the active scenario so callers can query future carbs."""
+        if self._use_batch:
+            return self._batch_env._scenario
+        return self.env.env.scenario
+
     def reset(self, seed=None, options=None):
         if self._use_batch:
             return self._batch_env.reset(seed=seed, options=options)
         super().reset(seed=seed)
+        if seed is not None:
+            # Re-seed and recreate inner env so scenario/patient/sensor
+            # are deterministically regenerated.
+            self.env._seed(seed)
         obs, _, _, info = self.env._raw_reset()
         observation = {"CGM": np.float32(obs.CGM), "CHO": np.float32(0.0)}
         return observation, info

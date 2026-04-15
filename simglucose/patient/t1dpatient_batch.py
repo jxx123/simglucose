@@ -11,10 +11,10 @@ dopri5 used in the original single-patient path.
 import torch
 import pandas as pd
 import numpy as np
-import importlib.resources
 from typing import Optional, List, Union
+from simglucose.utils import _get_resource_path
 
-PATIENT_PARA_FILE = str(importlib.resources.files("simglucose") / "params/vpatient_params.csv")
+PATIENT_PARA_FILE = _get_resource_path("simglucose", "params/vpatient_params.csv")
 
 # Names of scalar parameters accessed inside the ODE model
 _ODE_PARAM_NAMES = [
@@ -296,19 +296,25 @@ class T1DPatientBatch:
         self.is_eating = self.is_eating & ~meal_end
         self._last_cho = cho_announced.clone()
 
-        # --- RK4 integration ---
-        self.x = rk4_step(
-            t1d_rhs_batch,
-            float(self.t),
-            self.x,
-            float(self.SAMPLE_TIME),
-            insulin=insulin,
-            cho_rate=to_eat,
-            params=self.params,
-            last_Qsto=self._last_Qsto,
-            last_foodtaken=self._last_foodtaken,
-        )
-        self.t += self.SAMPLE_TIME
+        # --- RK4 integration with sub-stepping ---
+        # 10 sub-steps of 0.1 min per minute significantly improves parity with
+        # the adaptive dopri5 solver used in the single-patient path.
+        n_substeps = 10
+        dt_sub = float(self.SAMPLE_TIME) / n_substeps
+        
+        for _ in range(n_substeps):
+            self.x = rk4_step(
+                t1d_rhs_batch,
+                float(self.t),
+                self.x,
+                dt_sub,
+                insulin=insulin,
+                cho_rate=to_eat,
+                params=self.params,
+                last_Qsto=self._last_Qsto,
+                last_foodtaken=self._last_foodtaken,
+            )
+            self.t += dt_sub
 
     # ------------------------------------------------------------------
     @property
@@ -318,5 +324,5 @@ class T1DPatientBatch:
 
     @property
     def bg(self) -> torch.Tensor:
-        """Plasma glucose x[:,3] (mg/kg), shape (N,)."""
-        return self.x[:, 3]
+        """Plasma glucose concentration (mg/dL), shape (N,)."""
+        return self.x[:, 3] / self.params["Vg"]

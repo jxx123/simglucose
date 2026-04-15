@@ -210,44 +210,30 @@ class TestOutputShapes(unittest.TestCase):
 
 
 # =============================================================================
-# 5. Auto-reset on termination
+# 5. No Auto-reset on termination
 # =============================================================================
 
-class TestAutoReset(unittest.TestCase):
+class TestTermination(unittest.TestCase):
 
-    def test_autoreset_on_termination(self):
-        """When a patient terminates, info['final_observation'] must be present."""
+    def test_termination_signals_with_reset(self):
+        """When a patient terminates, term[i] must be True, and auto-reset should occur."""
         env = _make_batch_env(n=2, seed=1)
         env.reset()
 
-        # Force patient 0's BG way out of range by injecting massive insulin
-        # and then draining — actually easier to manipulate patient.x directly
-        env._patient.x[0, 3] = 650.0   # plasma glucose > 600 → done
+        # Force patient 0's BG way out of range (account for Vg scaling)
+        env._patient.x[0, 3] = 800.0 * env._patient.params["Vg"][0]
+        env._patient.x[0, 12] = 800.0 * env._patient.params["Vg"][0]
 
-        # Also set bg for patient 0 above threshold via x[3]
         action = _zero_action_batch(2, env)
         obs, rew, term, trunc, info = env.step(action)
 
-        self.assertIn("final_observation", info,
-                      "info should contain final_observation for terminated env")
-        self.assertTrue(term[0] or True,  # termination may have occurred
-                        "Patient 0 should have terminated")
+        self.assertTrue(term[0], "Patient 0 should have reported termination")
+        # After auto-reset, CGM should be a normal initial value (not > 600)
+        self.assertLess(obs["CGM"][0], 400.0)
+        self.assertIn("final_observation", info)
+        self.assertEqual(len(info["final_observation"]), 1)
+        self.assertGreaterEqual(info["final_observation"][0]["CGM"], 600.0)
 
-    def test_autoreset_returns_fresh_obs(self):
-        """After auto-reset, the returned obs for done slot is a fresh initial obs."""
-        env = _make_batch_env(n=2, seed=2)
-        env.reset()
-
-        # Force patient 1 to terminate
-        env._patient.x[1, 3] = 700.0
-
-        obs_before = env._patient.observation[1].item()
-        obs_out, _, term, _, info = env.step(_zero_action_batch(2, env))
-
-        if term[1]:
-            # After auto-reset, CGM should be a normal initial value (not > 600)
-            self.assertLess(obs_out["CGM"][1], env._sensor._cgm_max + 1.0)
-            self.assertIn("final_observation", info)
 
 
 # =============================================================================
