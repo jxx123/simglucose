@@ -91,14 +91,32 @@ class CGMSensorBatch:
         return self._xi + self._lam * torch.sinh((self.e[indices] - self._gamma) / self._delta)
 
     # ------------------------------------------------------------------
-    def measure(self, gsub: torch.Tensor, t: int) -> torch.Tensor:
+    def measure(self, gsub: torch.Tensor, t: Union[int, torch.Tensor]) -> torch.Tensor:
         """
-        Measure CGM for all N patients at minute t with linear interpolation
-        between 15-minute AR(1) samples.
+        Measure CGM for all N patients at patient-specific time t with 
+        linear interpolation between 15-minute AR(1) samples.
         """
         MDL_SAMPLE_TIME = 15
         
         # Update 15-min targets
+        if isinstance(t, torch.Tensor):
+            update_mask = (t > 0) & (t % MDL_SAMPLE_TIME == 0)
+            if update_mask.any():
+                idx_t = torch.where(update_mask)[0]
+                self.noise15_prev[idx_t] = self.noise15_next[idx_t].clone()
+                self.noise15_next[idx_t] = self._gen_noise15_idx(idx_t.cpu().numpy())
+            
+            # Linear interpolation (vectorised)
+            alpha = (t % MDL_SAMPLE_TIME).to(self.dtype) / float(MDL_SAMPLE_TIME)
+            noise = (1.0 - alpha) * self.noise15_prev + alpha * self.noise15_next
+            
+            # Apply only on sample_time boundaries
+            # Note: T1DSimVectorEnv calls measure once per sample_time outside its inner loop,
+            # so we assume t is already at a sample boundary for all patients here.
+            cgm = (gsub + noise).clamp(min=self._cgm_min, max=self._cgm_max)
+            self.last_cgm = cgm
+            return self.last_cgm
+
         if t > 0 and t % MDL_SAMPLE_TIME == 0:
             self.noise15_prev = self.noise15_next.clone()
             self.noise15_next = self._gen_noise15()

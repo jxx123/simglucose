@@ -101,12 +101,16 @@ class T1DSimVectorEnv(VectorEnv):
         seed: Optional[int] = None,
         device: Union[str, torch.device] = "cpu",
         dtype: torch.dtype = torch.float64,
+        warmup_minutes: int = 0,
+        auto_reset: bool = True,
     ):
         self.num_envs = n_envs
         self.device = torch.device(device)
         self.dtype = dtype
         self.seed = seed
         self.reward_fun = reward_fun
+        self.warmup_minutes = warmup_minutes
+        self.auto_reset = auto_reset
 
         # --- pump params ------------------------------------------------
         pump_df = pd.read_csv(PUMP_PARA_FILE)
@@ -171,7 +175,7 @@ class T1DSimVectorEnv(VectorEnv):
         self._window = max(2, 60 // self._sample_time)
         self._cgm_hist: Optional[torch.Tensor] = None  # (N, window)
 
-        self._t = 0  # global step counter
+        self._t = torch.zeros(self.num_envs, dtype=torch.long, device=self.device)  # per-patient step counter
 
     # ------------------------------------------------------------------
     def _sample_names(self, indices: List[int]) -> List[str]:
@@ -191,6 +195,10 @@ class T1DSimVectorEnv(VectorEnv):
 
         if indices is None:
             indices = list(range(self.num_envs))
+            self._t.zero_()
+        else:
+            idx_t = torch.tensor(indices, dtype=torch.long, device=self.device)
+            self._t[idx_t] = 0
         
         names = self._sample_names(indices)
 
@@ -206,7 +214,8 @@ class T1DSimVectorEnv(VectorEnv):
                 device=self.device, seed=self.seed, dtype=self.dtype
             )
             self._scenario = BatchScenario(
-                self.num_envs, device=self.device, seed=self.seed, dtype=self.dtype
+                self.num_envs, device=self.device, seed=self.seed, dtype=self.dtype,
+                warmup_minutes=self.warmup_minutes,
             )
             # Full reset for all
             self._patient.reset()
@@ -220,8 +229,8 @@ class T1DSimVectorEnv(VectorEnv):
             self._sensor.reset(indices=indices)
             self._scenario.reset(indices=indices)
 
-        if indices == list(range(self.num_envs)):
-            self._t = 0
+        # Removed: if indices == list(range(self.num_envs)): self._t = 0
+        # Corrected above to use idx_t for individual reset.
 
         # Initial CGM measurement
         cgm = self._sensor.measure(self._patient.observation, self._t)  # (N,)
@@ -306,7 +315,7 @@ class T1DSimVectorEnv(VectorEnv):
 
         # Auto-reset terminated sub-envs (gymnasium vector convention)
         done_idx = np.where(term_np)[0].tolist()
-        if done_idx:
+        if self.auto_reset and done_idx:
             # Save final observations before resetting
             final_cgm = cgm_np.copy()
             final_cho = cho_np.copy()
@@ -326,7 +335,7 @@ class T1DSimVectorEnv(VectorEnv):
             # Measure new initial CGM for done slots
             new_cgm = self._sensor.measure(
                 self._patient.observation, self._t
-            )  # (N,) — only done slots updated
+            )  # (N,) — all slots calculated, only done slots returned
 
             init_cgm = new_cgm[done_idx].cpu().float().numpy()
             obs["CGM"][done_idx] = init_cgm
