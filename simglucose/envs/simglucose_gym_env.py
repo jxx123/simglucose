@@ -5,7 +5,7 @@ from simglucose.actuator.pump import InsulinPump
 from simglucose.simulation.scenario_gen import RandomScenario
 from simglucose.controller.base import Action
 import numpy as np
-import pkg_resources
+from importlib.resources import files
 import gym
 from gym import spaces
 from gym.utils import seeding
@@ -13,9 +13,7 @@ from datetime import datetime
 import gymnasium
 
 
-PATIENT_PARA_FILE = pkg_resources.resource_filename(
-    "simglucose", "params/vpatient_params.csv"
-)
+PATIENT_PARA_FILE = str(files("simglucose") / "params" / "vpatient_params.csv")
 
 
 class T1DSimEnv(gym.Env):
