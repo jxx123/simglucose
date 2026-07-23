@@ -15,7 +15,7 @@ the hot loop.
 import torch
 import numpy as np
 from scipy.stats import truncnorm
-from typing import List, Optional, Union
+from typing import List, Optional, Sequence, Union
 
 
 _MEAL_PROB   = [0.95, 0.3, 0.95, 0.3, 0.95, 0.3]
@@ -69,6 +69,7 @@ class BatchScenario:
         seed: Optional[int] = None,
         dtype: torch.dtype = torch.float64,
         warmup_minutes: int = 0,
+        env_seeds: Optional[Sequence[int]] = None,
     ):
         self.n = n
         self.device = torch.device(device)
@@ -76,6 +77,13 @@ class BatchScenario:
         self.seed = seed
         self.warmup_minutes = warmup_minutes  # global steps before CHO is allowed
         self._rng = np.random.RandomState(seed)
+        # When env_seeds is given, env i's meal schedule is a pure function of
+        # env_seeds[i] (not the sequential master RNG). This makes rollouts
+        # reproducible per-env and lets a GRPO group share one seed -> identical
+        # meals across the group so only the policy's actions differ.
+        self.env_seeds = None if env_seeds is None else [int(s) for s in env_seeds]
+        if self.env_seeds is not None and len(self.env_seeds) != n:
+            raise ValueError(f"env_seeds len {len(self.env_seeds)} != n {n}")
 
         self.meal_schedule = torch.zeros(
             n, self.T_MAX, dtype=dtype, device=self.device
@@ -94,7 +102,10 @@ class BatchScenario:
 
     def _reset_indices(self, indices: List[int]):
         for i in indices:
-            rng_i = np.random.RandomState(int(self._rng.randint(0, 2 ** 31)))
+            if self.env_seeds is not None:
+                rng_i = np.random.RandomState(self.env_seeds[i])
+            else:
+                rng_i = np.random.RandomState(int(self._rng.randint(0, 2 ** 31)))
             scen = _create_one_scenario(rng_i)
 
             sched = np.zeros(self.T_MAX, dtype=np.float64)

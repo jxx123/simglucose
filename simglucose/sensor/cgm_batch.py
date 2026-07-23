@@ -10,7 +10,7 @@ statistically appropriate.
 import torch
 import pandas as pd
 import numpy as np
-from typing import Optional, Union
+from typing import Optional, Sequence, Union
 from simglucose.utils import _get_resource_path
 
 SENSOR_PARA_FILE = _get_resource_path("simglucose", "params/sensor_params.csv")
@@ -36,11 +36,19 @@ class CGMSensorBatch:
         device: Union[str, torch.device] = "cpu",
         seed: Optional[int] = None,
         dtype: torch.dtype = torch.float64,
+        env_seeds: Optional[Sequence[int]] = None,
     ):
         self.n = n
         self.device = torch.device(device)
         self.dtype = dtype
         self.seed = seed
+        # When env_seeds is given, each env draws its noise from its OWN RNG
+        # seeded by env_seeds[i], so env i's noise stream is a pure function of
+        # its seed (envs sharing a seed get identical noise). Enables clean,
+        # reproducible GRPO groups. Default (None) keeps the fast single-RNG path.
+        self.env_seeds = None if env_seeds is None else [int(s) for s in env_seeds]
+        if self.env_seeds is not None and len(self.env_seeds) != n:
+            raise ValueError(f"env_seeds len {len(self.env_seeds)} != n {n}")
 
         df = pd.read_csv(SENSOR_PARA_FILE)
         p = df.loc[df.Name == sensor_name].squeeze()
@@ -58,21 +66,34 @@ class CGMSensorBatch:
         self.reset()
 
     # ------------------------------------------------------------------
+    def _randn(self, indices=None) -> np.ndarray:
+        """Standard-normal draws. Per-env RNGs when env_seeds is set (so env i's
+        stream is a pure function of its seed); else the single vectorized RNG."""
+        if self.env_seeds is None:
+            return self._rng.randn(self.n if indices is None else len(indices))
+        idxs = range(self.n) if indices is None else indices
+        return np.array([self._rngs[i].randn() for i in idxs], dtype=np.float64)
+
     def reset(self, indices=None):
         if indices is None:
             self._rng = np.random.RandomState(self.seed)
+            if self.env_seeds is not None:
+                self._rngs = [np.random.RandomState(s) for s in self.env_seeds]
             # Initialise AR(1) state
-            self.e = torch.tensor(self._rng.randn(self.n), dtype=self.dtype, device=self.device)
+            self.e = torch.tensor(self._randn(), dtype=self.dtype, device=self.device)
             self.last_cgm = torch.zeros(self.n, dtype=self.dtype, device=self.device)
-            
+
             # 15-min noise buffer for interpolation
             self.noise15_prev = self._gen_noise15()
             self.noise15_next = self._gen_noise15()
         else:
             idx_t = torch.tensor(indices, dtype=torch.long, device=self.device)
-            self.e[idx_t] = torch.tensor(self._rng.randn(len(indices)), dtype=self.dtype, device=self.device)
+            if self.env_seeds is not None:                       # re-seed just these envs
+                for i in indices:
+                    self._rngs[i] = np.random.RandomState(self.env_seeds[i])
+            self.e[idx_t] = torch.tensor(self._randn(indices), dtype=self.dtype, device=self.device)
             self.last_cgm[idx_t] = 0.0
-            
+
             # Reset buffers for specific indices
             n_idx = len(indices)
             self.noise15_prev[idx_t] = self._gen_noise15_idx(indices)
@@ -80,13 +101,13 @@ class CGMSensorBatch:
 
     def _gen_noise15(self) -> torch.Tensor:
         """Advance AR(1) and apply Johnson SU for all N."""
-        z = torch.tensor(self._rng.randn(self.n), dtype=self.dtype, device=self.device)
+        z = torch.tensor(self._randn(), dtype=self.dtype, device=self.device)
         self.e = self._PACF * (self.e + z)
         return self._xi + self._lam * torch.sinh((self.e - self._gamma) / self._delta)
 
     def _gen_noise15_idx(self, indices) -> torch.Tensor:
         """Advance AR(1) and apply Johnson SU for specific indices."""
-        z = torch.tensor(self._rng.randn(len(indices)), dtype=self.dtype, device=self.device)
+        z = torch.tensor(self._randn(indices), dtype=self.dtype, device=self.device)
         self.e[indices] = self._PACF * (self.e[indices] + z)
         return self._xi + self._lam * torch.sinh((self.e[indices] - self._gamma) / self._delta)
 

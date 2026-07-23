@@ -103,6 +103,7 @@ class T1DSimVectorEnv(VectorEnv):
         dtype: torch.dtype = torch.float64,
         warmup_minutes: int = 0,
         auto_reset: bool = True,
+        env_seeds: Optional[List[int]] = None,
     ):
         self.num_envs = n_envs
         self.device = torch.device(device)
@@ -111,6 +112,11 @@ class T1DSimVectorEnv(VectorEnv):
         self.reward_fun = reward_fun
         self.warmup_minutes = warmup_minutes
         self.auto_reset = auto_reset
+        # Per-env seeds for deterministic, reproducible meals + sensor noise.
+        # Envs sharing a seed get identical meals + noise (clean GRPO groups).
+        self.env_seeds = None if env_seeds is None else [int(s) for s in env_seeds]
+        if self.env_seeds is not None and len(self.env_seeds) != n_envs:
+            raise ValueError(f"env_seeds len {len(self.env_seeds)} != n_envs {n_envs}")
 
         # --- pump params ------------------------------------------------
         pump_df = pd.read_csv(PUMP_PARA_FILE)
@@ -205,17 +211,20 @@ class T1DSimVectorEnv(VectorEnv):
         if self._patient is None:
             # First ever reset — create components (ignores indices, creates all)
             self._patient = T1DPatientBatch(
-                self._sample_names(list(range(self.num_envs))), 
+                self._sample_names(list(range(self.num_envs))),
                 device=self.device, random_init_bg=True,
                 seed=self.seed, dtype=self.dtype,
+                env_seeds=self.env_seeds,
             )
             self._sensor = CGMSensorBatch(
                 SENSOR_HARDWARE, self.num_envs,
-                device=self.device, seed=self.seed, dtype=self.dtype
+                device=self.device, seed=self.seed, dtype=self.dtype,
+                env_seeds=self.env_seeds,
             )
             self._scenario = BatchScenario(
                 self.num_envs, device=self.device, seed=self.seed, dtype=self.dtype,
                 warmup_minutes=self.warmup_minutes,
+                env_seeds=self.env_seeds,
             )
             # Full reset for all
             self._patient.reset()

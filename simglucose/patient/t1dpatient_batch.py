@@ -11,7 +11,7 @@ dopri5 used in the original single-patient path.
 import torch
 import pandas as pd
 import numpy as np
-from typing import Optional, List, Union
+from typing import Optional, List, Sequence, Union
 from simglucose.utils import _get_resource_path
 
 PATIENT_PARA_FILE = _get_resource_path("simglucose", "params/vpatient_params.csv")
@@ -178,6 +178,7 @@ class T1DPatientBatch:
         random_init_bg: bool = False,
         seed: Optional[int] = None,
         dtype: torch.dtype = torch.float64,
+        env_seeds: Optional[Sequence[int]] = None,
     ):
         self.device = torch.device(device)
         self.dtype = dtype
@@ -185,6 +186,11 @@ class T1DPatientBatch:
         self.N = len(patient_names)
         self.random_init_bg = random_init_bg
         self.seed = seed
+        # Per-env seeds -> deterministic per-env init-BG (envs sharing a seed
+        # start at the SAME BG). Enables clean, reproducible GRPO groups.
+        self.env_seeds = None if env_seeds is None else [int(s) for s in env_seeds]
+        if self.env_seeds is not None and len(self.env_seeds) != self.N:
+            raise ValueError(f"env_seeds len {len(self.env_seeds)} != N {self.N}")
 
         self._base_params, self._base_init_states = _load_params_for_names(
             patient_names, self.device, dtype
@@ -194,6 +200,8 @@ class T1DPatientBatch:
         self.init_states = self._base_init_states.clone()
 
         self._rng = np.random.RandomState(seed)
+        if self.env_seeds is not None:
+            self._rngs = [np.random.RandomState(s) for s in self.env_seeds]
         self.reset()
 
     # ------------------------------------------------------------------
@@ -209,6 +217,13 @@ class T1DPatientBatch:
         if indices is None:
             indices = list(range(self.N))
 
+        # Re-seed the reset envs' RNGs so init-BG is a pure function of the
+        # per-env seed on EVERY reset (matches CGMSensorBatch / BatchScenario,
+        # keeps GRPO groups reproducible across successive episodes).
+        if self.env_seeds is not None:
+            for i in indices:
+                self._rngs[i] = np.random.RandomState(self.env_seeds[i])
+
         init = self.init_states[indices].clone()  # (|indices|, 13)
 
         if self.random_init_bg and len(indices) > 0:
@@ -216,9 +231,11 @@ class T1DPatientBatch:
             means = init[:, [3, 4, 12]]                        # (n_idx, 3)
             variances = 0.1 * means.clamp(min=0)               # (n_idx, 3)
             stds = variances.sqrt()
-            noise = torch.tensor(
-                self._rng.randn(n_idx, 3), dtype=self.dtype, device=self.device
-            )
+            if self.env_seeds is not None:                     # per-env deterministic init BG
+                raw = np.stack([self._rngs[i].randn(3) for i in indices], axis=0)
+            else:
+                raw = self._rng.randn(n_idx, 3)
+            noise = torch.tensor(raw, dtype=self.dtype, device=self.device)
             init[:, 3] = (means[:, 0] + stds[:, 0] * noise[:, 0]).clamp(min=0)
             init[:, 4] = (means[:, 1] + stds[:, 1] * noise[:, 1]).clamp(min=0)
             init[:, 12] = (means[:, 2] + stds[:, 2] * noise[:, 2]).clamp(min=0)
