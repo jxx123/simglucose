@@ -1,0 +1,36 @@
+[project]
+name = "simglucose"
+version = "0.2.11"
+description = "A Type-1 Diabetes Simulator as a Reinforcement Learning Environment in OpenAI gym or rllab"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [{name = "Jinyu Xie", email = "xjygr08@gmail.com"}]
+requires-python = ">=3.9"
+dependencies = [
+    "gym==0.9.4",
+    "gymnasium~=0.29.1",
+    "pathos>=0.3.1",
+    "scipy>=1.11.0",
+    "matplotlib>=3.7.2",
+    "numpy>=1.25.0",
+    "pandas>=2.0.3",
+]
+
+[project.optional-dependencies]
+gpu = ["torch>=2.0"]
+
+[project.urls]
+Homepage = "https://github.com/jxx123/simglucose"
+
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["simglucose*"]
+
+[tool.setuptools.package-data]
+simglucose = ["params/*.csv"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

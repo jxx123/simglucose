@@ -4,16 +4,14 @@ from scipy.integrate import ode
 import pandas as pd
 from collections import namedtuple
 import logging
-import pkg_resources
+from simglucose.utils import _get_resource_path
 
 logger = logging.getLogger(__name__)
 
 Action = namedtuple("patient_action", ["CHO", "insulin"])
 Observation = namedtuple("observation", ["Gsub"])
 
-PATIENT_PARA_FILE = pkg_resources.resource_filename(
-    "simglucose", "params/vpatient_params.csv"
-)
+PATIENT_PARA_FILE = _get_resource_path("simglucose", "params/vpatient_params.csv")
 
 
 class T1DPatient(Patient):
