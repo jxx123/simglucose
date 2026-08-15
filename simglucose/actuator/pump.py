@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 
 class InsulinPump(object):
     U2PMOL = 6000
+    MINUTES_PER_HOUR = 60.0
 
     def __init__(self, params):
         self._params = params
@@ -30,13 +31,24 @@ class InsulinPump(object):
         return bol
 
     def basal(self, amount):
-        bas = amount * self.U2PMOL  # convert from U/min to pmol/min
-        bas = np.round(bas / self._params['inc_basal']
-                       ) * self._params['inc_basal']
-        bas = bas / self.U2PMOL     # convert from pmol/min to U/min
-        bas = min(bas, self._params['max_basal'])
-        bas = max(bas, self._params['min_basal'])
-        return bas
+        """Quantize a U/min basal request using the pump's U/hour limits."""
+        rate_u_hour = amount * self.MINUTES_PER_HOUR
+        rate_u_hour = np.round(
+            rate_u_hour / self._params["inc_basal"]
+        ) * self._params["inc_basal"]
+        rate_u_hour = min(rate_u_hour, self._params["max_basal"])
+        rate_u_hour = max(rate_u_hour, self._params["min_basal"])
+        return rate_u_hour / self.MINUTES_PER_HOUR
+
+    @property
+    def max_basal(self):
+        """Maximum basal rate exposed by the controller API, in U/min."""
+        return self._params["max_basal"] / self.MINUTES_PER_HOUR
+
+    @property
+    def min_basal(self):
+        """Minimum basal rate exposed by the controller API, in U/min."""
+        return self._params["min_basal"] / self.MINUTES_PER_HOUR
 
     def reset(self):
         logger.info('Resetting insulin pump ...')

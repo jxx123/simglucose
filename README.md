@@ -103,7 +103,7 @@ class MyController(Controller):
         ----
         Output:
         action - a namedtuple defined at the beginning of this file. The
-                 controller action contains two entries: basal, bolus
+                 controller action contains two U/min rates: basal, bolus
         '''
         self.state = observation
         action = Action(basal=0, bolus=0)
@@ -172,8 +172,8 @@ observation = env.reset()
 for t in range(100):
     env.render(mode='human')
     print(observation)
-    # Action in the gym environment is a scalar
-    # representing the basal insulin, which differs from
+    # Action in the gym environment is a scalar in U/min
+    # representing the basal insulin rate, which differs from
     # the regular controller action outside the gym
     # environment (a tuple (basal, bolus)).
     # In the perfect situation, the agent should be able

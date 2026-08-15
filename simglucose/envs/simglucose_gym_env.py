@@ -108,7 +108,7 @@ class T1DSimEnv(gym.Env):
 
     @property
     def action_space(self):
-        ub = self.env.pump._params["max_basal"]
+        ub = self.env.pump.max_basal
         return spaces.Box(low=0, high=ub, shape=(1,))
 
     @property
@@ -117,7 +117,7 @@ class T1DSimEnv(gym.Env):
 
     @property
     def max_basal(self):
-        return self.env.pump._params["max_basal"]
+        return self.env.pump.max_basal
 
 
 class T1DSimGymnaisumEnv(gymnasium.Env):
