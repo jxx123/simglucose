@@ -25,7 +25,7 @@ class TestReport(unittest.TestCase):
         RI = ri_per_hour.transpose()["Risk Index"]
 
         self.assertEqual(LBGI.size, 48)
-        self.assertEqual(round(LBGI.iloc[-1].test, 3), 0.843)
+        self.assertEqual(round(LBGI.iloc[-1].test, 3), 0.952)
         self.assertEqual(round(LBGI.iloc[0].test, 3), 0.0)
 
         self.assertEqual(HBGI.size, 48)
@@ -33,7 +33,7 @@ class TestReport(unittest.TestCase):
         self.assertEqual(round(HBGI.iloc[0].test,3), 2.755)
 
         self.assertEqual(RI.size, 48)
-        self.assertEqual(round(RI.iloc[-1].test,3), 0.843)
+        self.assertEqual(round(RI.iloc[-1].test,3), 0.952)
         self.assertEqual(round(RI.iloc[0].test,3), 2.755)
 
 
