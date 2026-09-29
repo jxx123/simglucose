@@ -1,0 +1,103 @@
+C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\envs\registration.py:2: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+START round=1 mode=serial patients=6 days=10
+Process ID: 1972
+Simulation starts ...
+Simulation Completed!
+Process ID: 1972
+Simulation starts ...
+Simulation Completed!
+Process ID: 1972
+Simulation starts ...
+Simulation Completed!
+Process ID: 1972
+Simulation starts ...
+Simulation Completed!
+Process ID: 1972
+Simulation starts ...
+Simulation Completed!
+Process ID: 1972
+Simulation starts ...
+Simulation Completed!
+Simulation took 172.34391069412231 sec.
+DONE round=1 mode=serial seconds=172.345 pids=[1972]
+START round=1 mode=parallel patients=6 days=10
+C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\envs\registration.py:2: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\envs\registration.py:2: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\envs\registration.py:2: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\envs\registration.py:2: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+Process ID: 22764
+Simulation starts ...
+Simulation Completed!
+Process ID: 13436
+Simulation starts ...
+Simulation Completed!
+Process ID: 42008
+Simulation starts ...
+Simulation Completed!
+Process ID: 42008
+Simulation starts ...
+Simulation Completed!
+Process ID: 26672
+Simulation starts ...
+Simulation Completed!
+Process ID: 26672
+Simulation starts ...
+Simulation Completed!
+Simulation took 63.9219651222229 sec.
+DONE round=1 mode=parallel seconds=63.923 pids=[13436, 22764, 26672, 42008]
+START round=2 mode=parallel patients=6 days=10
+C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\envs\registration.py:2: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\envs\registration.py:2: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\envs\registration.py:2: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\envs\registration.py:2: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+Process ID: 45012
+Simulation starts ...
+Simulation Completed!
+Process ID: 28776
+Simulation starts ...
+Simulation Completed!
+Process ID: 17204
+Simulation starts ...
+Simulation Completed!
+Process ID: 17204
+Simulation starts ...
+Simulation Completed!
+Process ID: 40836
+Simulation starts ...
+Simulation Completed!
+Process ID: 40836
+Simulation starts ...
+Simulation Completed!
+Simulation took 67.17689538002014 sec.
+DONE round=2 mode=parallel seconds=67.177 pids=[17204, 28776, 40836, 45012]
+START round=2 mode=serial patients=6 days=10
+Process ID: 1972
+Simulation starts ...
+Simulation Completed!
+Process ID: 1972
+Simulation starts ...
+Simulation Completed!
+Process ID: 1972
+Simulation starts ...
+Simulation Completed!
+Process ID: 1972
+Simulation starts ...
+Simulation Completed!
+Process ID: 1972
+Simulation starts ...
+Simulation Completed!
+Process ID: 1972
+Simulation starts ...
+Simulation Completed!
+Simulation took 175.85956978797913 sec.
+DONE round=2 mode=serial seconds=175.860 pids=[1972]
+FINAL passed=True comparisons=60 report=C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\results\ten-day-benchmark-20260930\report.json
