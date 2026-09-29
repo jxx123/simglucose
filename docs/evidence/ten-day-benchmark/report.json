@@ -1,0 +1,555 @@
+{
+  "python": "3.11.15",
+  "platform": "Windows-10-10.0.19045-SP0",
+  "cpu_count": 16,
+  "parent_pid": 1972,
+  "workers": 4,
+  "commit": "afe5682b03a866d25a37e2ea57961368b0e508dc",
+  "engine_sha256": "76f561f41a34ebd0b0f9c53e61b04d887f8d376beb0059fc27fe5699f0d65c6d",
+  "harness_sha256": "01dadaf837b461d07f1f63aa8577f92b95d8541f953e954f8209547d14487880",
+  "packages": {
+    "numpy": "1.26.4",
+    "scipy": "1.11.4",
+    "pandas": "2.3.3",
+    "pathos": "0.3.5",
+    "multiprocess": "0.70.19",
+    "dill": "0.4.1"
+  },
+  "thread_limits": {
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "configs": [
+    {
+      "id": "child-001",
+      "patient": "child#001",
+      "scenario": "random",
+      "controller": "bb",
+      "hours": 240,
+      "seeds": [
+        100,
+        200,
+        300
+      ]
+    },
+    {
+      "id": "child-002",
+      "patient": "child#002",
+      "scenario": "random",
+      "controller": "bb",
+      "hours": 240,
+      "seeds": [
+        101,
+        201,
+        301
+      ]
+    },
+    {
+      "id": "adolescent-001",
+      "patient": "adolescent#001",
+      "scenario": "random",
+      "controller": "bb",
+      "hours": 240,
+      "seeds": [
+        102,
+        202,
+        302
+      ]
+    },
+    {
+      "id": "adolescent-002",
+      "patient": "adolescent#002",
+      "scenario": "random",
+      "controller": "bb",
+      "hours": 240,
+      "seeds": [
+        103,
+        203,
+        303
+      ]
+    },
+    {
+      "id": "adult-001",
+      "patient": "adult#001",
+      "scenario": "random",
+      "controller": "bb",
+      "hours": 240,
+      "seeds": [
+        104,
+        204,
+        304
+      ]
+    },
+    {
+      "id": "adult-002",
+      "patient": "adult#002",
+      "scenario": "random",
+      "controller": "bb",
+      "hours": 240,
+      "seeds": [
+        105,
+        205,
+        305
+      ]
+    }
+  ],
+  "rounds": 2,
+  "comparisons": 60,
+  "batches": [
+    {
+      "round": 1,
+      "mode": "serial",
+      "seconds": 172.34548290001112,
+      "pids": [
+        1972
+      ],
+      "patients": [
+        {
+          "patient": "child#001",
+          "rows": 4801,
+          "start": "2018-01-01 00:00:00",
+          "end": "2018-01-11 00:00:00",
+          "days_with_meals": 10
+        },
+        {
+          "patient": "child#002",
+          "rows": 4801,
+          "start": "2018-01-01 00:00:00",
+          "end": "2018-01-11 00:00:00",
+          "days_with_meals": 10
+        },
+        {
+          "patient": "adolescent#001",
+          "rows": 4801,
+          "start": "2018-01-01 00:00:00",
+          "end": "2018-01-11 00:00:00",
+          "days_with_meals": 10
+        },
+        {
+          "patient": "adolescent#002",
+          "rows": 4801,
+          "start": "2018-01-01 00:00:00",
+          "end": "2018-01-11 00:00:00",
+          "days_with_meals": 10
+        },
+        {
+          "patient": "adult#001",
+          "rows": 4801,
+          "start": "2018-01-01 00:00:00",
+          "end": "2018-01-11 00:00:00",
+          "days_with_meals": 10
+        },
+        {
+          "patient": "adult#002",
+          "rows": 4801,
+          "start": "2018-01-01 00:00:00",
+          "end": "2018-01-11 00:00:00",
+          "days_with_meals": 10
+        }
+      ]
+    },
+    {
+      "round": 1,
+      "mode": "parallel",
+      "seconds": 63.92263750001439,
+      "pids": [
+        13436,
+        22764,
+        26672,
+        42008
+      ],
+      "patients": [
+        {
+          "patient": "child#001",
+          "rows": 4801,
+          "start": "2018-01-01 00:00:00",
+          "end": "2018-01-11 00:00:00",
+          "days_with_meals": 10
+        },
+        {
+          "patient": "child#002",
+          "rows": 4801,
+          "start": "2018-01-01 00:00:00",
+          "end": "2018-01-11 00:00:00",
+          "days_with_meals": 10
+        },
+        {
+          "patient": "adolescent#001",
+          "rows": 4801,
+          "start": "2018-01-01 00:00:00",
+          "end": "2018-01-11 00:00:00",
+          "days_with_meals": 10
+        },
+        {
+          "patient": "adolescent#002",
+          "rows": 4801,
+          "start": "2018-01-01 00:00:00",
+          "end": "2018-01-11 00:00:00",
+          "days_with_meals": 10
+        },
+        {
+          "patient": "adult#001",
+          "rows": 4801,
+          "start": "2018-01-01 00:00:00",
+          "end": "2018-01-11 00:00:00",
+          "days_with_meals": 10
+        },
+        {
+          "patient": "adult#002",
+          "rows": 4801,
+          "start": "2018-01-01 00:00:00",
+          "end": "2018-01-11 00:00:00",
+          "days_with_meals": 10
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "mode": "parallel",
+      "seconds": 67.17689579998842,
+      "pids": [
+        17204,
+        28776,
+        40836,
+        45012
+      ],
+      "patients": [
+        {
+          "patient": "child#001",
+          "rows": 4801,
+          "start": "2018-01-01 00:00:00",
+          "end": "2018-01-11 00:00:00",
+          "days_with_meals": 10
+        },
+        {
+          "patient": "child#002",
+          "rows": 4801,
+          "start": "2018-01-01 00:00:00",
+          "end": "2018-01-11 00:00:00",
+          "days_with_meals": 10
+        },
+        {
+          "patient": "adolescent#001",
+          "rows": 4801,
+          "start": "2018-01-01 00:00:00",
+          "end": "2018-01-11 00:00:00",
+          "days_with_meals": 10
+        },
+        {
+          "patient": "adolescent#002",
+          "rows": 4801,
+          "start": "2018-01-01 00:00:00",
+          "end": "2018-01-11 00:00:00",
+          "days_with_meals": 10
+        },
+        {
+          "patient": "adult#001",
+          "rows": 4801,
+          "start": "2018-01-01 00:00:00",
+          "end": "2018-01-11 00:00:00",
+          "days_with_meals": 10
+        },
+        {
+          "patient": "adult#002",
+          "rows": 4801,
+          "start": "2018-01-01 00:00:00",
+          "end": "2018-01-11 00:00:00",
+          "days_with_meals": 10
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "mode": "serial",
+      "seconds": 175.86000169999897,
+      "pids": [
+        1972
+      ],
+      "patients": [
+        {
+          "patient": "child#001",
+          "rows": 4801,
+          "start": "2018-01-01 00:00:00",
+          "end": "2018-01-11 00:00:00",
+          "days_with_meals": 10
+        },
+        {
+          "patient": "child#002",
+          "rows": 4801,
+          "start": "2018-01-01 00:00:00",
+          "end": "2018-01-11 00:00:00",
+          "days_with_meals": 10
+        },
+        {
+          "patient": "adolescent#001",
+          "rows": 4801,
+          "start": "2018-01-01 00:00:00",
+          "end": "2018-01-11 00:00:00",
+          "days_with_meals": 10
+        },
+        {
+          "patient": "adolescent#002",
+          "rows": 4801,
+          "start": "2018-01-01 00:00:00",
+          "end": "2018-01-11 00:00:00",
+          "days_with_meals": 10
+        },
+        {
+          "patient": "adult#001",
+          "rows": 4801,
+          "start": "2018-01-01 00:00:00",
+          "end": "2018-01-11 00:00:00",
+          "days_with_meals": 10
+        },
+        {
+          "patient": "adult#002",
+          "rows": 4801,
+          "start": "2018-01-01 00:00:00",
+          "end": "2018-01-11 00:00:00",
+          "days_with_meals": 10
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "patient_comparisons": [
+    {
+      "round": 1,
+      "patient": "child#001",
+      "max_absolute_error_by_column": {
+        "BG": 0.0,
+        "CGM": 0.0,
+        "CHO": 0.0,
+        "insulin": 0.0,
+        "LBGI": 0.0,
+        "HBGI": 0.0,
+        "Risk": 0.0
+      },
+      "csv_sha256": {
+        "serial": "9286b3bbd94539073df0703ac1e55316a4221b8957f31d8cd5bcdfa44f102a17",
+        "parallel": "9286b3bbd94539073df0703ac1e55316a4221b8957f31d8cd5bcdfa44f102a17"
+      },
+      "csv_bytes_identical": true
+    },
+    {
+      "round": 1,
+      "patient": "child#002",
+      "max_absolute_error_by_column": {
+        "BG": 0.0,
+        "CGM": 0.0,
+        "CHO": 0.0,
+        "insulin": 0.0,
+        "LBGI": 0.0,
+        "HBGI": 0.0,
+        "Risk": 0.0
+      },
+      "csv_sha256": {
+        "serial": "e12f635a0b239b9ffb0a5a25073b1b4dc5eecdc2ceff59c1013ca59c21573e29",
+        "parallel": "e12f635a0b239b9ffb0a5a25073b1b4dc5eecdc2ceff59c1013ca59c21573e29"
+      },
+      "csv_bytes_identical": true
+    },
+    {
+      "round": 1,
+      "patient": "adolescent#001",
+      "max_absolute_error_by_column": {
+        "BG": 0.0,
+        "CGM": 0.0,
+        "CHO": 0.0,
+        "insulin": 0.0,
+        "LBGI": 0.0,
+        "HBGI": 0.0,
+        "Risk": 0.0
+      },
+      "csv_sha256": {
+        "serial": "2f9a75b8aa8fc0f1b1d67f30ebf90581c6d38ffa4952fef6f46ea7bafd643c89",
+        "parallel": "2f9a75b8aa8fc0f1b1d67f30ebf90581c6d38ffa4952fef6f46ea7bafd643c89"
+      },
+      "csv_bytes_identical": true
+    },
+    {
+      "round": 1,
+      "patient": "adolescent#002",
+      "max_absolute_error_by_column": {
+        "BG": 0.0,
+        "CGM": 0.0,
+        "CHO": 0.0,
+        "insulin": 0.0,
+        "LBGI": 0.0,
+        "HBGI": 0.0,
+        "Risk": 0.0
+      },
+      "csv_sha256": {
+        "serial": "b981e1bacd318a86d433ac25d8881c5b4053347caf9a925afefb309267237838",
+        "parallel": "b981e1bacd318a86d433ac25d8881c5b4053347caf9a925afefb309267237838"
+      },
+      "csv_bytes_identical": true
+    },
+    {
+      "round": 1,
+      "patient": "adult#001",
+      "max_absolute_error_by_column": {
+        "BG": 0.0,
+        "CGM": 0.0,
+        "CHO": 0.0,
+        "insulin": 0.0,
+        "LBGI": 0.0,
+        "HBGI": 0.0,
+        "Risk": 0.0
+      },
+      "csv_sha256": {
+        "serial": "57684f28713c96a4b63b2acee67093d0dd70f8314617eec31c68a5761a93e354",
+        "parallel": "57684f28713c96a4b63b2acee67093d0dd70f8314617eec31c68a5761a93e354"
+      },
+      "csv_bytes_identical": true
+    },
+    {
+      "round": 1,
+      "patient": "adult#002",
+      "max_absolute_error_by_column": {
+        "BG": 0.0,
+        "CGM": 0.0,
+        "CHO": 0.0,
+        "insulin": 0.0,
+        "LBGI": 0.0,
+        "HBGI": 0.0,
+        "Risk": 0.0
+      },
+      "csv_sha256": {
+        "serial": "dedcedd5c0b9094bf15ef03c4c6a74efcdb814050cdb4d54db87050d4363580d",
+        "parallel": "dedcedd5c0b9094bf15ef03c4c6a74efcdb814050cdb4d54db87050d4363580d"
+      },
+      "csv_bytes_identical": true
+    },
+    {
+      "round": 2,
+      "patient": "child#001",
+      "max_absolute_error_by_column": {
+        "BG": 0.0,
+        "CGM": 0.0,
+        "CHO": 0.0,
+        "insulin": 0.0,
+        "LBGI": 0.0,
+        "HBGI": 0.0,
+        "Risk": 0.0
+      },
+      "csv_sha256": {
+        "serial": "9286b3bbd94539073df0703ac1e55316a4221b8957f31d8cd5bcdfa44f102a17",
+        "parallel": "9286b3bbd94539073df0703ac1e55316a4221b8957f31d8cd5bcdfa44f102a17"
+      },
+      "csv_bytes_identical": true
+    },
+    {
+      "round": 2,
+      "patient": "child#002",
+      "max_absolute_error_by_column": {
+        "BG": 0.0,
+        "CGM": 0.0,
+        "CHO": 0.0,
+        "insulin": 0.0,
+        "LBGI": 0.0,
+        "HBGI": 0.0,
+        "Risk": 0.0
+      },
+      "csv_sha256": {
+        "serial": "e12f635a0b239b9ffb0a5a25073b1b4dc5eecdc2ceff59c1013ca59c21573e29",
+        "parallel": "e12f635a0b239b9ffb0a5a25073b1b4dc5eecdc2ceff59c1013ca59c21573e29"
+      },
+      "csv_bytes_identical": true
+    },
+    {
+      "round": 2,
+      "patient": "adolescent#001",
+      "max_absolute_error_by_column": {
+        "BG": 0.0,
+        "CGM": 0.0,
+        "CHO": 0.0,
+        "insulin": 0.0,
+        "LBGI": 0.0,
+        "HBGI": 0.0,
+        "Risk": 0.0
+      },
+      "csv_sha256": {
+        "serial": "2f9a75b8aa8fc0f1b1d67f30ebf90581c6d38ffa4952fef6f46ea7bafd643c89",
+        "parallel": "2f9a75b8aa8fc0f1b1d67f30ebf90581c6d38ffa4952fef6f46ea7bafd643c89"
+      },
+      "csv_bytes_identical": true
+    },
+    {
+      "round": 2,
+      "patient": "adolescent#002",
+      "max_absolute_error_by_column": {
+        "BG": 0.0,
+        "CGM": 0.0,
+        "CHO": 0.0,
+        "insulin": 0.0,
+        "LBGI": 0.0,
+        "HBGI": 0.0,
+        "Risk": 0.0
+      },
+      "csv_sha256": {
+        "serial": "b981e1bacd318a86d433ac25d8881c5b4053347caf9a925afefb309267237838",
+        "parallel": "b981e1bacd318a86d433ac25d8881c5b4053347caf9a925afefb309267237838"
+      },
+      "csv_bytes_identical": true
+    },
+    {
+      "round": 2,
+      "patient": "adult#001",
+      "max_absolute_error_by_column": {
+        "BG": 0.0,
+        "CGM": 0.0,
+        "CHO": 0.0,
+        "insulin": 0.0,
+        "LBGI": 0.0,
+        "HBGI": 0.0,
+        "Risk": 0.0
+      },
+      "csv_sha256": {
+        "serial": "57684f28713c96a4b63b2acee67093d0dd70f8314617eec31c68a5761a93e354",
+        "parallel": "57684f28713c96a4b63b2acee67093d0dd70f8314617eec31c68a5761a93e354"
+      },
+      "csv_bytes_identical": true
+    },
+    {
+      "round": 2,
+      "patient": "adult#002",
+      "max_absolute_error_by_column": {
+        "BG": 0.0,
+        "CGM": 0.0,
+        "CHO": 0.0,
+        "insulin": 0.0,
+        "LBGI": 0.0,
+        "HBGI": 0.0,
+        "Risk": 0.0
+      },
+      "csv_sha256": {
+        "serial": "dedcedd5c0b9094bf15ef03c4c6a74efcdb814050cdb4d54db87050d4363580d",
+        "parallel": "dedcedd5c0b9094bf15ef03c4c6a74efcdb814050cdb4d54db87050d4363580d"
+      },
+      "csv_bytes_identical": true
+    }
+  ],
+  "timing_scope": "Wall time of batch_sim: simulation, CSV writes, pool startup, result transfer and pool cleanup; excludes object construction, imports and result comparison. Sequential batches, no overlap.",
+  "timing": [
+    {
+      "round": 1,
+      "serial": 172.34548290001112,
+      "parallel": 63.92263750001439,
+      "speedup": 2.6961572557135542
+    },
+    {
+      "round": 2,
+      "parallel": 67.17689579998842,
+      "serial": 175.86000169999897,
+      "speedup": 2.6178643655045057
+    }
+  ],
+  "aggregate_speedup": 2.656039085991183,
+  "mean_seconds": {
+    "serial": 174.10274230000505,
+    "parallel": 65.5497666500014
+  },
+  "passed": true
+}

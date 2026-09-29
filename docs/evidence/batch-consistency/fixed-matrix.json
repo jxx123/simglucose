@@ -1,0 +1,752 @@
+{
+  "python": "3.11.15",
+  "platform": "Windows-10-10.0.19045-SP0",
+  "cpu_count": 16,
+  "parent_pid": 35984,
+  "workers": 2,
+  "case": "all",
+  "repeats": 3,
+  "packages": {
+    "numpy": "1.26.4",
+    "scipy": "1.11.4",
+    "pandas": "2.3.3",
+    "pathos": "0.3.5",
+    "multiprocess": "0.70.19",
+    "dill": "0.4.1",
+    "gym": "0.9.4",
+    "gymnasium": "0.29.1",
+    "matplotlib": "3.8.4",
+    "setuptools": "80.10.2"
+  },
+  "engine_sha256": "76f561f41a34ebd0b0f9c53e61b04d887f8d376beb0059fc27fe5699f0d65c6d",
+  "comparisons": 268,
+  "batches": [
+    {
+      "label": "matrix/0/serial",
+      "parallel": false,
+      "pids": [
+        35984
+      ],
+      "tasks": 24,
+      "seconds": 84.63896089998889
+    },
+    {
+      "label": "matrix/0/parallel",
+      "parallel": true,
+      "pids": [
+        22800,
+        41200
+      ],
+      "tasks": 24,
+      "seconds": 46.94467569998233
+    },
+    {
+      "label": "matrix/1/serial",
+      "parallel": false,
+      "pids": [
+        35984
+      ],
+      "tasks": 24,
+      "seconds": 70.66975410000305
+    },
+    {
+      "label": "matrix/1/parallel",
+      "parallel": true,
+      "pids": [
+        30368,
+        44600
+      ],
+      "tasks": 24,
+      "seconds": 42.86255930000334
+    },
+    {
+      "label": "matrix/2/serial",
+      "parallel": false,
+      "pids": [
+        35984
+      ],
+      "tasks": 24,
+      "seconds": 69.76309860000038
+    },
+    {
+      "label": "matrix/2/parallel",
+      "parallel": true,
+      "pids": [
+        10376,
+        19716
+      ],
+      "tasks": 24,
+      "seconds": 39.84215310000582
+    },
+    {
+      "label": "duplicates/serial",
+      "parallel": false,
+      "pids": [
+        35984
+      ],
+      "tasks": 2,
+      "seconds": 0.8509523999819066
+    },
+    {
+      "label": "duplicates/parallel",
+      "parallel": true,
+      "pids": [
+        12720,
+        25244
+      ],
+      "tasks": 2,
+      "seconds": 3.8545500000182074
+    }
+  ],
+  "duplicates": {
+    "serial": {
+      "files": [
+        "adolescent#001__1.csv",
+        "adolescent#001__2.csv"
+      ],
+      "matches": [
+        1,
+        1
+      ]
+    },
+    "parallel": {
+      "files": [
+        "adolescent#001__1.csv",
+        "adolescent#001__2.csv"
+      ],
+      "matches": [
+        1,
+        1
+      ]
+    }
+  },
+  "errors": [],
+  "commit": "a6f6777586c860457a2a1e6cce6d0bd3fd33d1cc",
+  "matrix_configs": [
+    {
+      "id": "adolescent-custom-bb-1",
+      "patient": "adolescent#001",
+      "scenario": "custom",
+      "controller": "bb",
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "hours": 24,
+      "meals": [
+        [
+          7,
+          45
+        ],
+        [
+          12,
+          70
+        ],
+        [
+          18,
+          80
+        ]
+      ]
+    },
+    {
+      "id": "adolescent-custom-bb-11",
+      "patient": "adolescent#001",
+      "scenario": "custom",
+      "controller": "bb",
+      "seeds": [
+        11,
+        12,
+        13
+      ],
+      "hours": 24,
+      "meals": [
+        [
+          7,
+          45
+        ],
+        [
+          12,
+          70
+        ],
+        [
+          18,
+          80
+        ]
+      ]
+    },
+    {
+      "id": "adolescent-custom-pid-1",
+      "patient": "adolescent#001",
+      "scenario": "custom",
+      "controller": "pid",
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "hours": 24,
+      "meals": [
+        [
+          7,
+          45
+        ],
+        [
+          12,
+          70
+        ],
+        [
+          18,
+          80
+        ]
+      ]
+    },
+    {
+      "id": "adolescent-custom-pid-11",
+      "patient": "adolescent#001",
+      "scenario": "custom",
+      "controller": "pid",
+      "seeds": [
+        11,
+        12,
+        13
+      ],
+      "hours": 24,
+      "meals": [
+        [
+          7,
+          45
+        ],
+        [
+          12,
+          70
+        ],
+        [
+          18,
+          80
+        ]
+      ]
+    },
+    {
+      "id": "adolescent-random-bb-1",
+      "patient": "adolescent#001",
+      "scenario": "random",
+      "controller": "bb",
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "hours": 24,
+      "meals": [
+        [
+          7,
+          45
+        ],
+        [
+          12,
+          70
+        ],
+        [
+          18,
+          80
+        ]
+      ]
+    },
+    {
+      "id": "adolescent-random-bb-11",
+      "patient": "adolescent#001",
+      "scenario": "random",
+      "controller": "bb",
+      "seeds": [
+        11,
+        12,
+        13
+      ],
+      "hours": 24,
+      "meals": [
+        [
+          7,
+          45
+        ],
+        [
+          12,
+          70
+        ],
+        [
+          18,
+          80
+        ]
+      ]
+    },
+    {
+      "id": "adolescent-random-pid-1",
+      "patient": "adolescent#001",
+      "scenario": "random",
+      "controller": "pid",
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "hours": 24,
+      "meals": [
+        [
+          7,
+          45
+        ],
+        [
+          12,
+          70
+        ],
+        [
+          18,
+          80
+        ]
+      ]
+    },
+    {
+      "id": "adolescent-random-pid-11",
+      "patient": "adolescent#001",
+      "scenario": "random",
+      "controller": "pid",
+      "seeds": [
+        11,
+        12,
+        13
+      ],
+      "hours": 24,
+      "meals": [
+        [
+          7,
+          45
+        ],
+        [
+          12,
+          70
+        ],
+        [
+          18,
+          80
+        ]
+      ]
+    },
+    {
+      "id": "adult-custom-bb-1",
+      "patient": "adult#001",
+      "scenario": "custom",
+      "controller": "bb",
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "hours": 24,
+      "meals": [
+        [
+          7,
+          45
+        ],
+        [
+          12,
+          70
+        ],
+        [
+          18,
+          80
+        ]
+      ]
+    },
+    {
+      "id": "adult-custom-bb-11",
+      "patient": "adult#001",
+      "scenario": "custom",
+      "controller": "bb",
+      "seeds": [
+        11,
+        12,
+        13
+      ],
+      "hours": 24,
+      "meals": [
+        [
+          7,
+          45
+        ],
+        [
+          12,
+          70
+        ],
+        [
+          18,
+          80
+        ]
+      ]
+    },
+    {
+      "id": "adult-custom-pid-1",
+      "patient": "adult#001",
+      "scenario": "custom",
+      "controller": "pid",
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "hours": 24,
+      "meals": [
+        [
+          7,
+          45
+        ],
+        [
+          12,
+          70
+        ],
+        [
+          18,
+          80
+        ]
+      ]
+    },
+    {
+      "id": "adult-custom-pid-11",
+      "patient": "adult#001",
+      "scenario": "custom",
+      "controller": "pid",
+      "seeds": [
+        11,
+        12,
+        13
+      ],
+      "hours": 24,
+      "meals": [
+        [
+          7,
+          45
+        ],
+        [
+          12,
+          70
+        ],
+        [
+          18,
+          80
+        ]
+      ]
+    },
+    {
+      "id": "adult-random-bb-1",
+      "patient": "adult#001",
+      "scenario": "random",
+      "controller": "bb",
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "hours": 24,
+      "meals": [
+        [
+          7,
+          45
+        ],
+        [
+          12,
+          70
+        ],
+        [
+          18,
+          80
+        ]
+      ]
+    },
+    {
+      "id": "adult-random-bb-11",
+      "patient": "adult#001",
+      "scenario": "random",
+      "controller": "bb",
+      "seeds": [
+        11,
+        12,
+        13
+      ],
+      "hours": 24,
+      "meals": [
+        [
+          7,
+          45
+        ],
+        [
+          12,
+          70
+        ],
+        [
+          18,
+          80
+        ]
+      ]
+    },
+    {
+      "id": "adult-random-pid-1",
+      "patient": "adult#001",
+      "scenario": "random",
+      "controller": "pid",
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "hours": 24,
+      "meals": [
+        [
+          7,
+          45
+        ],
+        [
+          12,
+          70
+        ],
+        [
+          18,
+          80
+        ]
+      ]
+    },
+    {
+      "id": "adult-random-pid-11",
+      "patient": "adult#001",
+      "scenario": "random",
+      "controller": "pid",
+      "seeds": [
+        11,
+        12,
+        13
+      ],
+      "hours": 24,
+      "meals": [
+        [
+          7,
+          45
+        ],
+        [
+          12,
+          70
+        ],
+        [
+          18,
+          80
+        ]
+      ]
+    },
+    {
+      "id": "child-custom-bb-1",
+      "patient": "child#001",
+      "scenario": "custom",
+      "controller": "bb",
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "hours": 24,
+      "meals": [
+        [
+          7,
+          45
+        ],
+        [
+          12,
+          70
+        ],
+        [
+          18,
+          80
+        ]
+      ]
+    },
+    {
+      "id": "child-custom-bb-11",
+      "patient": "child#001",
+      "scenario": "custom",
+      "controller": "bb",
+      "seeds": [
+        11,
+        12,
+        13
+      ],
+      "hours": 24,
+      "meals": [
+        [
+          7,
+          45
+        ],
+        [
+          12,
+          70
+        ],
+        [
+          18,
+          80
+        ]
+      ]
+    },
+    {
+      "id": "child-custom-pid-1",
+      "patient": "child#001",
+      "scenario": "custom",
+      "controller": "pid",
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "hours": 24,
+      "meals": [
+        [
+          7,
+          45
+        ],
+        [
+          12,
+          70
+        ],
+        [
+          18,
+          80
+        ]
+      ]
+    },
+    {
+      "id": "child-custom-pid-11",
+      "patient": "child#001",
+      "scenario": "custom",
+      "controller": "pid",
+      "seeds": [
+        11,
+        12,
+        13
+      ],
+      "hours": 24,
+      "meals": [
+        [
+          7,
+          45
+        ],
+        [
+          12,
+          70
+        ],
+        [
+          18,
+          80
+        ]
+      ]
+    },
+    {
+      "id": "child-random-bb-1",
+      "patient": "child#001",
+      "scenario": "random",
+      "controller": "bb",
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "hours": 24,
+      "meals": [
+        [
+          7,
+          45
+        ],
+        [
+          12,
+          70
+        ],
+        [
+          18,
+          80
+        ]
+      ]
+    },
+    {
+      "id": "child-random-bb-11",
+      "patient": "child#001",
+      "scenario": "random",
+      "controller": "bb",
+      "seeds": [
+        11,
+        12,
+        13
+      ],
+      "hours": 24,
+      "meals": [
+        [
+          7,
+          45
+        ],
+        [
+          12,
+          70
+        ],
+        [
+          18,
+          80
+        ]
+      ]
+    },
+    {
+      "id": "child-random-pid-1",
+      "patient": "child#001",
+      "scenario": "random",
+      "controller": "pid",
+      "seeds": [
+        1,
+        2,
+        3
+      ],
+      "hours": 24,
+      "meals": [
+        [
+          7,
+          45
+        ],
+        [
+          12,
+          70
+        ],
+        [
+          18,
+          80
+        ]
+      ]
+    },
+    {
+      "id": "child-random-pid-11",
+      "patient": "child#001",
+      "scenario": "random",
+      "controller": "pid",
+      "seeds": [
+        11,
+        12,
+        13
+      ],
+      "hours": 24,
+      "meals": [
+        [
+          7,
+          45
+        ],
+        [
+          12,
+          70
+        ],
+        [
+          18,
+          80
+        ]
+      ]
+    }
+  ],
+  "passed": true
+}

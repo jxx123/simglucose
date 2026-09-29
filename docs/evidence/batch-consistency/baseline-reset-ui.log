@@ -1,0 +1,83 @@
+F.                                                                       [100%]
+================================== FAILURES ===================================
+_____________ test_reset_and_reuse_keep_duplicate_outputs_stable ______________
+
+tmp_path = WindowsPath('C:/Users/10047/AppData/Local/Temp/pytest-of-10047/pytest-1/test_reset_and_reuse_keep_dupl0')
+two_workers = None
+
+    def test_reset_and_reuse_keep_duplicate_outputs_stable(tmp_path, two_workers):
+        saved_by_mode = {}
+        reference = None
+        for parallel in (False, True):
+            root = tmp_path / str(parallel)
+            root.mkdir()
+            tasks = [make_sim(root), make_sim(root, meals=((1, 50),))]
+            previous_files = None
+            for _ in range(3):
+                for task in tasks:
+                    task.reset()
+                frames = engine.batch_sim(tasks, parallel=parallel)
+                if reference is None:
+                    reference = frames
+                for left, right in zip(reference, frames):
+                    assert_frame_equal(left, right, check_exact=True)
+                files = {p.name: p.read_bytes() for p in root.glob('*.csv')}
+>               assert len(files) == 2
+E               AssertionError: assert 1 == 2
+E                +  where 1 = len({'adolescent#001.csv': b'Time,BG,CGM,CHO,insulin,LBGI,HBGI,Risk\r\n2018-01-01 00:00:00,153.85518926705456,154.86641207...27149462516\r\n2018-01-01 03:00:00,147.8919886184064,152.42931240250448,,,0.0,2.607929972741174,2.607929972741174\r\n'})
+
+tests\test_batch_consistency.py:143: AssertionError
+---------------------------- Captured stdout call -----------------------------
+Process ID: 42648
+Simulation starts ...
+Simulation Completed!
+Process ID: 42648
+Simulation starts ...
+Simulation Completed!
+Simulation took 1.017942190170288 sec.
+============================== warnings summary ===============================
+.venv\Lib\site-packages\gym\__init__.py:20
+.venv\Lib\site-packages\gym\__init__.py:20
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\__init__.py:20: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    if distutils.version.LooseVersion(numpy.__version__) < distutils.version.LooseVersion('1.10.4'):
+
+.venv\Lib\site-packages\gym\__init__.py:23
+.venv\Lib\site-packages\gym\__init__.py:23
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\__init__.py:23: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    if distutils.version.LooseVersion(requests.__version__) < distutils.version.LooseVersion('2.0'):
+
+.venv\Lib\site-packages\gym\envs\registration.py:2
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\envs\registration.py:2: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+    import pkg_resources
+
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88: PyparsingDeprecationWarning: 'parseString' deprecated - use 'parse_string'
+    parse = parser.parseString(pattern)
+
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92: PyparsingDeprecationWarning: 'resetCache' deprecated - use 'reset_cache'
+    parser.resetCache()
+
+.venv\Lib\site-packages\matplotlib\_mathtext.py:45
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\matplotlib\_mathtext.py:45: PyparsingDeprecationWarning: 'enablePackrat' deprecated - use 'enable_packrat'
+    ParserElement.enablePackrat()
+
+tests/test_batch_consistency.py::test_high_level_ui_produces_identical_reports_and_patient_csvs
+tests/test_batch_consistency.py::test_high_level_ui_produces_identical_reports_and_patient_csvs
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\simglucose\analysis\report.py:275: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+    plt.show()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_batch_consistency.py::test_reset_and_reuse_keep_duplicate_outputs_stable
+1 failed, 1 passed, 4 deselected, 20 warnings in 11.69s

@@ -1,0 +1,45 @@
+............                                                             [100%]
+============================== warnings summary ===============================
+.venv\Lib\site-packages\gym\__init__.py:20
+.venv\Lib\site-packages\gym\__init__.py:20
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\__init__.py:20: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    if distutils.version.LooseVersion(numpy.__version__) < distutils.version.LooseVersion('1.10.4'):
+
+.venv\Lib\site-packages\gym\__init__.py:23
+.venv\Lib\site-packages\gym\__init__.py:23
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\__init__.py:23: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    if distutils.version.LooseVersion(requests.__version__) < distutils.version.LooseVersion('2.0'):
+
+.venv\Lib\site-packages\gym\envs\registration.py:2
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\envs\registration.py:2: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+    import pkg_resources
+
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88: PyparsingDeprecationWarning: 'parseString' deprecated - use 'parse_string'
+    parse = parser.parseString(pattern)
+
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92: PyparsingDeprecationWarning: 'resetCache' deprecated - use 'reset_cache'
+    parser.resetCache()
+
+.venv\Lib\site-packages\matplotlib\_mathtext.py:45
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\matplotlib\_mathtext.py:45: PyparsingDeprecationWarning: 'enablePackrat' deprecated - use 'enable_packrat'
+    ParserElement.enablePackrat()
+
+tests/test_batch_consistency.py::test_high_level_ui_produces_identical_reports_and_patient_csvs
+tests/test_batch_consistency.py::test_high_level_ui_produces_identical_reports_and_patient_csvs
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\simglucose\analysis\report.py:275: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+    plt.show()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+12 passed, 20 warnings in 80.16s (0:01:20)

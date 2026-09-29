@@ -1,0 +1,123 @@
+FF                                                                       [100%]
+================================== FAILURES ===================================
+__________________ test_parallel_batch_releases_its_workers ___________________
+
+tmp_path = WindowsPath('C:/Users/10047/AppData/Local/Temp/pytest-of-10047/pytest-3/test_parallel_batch_releases_i0')
+two_workers = None
+
+    def test_parallel_batch_releases_its_workers(tmp_path, two_workers):
+        from multiprocess import active_children
+
+        frames = engine.batch_sim([make_sim(tmp_path / 'one'),
+                                   make_sim(tmp_path / 'two')], parallel=True)
+        worker_pids = {frame.attrs['worker_pid'] for frame in frames}
+>       assert not worker_pids.intersection(p.pid for p in active_children())
+E       assert not {14740, 43064}
+E        +  where {14740, 43064} = <built-in method intersection of set object at 0x00000224071EFCA0>(<generator object test_parallel_batch_releases_its_workers.<locals>.<genexpr> at 0x000002240721F510>)
+E        +    where <built-in method intersection of set object at 0x00000224071EFCA0> = {14740, 43064}.intersection
+
+tests\test_batch_consistency.py:134: AssertionError
+---------------------------- Captured stdout call -----------------------------
+Simulation took 3.146866798400879 sec.
+---------------------------- Captured stderr call -----------------------------
+C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\envs\registration.py:2: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+
+  import pkg_resources
+
+C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\envs\registration.py:2: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+
+  import pkg_resources
+
+-------------------------- Captured stdout teardown ---------------------------
+Process ID: 14740
+
+Simulation starts ...
+
+Simulation Completed!
+
+Process ID: 43064
+
+Simulation starts ...
+
+Simulation Completed!
+
+_________________ test_parallel_failure_releases_its_workers __________________
+
+tmp_path = WindowsPath('C:/Users/10047/AppData/Local/Temp/pytest-of-10047/pytest-3/test_parallel_failure_releases0')
+two_workers = None
+
+    def test_parallel_failure_releases_its_workers(tmp_path, two_workers):
+        from multiprocess import active_children
+
+        existing_children = {p.pid for p in active_children()}
+        invalid_directory = tmp_path / 'regular-file'
+        invalid_directory.write_text('not a directory')
+        with pytest.raises(FileExistsError):
+            engine.batch_sim([make_sim(invalid_directory),
+                              make_sim(tmp_path / 'valid')], parallel=True)
+>       assert not {p.pid for p in active_children()} - existing_children
+E       assert not ({19808, 36992} - set())
+
+tests\test_batch_consistency.py:146: AssertionError
+---------------------------- Captured stderr call -----------------------------
+C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\envs\registration.py:2: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+
+  import pkg_resources
+
+C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\envs\registration.py:2: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+
+  import pkg_resources
+
+-------------------------- Captured stdout teardown ---------------------------
+Process ID: 19808
+
+Simulation starts ...
+
+Process ID: 36992
+
+Simulation starts ...
+
+Simulation Completed!
+
+============================== warnings summary ===============================
+.venv\Lib\site-packages\gym\__init__.py:20
+.venv\Lib\site-packages\gym\__init__.py:20
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\__init__.py:20: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    if distutils.version.LooseVersion(numpy.__version__) < distutils.version.LooseVersion('1.10.4'):
+
+.venv\Lib\site-packages\gym\__init__.py:23
+.venv\Lib\site-packages\gym\__init__.py:23
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\__init__.py:23: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    if distutils.version.LooseVersion(requests.__version__) < distutils.version.LooseVersion('2.0'):
+
+.venv\Lib\site-packages\gym\envs\registration.py:2
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\envs\registration.py:2: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+    import pkg_resources
+
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88: PyparsingDeprecationWarning: 'parseString' deprecated - use 'parse_string'
+    parse = parser.parseString(pattern)
+
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92: PyparsingDeprecationWarning: 'resetCache' deprecated - use 'reset_cache'
+    parser.resetCache()
+
+.venv\Lib\site-packages\matplotlib\_mathtext.py:45
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\matplotlib\_mathtext.py:45: PyparsingDeprecationWarning: 'enablePackrat' deprecated - use 'enable_packrat'
+    ParserElement.enablePackrat()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_batch_consistency.py::test_parallel_batch_releases_its_workers
+FAILED tests/test_batch_consistency.py::test_parallel_failure_releases_its_workers
+2 failed, 8 deselected, 18 warnings in 10.44s

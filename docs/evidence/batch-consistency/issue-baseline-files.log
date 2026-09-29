@@ -1,0 +1,22 @@
+C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\envs\registration.py:2: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+Process ID: 42168
+Simulation starts ...
+Simulation Completed!
+Process ID: 42168
+Simulation starts ...
+Simulation Completed!
+Simulation took 0.8826150894165039 sec.
+parallel: False different trajectories: True saved: ['adolescent#001.csv']
+C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\envs\registration.py:2: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\envs\registration.py:2: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+Simulation took 3.8010098934173584 sec.
+parallel: True different trajectories: True saved: ['adolescent#001.csv']
+Process ID: 44052
+Simulation starts ...
+Simulation Completed!
+Process ID: 28564
+Simulation starts ...
+Simulation Completed!
