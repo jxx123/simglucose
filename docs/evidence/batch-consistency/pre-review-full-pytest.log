@@ -1,0 +1,127 @@
+C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\envs\registration.py:2: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+  import pkg_resources
+Timeout (0:03:00)!
+Thread 0x0000aa40 (most recent call first):
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\multiprocess\connection.py", line 324 in _recv_bytes
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\multiprocess\connection.py", line 253 in recv
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\multiprocess\pool.py", line 579 in _handle_results
+  File "C:\Users\10047\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\threading.py", line 982 in run
+  File "C:\Users\10047\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\threading.py", line 1045 in _bootstrap_inner
+  File "C:\Users\10047\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\threading.py", line 1002 in _bootstrap
+
+Thread 0x0000ab2c (most recent call first):
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\multiprocess\pool.py", line 531 in _handle_tasks
+  File "C:\Users\10047\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\threading.py", line 982 in run
+  File "C:\Users\10047\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\threading.py", line 1045 in _bootstrap_inner
+  File "C:\Users\10047\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\threading.py", line 1002 in _bootstrap
+
+Thread 0x000051c4 (most recent call first):
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\multiprocess\connection.py", line 831 in _exhaustive_wait
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\multiprocess\connection.py", line 899 in wait
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\multiprocess\pool.py", line 502 in _wait_for_updates
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\multiprocess\pool.py", line 522 in _handle_workers
+  File "C:\Users\10047\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\threading.py", line 982 in run
+  File "C:\Users\10047\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\threading.py", line 1045 in _bootstrap_inner
+  File "C:\Users\10047\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\threading.py", line 1002 in _bootstrap
+
+Thread 0x0000b6cc (most recent call first):
+  File "C:\Users\10047\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\threading.py", line 327 in wait
+  File "C:\Users\10047\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\threading.py", line 629 in wait
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\multiprocess\pool.py", line 765 in wait
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\multiprocess\pool.py", line 768 in get
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\multiprocess\pool.py", line 367 in map
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\pathos\multiprocessing.py", line 154 in map
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\simglucose\simulation\sim_engine.py", line 114 in batch_sim
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\tests\test_sim_engine.py", line 67 in test_batch_sim
+  File "C:\Users\10047\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\unittest\case.py", line 579 in _callTestMethod
+  File "C:\Users\10047\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\unittest\case.py", line 623 in run
+  File "C:\Users\10047\AppData\Roaming\uv\python\cpython-3.11-windows-x86_64-none\Lib\unittest\case.py", line 678 in __call__
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\_pytest\unittest.py", line 410 in runtest
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\_pytest\runner.py", line 184 in pytest_runtest_call
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\_pytest\runner.py", line 250 in <lambda>
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\_pytest\runner.py", line 361 in from_call
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\_pytest\runner.py", line 249 in call_and_report
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\_pytest\runner.py", line 139 in runtestprotocol
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\_pytest\runner.py", line 118 in pytest_runtest_protocol
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\_pytest\main.py", line 408 in pytest_runtestloop
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\_pytest\main.py", line 384 in _main
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\_pytest\main.py", line 330 in wrap_session
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\_pytest\main.py", line 377 in pytest_cmdline_main
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\pluggy\_callers.py", line 121 in _multicall
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\pluggy\_manager.py", line 120 in _hookexec
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\pluggy\_hooks.py", line 512 in __call__
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\_pytest\config\__init__.py", line 229 in _main
+  File "C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\_pytest\config\__init__.py", line 201 in main
+  File "<string>", line 1 in <module>
+.........................                                                [100%]
+============================== warnings summary ===============================
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88: PyparsingDeprecationWarning: 'parseString' deprecated - use 'parse_string'
+    parse = parser.parseString(pattern)
+
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92: PyparsingDeprecationWarning: 'resetCache' deprecated - use 'reset_cache'
+    parser.resetCache()
+
+.venv\Lib\site-packages\matplotlib\_mathtext.py:45
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\matplotlib\_mathtext.py:45: PyparsingDeprecationWarning: 'enablePackrat' deprecated - use 'enable_packrat'
+    ParserElement.enablePackrat()
+
+tests/test_batch_consistency.py::test_high_level_ui_produces_identical_reports_and_patient_csvs
+tests/test_batch_consistency.py::test_high_level_ui_produces_identical_reports_and_patient_csvs
+tests/test_pid_controller.py::TestPIDController::test_pid_controller
+tests/test_ui.py::testUI::test_ui
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\simglucose\analysis\report.py:275: UserWarning: FigureCanvasAgg is non-interactive, and thus cannot be shown
+    plt.show()
+
+tests/test_gym.py::TestGym::test_gym_random_agent
+tests/test_gym_custom_scenario.py::TestCustomScenario::test_custom_scenario
+tests/test_reset.py::TestReset::test_reset_change_is_deterministic_when_seed_is_fixed
+tests/test_reset.py::TestReset::test_reset_change_is_random_when_seed_is_different
+tests/test_reset.py::TestReset::test_reset_changes_observation_when_seed_is_fixed
+tests/test_reward_fun.py::TestCustomReward::test_custom_reward
+tests/test_seed.py::TestSeed::test_changing_seed_generates_different_results
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\envs\registration.py:17: PkgResourcesDeprecationWarning: Parameters to load are deprecated.  Call .resolve and .require separately.
+    result = entry_point.load(False)
+
+tests/test_gymnasium.py: 517 warnings
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\simglucose\patient\t1dpatient.py:195: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+    dxdt[10] = insulin - (params.ka1 + params.kd) * x[10]
+
+tests/test_gymnasium.py::TestGymnasium::test_gymnasium_random_agent
+tests/test_gymnasium.py::TestGymnasium::test_gymnasium_random_agent
+tests/test_gymnasium.py::TestGymnasium::test_gymnasium_random_agent
+tests/test_gymnasium.py::TestGymnasium::test_gymnasium_random_agent
+tests/test_gymnasium.py::TestGymnasium::test_gymnasium_random_agent
+tests/test_gymnasium.py::TestGymnasium::test_gymnasium_random_agent
+tests/test_gymnasium.py::TestGymnasium::test_gymnasium_random_agent
+tests/test_gymnasium.py::TestGymnasium::test_gymnasium_random_agent
+tests/test_gymnasium.py::TestGymnasium::test_gymnasium_random_agent
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\matplotlib\cbook.py:1699: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+    return math.isfinite(val)
+
+tests/test_gymnasium.py: 45 warnings
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\matplotlib\cbook.py:1345: DeprecationWarning: Conversion of an array with ndim > 0 to a scalar is deprecated, and will error in future. Ensure you extract a single element from your array before performing this operation. (Deprecated NumPy 1.25.)
+    return np.asarray(x, float)
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+25 passed, 595 warnings in 677.52s (0:11:17)

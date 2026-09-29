@@ -25,6 +25,16 @@ This simulator is a python implementation of the FDA-approved [UVa/Padova Simula
 - Simulation environment follows [OpenAI gym](https://github.com/openai/gym) and [rllab](https://github.com/rll/rllab) APIs. It returns observation, reward, done, info at each step, which means the simulator is "reinforcement-learning-ready".
 - Supports customized reward function. The reward function is a function of blood glucose measurements in the last hour. By default, the reward at each step is `risk[t-1] - risk[t]`. `risk[t]` is the risk index at time `t` defined in this [paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2903980/pdf/dia.2008.0138.pdf).
 - Supports parallel computing. The simulator simulates multiple patients in parallel using [pathos multiprocessing package](https://github.com/uqfoundation/pathos) (you are free to turn parallel off by setting `parallel=False`).
+  For equivalent serial/process experiments, use identical configurations and
+  explicit patient, sensor, and scenario seeds with a deterministic controller.
+  Compare the DataFrames returned by `batch_sim`; worker processes do not update
+  the caller's environment objects. A unique patient/output-directory pair still
+  saves as `patient.csv`. Repeated pairs within one batch save as
+  `patient__1.csv`, `patient__2.csv`, etc., in input order, skipping filenames
+  reserved by other tasks. Running the same batch again updates the same files;
+  use separate output directories for separate concurrent batches.
+  On Windows, put calls that start process pools under
+  `if __name__ == '__main__':` (see `examples/advanced_tutorial.py`).
 - The simulator provides a random scenario generator (`from simglucose.simulation.scenario_gen import RandomScenario`) and a customized scenario generator (`from simglucose.simulation.scenario import CustomScenario`). Commandline user-interface will guide you through the scenario settings.
 - The simulator provides the most basic basal-bolus controller for now. It provides very simple syntax to implement your own controller, like Model Predictive Control, PID control, reinforcement learning control, etc.
 - You can specify random seed in case you want to repeat your experiments.

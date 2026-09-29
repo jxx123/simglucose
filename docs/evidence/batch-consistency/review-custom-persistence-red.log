@@ -1,0 +1,108 @@
+FF                                                                       [100%]
+================================== FAILURES ===================================
+_________ test_custom_persistence_without_directory_still_runs[False] _________
+
+two_workers = None, parallel = False
+
+    @pytest.mark.parametrize('parallel', [False, True])
+    def test_custom_persistence_without_directory_still_runs(two_workers, parallel):
+>       frames = engine.batch_sim(
+            [make_sim(None, simulation_class=MemorySimulation),
+             make_sim(None, simulation_class=MemorySimulation)], parallel=parallel)
+
+tests\test_batch_consistency.py:163:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+simglucose\simulation\sim_engine.py:108: in batch_sim
+    filenames = _batch_filenames(sim_instances)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+simglucose\simulation\sim_engine.py:78: in _batch_filenames
+    targets = [target(s, name) for s, name in zip(sim_instances, names)]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+simglucose\simulation\sim_engine.py:78: in <listcomp>
+    targets = [target(s, name) for s, name in zip(sim_instances, names)]
+               ^^^^^^^^^^^^^^^
+simglucose\simulation\sim_engine.py:75: in target
+    os.path.join(instance.path, filename)))
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = None, paths = ('adolescent#001.csv',)
+
+>   ???
+E   TypeError: expected str, bytes or os.PathLike object, not NoneType
+
+<frozen ntpath>:109: TypeError
+_________ test_custom_persistence_without_directory_still_runs[True] __________
+
+two_workers = None, parallel = True
+
+    @pytest.mark.parametrize('parallel', [False, True])
+    def test_custom_persistence_without_directory_still_runs(two_workers, parallel):
+>       frames = engine.batch_sim(
+            [make_sim(None, simulation_class=MemorySimulation),
+             make_sim(None, simulation_class=MemorySimulation)], parallel=parallel)
+
+tests\test_batch_consistency.py:163:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+simglucose\simulation\sim_engine.py:108: in batch_sim
+    filenames = _batch_filenames(sim_instances)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+simglucose\simulation\sim_engine.py:78: in _batch_filenames
+    targets = [target(s, name) for s, name in zip(sim_instances, names)]
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+simglucose\simulation\sim_engine.py:78: in <listcomp>
+    targets = [target(s, name) for s, name in zip(sim_instances, names)]
+               ^^^^^^^^^^^^^^^
+simglucose\simulation\sim_engine.py:75: in target
+    os.path.join(instance.path, filename)))
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+path = None, paths = ('adolescent#001.csv',)
+
+>   ???
+E   TypeError: expected str, bytes or os.PathLike object, not NoneType
+
+<frozen ntpath>:109: TypeError
+============================== warnings summary ===============================
+.venv\Lib\site-packages\gym\__init__.py:20
+.venv\Lib\site-packages\gym\__init__.py:20
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\__init__.py:20: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    if distutils.version.LooseVersion(numpy.__version__) < distutils.version.LooseVersion('1.10.4'):
+
+.venv\Lib\site-packages\gym\__init__.py:23
+.venv\Lib\site-packages\gym\__init__.py:23
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\__init__.py:23: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    if distutils.version.LooseVersion(requests.__version__) < distutils.version.LooseVersion('2.0'):
+
+.venv\Lib\site-packages\gym\envs\registration.py:2
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\envs\registration.py:2: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+    import pkg_resources
+
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88: PyparsingDeprecationWarning: 'parseString' deprecated - use 'parse_string'
+    parse = parser.parseString(pattern)
+
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92: PyparsingDeprecationWarning: 'resetCache' deprecated - use 'reset_cache'
+    parser.resetCache()
+
+.venv\Lib\site-packages\matplotlib\_mathtext.py:45
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\matplotlib\_mathtext.py:45: PyparsingDeprecationWarning: 'enablePackrat' deprecated - use 'enable_packrat'
+    ParserElement.enablePackrat()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_batch_consistency.py::test_custom_persistence_without_directory_still_runs[False]
+FAILED tests/test_batch_consistency.py::test_custom_persistence_without_directory_still_runs[True]
+2 failed, 10 deselected, 18 warnings in 3.59s

@@ -1,0 +1,93 @@
+F.                                                                       [100%]
+================================== FAILURES ===================================
+_____________ test_alias_paths_and_generated_names_do_not_collide _____________
+
+tmp_path = WindowsPath('C:/Users/10047/AppData/Local/Temp/pytest-of-10047/pytest-2/test_alias_paths_and_generated0')
+two_workers = None
+
+    def test_alias_paths_and_generated_names_do_not_collide(tmp_path, two_workers):
+        # Two spellings of one output directory must be grouped together. The
+        # natural filename of a third patient must not be stolen by a suffix.
+        alias = tmp_path / 'subdirectory' / '..'
+        tasks = [make_sim(tmp_path), make_sim(alias, meals=((1, 50),)),
+                 make_sim(tmp_path, meals=((1, 70),))]
+        tasks[2].env.patient._params['Name'] = 'adolescent#001__1'
+        tasks[2].env.patient.name = 'adolescent#001__1'
+        frames = engine.batch_sim(tasks, parallel=True)
+        files = list(tmp_path.glob('*.csv'))
+>       assert len(files) == 3
+E       AssertionError: assert 2 == 3
+E        +  where 2 = len([WindowsPath('C:/Users/10047/AppData/Local/Temp/pytest-of-10047/pytest-2/test_alias_paths_and_generated0/adolescent#00...th('C:/Users/10047/AppData/Local/Temp/pytest-of-10047/pytest-2/test_alias_paths_and_generated0/adolescent#001__1.csv')])
+
+tests\test_batch_consistency.py:110: AssertionError
+---------------------------- Captured stdout call -----------------------------
+Simulation took 4.09218692779541 sec.
+---------------------------- Captured stderr call -----------------------------
+C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\envs\registration.py:2: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+
+  import pkg_resources
+
+C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\envs\registration.py:2: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+
+  import pkg_resources
+
+-------------------------- Captured stdout teardown ---------------------------
+Process ID: 19792
+
+Simulation starts ...
+
+Simulation Completed!
+
+Process ID: 43624
+
+Simulation starts ...
+
+Simulation Completed!
+
+Process ID: 43624
+
+Simulation starts ...
+
+Simulation Completed!
+
+============================== warnings summary ===============================
+.venv\Lib\site-packages\gym\__init__.py:20
+.venv\Lib\site-packages\gym\__init__.py:20
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\__init__.py:20: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    if distutils.version.LooseVersion(numpy.__version__) < distutils.version.LooseVersion('1.10.4'):
+
+.venv\Lib\site-packages\gym\__init__.py:23
+.venv\Lib\site-packages\gym\__init__.py:23
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\__init__.py:23: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    if distutils.version.LooseVersion(requests.__version__) < distutils.version.LooseVersion('2.0'):
+
+.venv\Lib\site-packages\gym\envs\registration.py:2
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\envs\registration.py:2: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+    import pkg_resources
+
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88: PyparsingDeprecationWarning: 'parseString' deprecated - use 'parse_string'
+    parse = parser.parseString(pattern)
+
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92: PyparsingDeprecationWarning: 'resetCache' deprecated - use 'reset_cache'
+    parser.resetCache()
+
+.venv\Lib\site-packages\matplotlib\_mathtext.py:45
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\matplotlib\_mathtext.py:45: PyparsingDeprecationWarning: 'enablePackrat' deprecated - use 'enable_packrat'
+    ParserElement.enablePackrat()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_batch_consistency.py::test_alias_paths_and_generated_names_do_not_collide
+1 failed, 1 passed, 6 deselected, 18 warnings in 12.11s

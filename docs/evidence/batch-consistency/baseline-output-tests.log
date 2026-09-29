@@ -1,0 +1,151 @@
+FFF.                                                                     [100%]
+================================== FAILURES ===================================
+_________ test_same_patient_different_scenarios_are_both_saved[False] _________
+
+tmp_path = WindowsPath('C:/Users/10047/AppData/Local/Temp/pytest-of-10047/pytest-0/test_same_patient_different_sc0')
+two_workers = None, parallel = False
+
+    @pytest.mark.parametrize('parallel', [False, True])
+    def test_same_patient_different_scenarios_are_both_saved(
+            tmp_path, two_workers, parallel):
+        tasks = [make_sim(tmp_path), make_sim(tmp_path, meals=((1, 50),))]
+        frames = engine.batch_sim(tasks, parallel=parallel)
+        assert not frames[0].equals(frames[1]), 'Scenarios must be distinguishable'
+        files = sorted(tmp_path.glob('*.csv'))
+>       assert len(files) == 2, 'A batch must not overwrite another scenario'
+E       AssertionError: A batch must not overwrite another scenario
+E       assert 1 == 2
+E        +  where 1 = len([WindowsPath('C:/Users/10047/AppData/Local/Temp/pytest-of-10047/pytest-0/test_same_patient_different_sc0/adolescent#001.csv')])
+
+tests\test_batch_consistency.py:74: AssertionError
+---------------------------- Captured stdout call -----------------------------
+Process ID: 41936
+Simulation starts ...
+Simulation Completed!
+Process ID: 41936
+Simulation starts ...
+Simulation Completed!
+Simulation took 0.9028327465057373 sec.
+_________ test_same_patient_different_scenarios_are_both_saved[True] __________
+
+tmp_path = WindowsPath('C:/Users/10047/AppData/Local/Temp/pytest-of-10047/pytest-0/test_same_patient_different_sc1')
+two_workers = None, parallel = True
+
+    @pytest.mark.parametrize('parallel', [False, True])
+    def test_same_patient_different_scenarios_are_both_saved(
+            tmp_path, two_workers, parallel):
+        tasks = [make_sim(tmp_path), make_sim(tmp_path, meals=((1, 50),))]
+        frames = engine.batch_sim(tasks, parallel=parallel)
+        assert not frames[0].equals(frames[1]), 'Scenarios must be distinguishable'
+        files = sorted(tmp_path.glob('*.csv'))
+>       assert len(files) == 2, 'A batch must not overwrite another scenario'
+E       AssertionError: A batch must not overwrite another scenario
+E       assert 1 == 2
+E        +  where 1 = len([WindowsPath('C:/Users/10047/AppData/Local/Temp/pytest-of-10047/pytest-0/test_same_patient_different_sc1/adolescent#001.csv')])
+
+tests\test_batch_consistency.py:74: AssertionError
+---------------------------- Captured stdout call -----------------------------
+Simulation took 3.5623931884765625 sec.
+---------------------------- Captured stderr call -----------------------------
+C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\envs\registration.py:2: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+
+  import pkg_resources
+
+C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\envs\registration.py:2: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+
+  import pkg_resources
+
+-------------------------- Captured stdout teardown ---------------------------
+Process ID: 43512
+
+Simulation starts ...
+
+Simulation Completed!
+
+Process ID: 37168
+
+Simulation starts ...
+
+Simulation Completed!
+
+________ test_save_results_accepts_directory_created_by_another_worker ________
+
+tmp_path = WindowsPath('C:/Users/10047/AppData/Local/Temp/pytest-of-10047/pytest-0/test_save_results_accepts_dire0')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000001BBA7757290>
+
+    def test_save_results_accepts_directory_created_by_another_worker(
+            tmp_path, monkeypatch):
+        directory = tmp_path / 'new'
+        task = make_sim(directory)
+        task.simulate()
+        original_makedirs = os.makedirs
+
+        def another_worker_creates_first(path, *args, **kwargs):
+            # A deterministic interleaving of the real filesystem operations:
+            # the other worker wins between this worker's check and mkdir.
+            if Path(path) == directory and not directory.exists():
+                original_makedirs(path)
+            return original_makedirs(path, *args, **kwargs)
+
+        monkeypatch.setattr(engine.os, 'makedirs', another_worker_creates_first)
+>       task.save_results()
+
+tests\test_batch_consistency.py:95:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+simglucose\simulation\sim_engine.py:47: in save_results
+    os.makedirs(self.path)
+tests\test_batch_consistency.py:92: in another_worker_creates_first
+    return original_makedirs(path, *args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+name = WindowsPath('C:/Users/10047/AppData/Local/Temp/pytest-of-10047/pytest-0/test_save_results_accepts_dire0/new')
+mode = 511, exist_ok = False
+
+>   ???
+E   FileExistsError: [WinError 183] ���ļ��Ѵ���ʱ���޷��������ļ���: 'C:\\Users\\10047\\AppData\\Local\\Temp\\pytest-of-10047\\pytest-0\\test_save_results_accepts_dire0\\new'
+
+<frozen os>:225: FileExistsError
+============================== warnings summary ===============================
+.venv\Lib\site-packages\gym\__init__.py:20
+.venv\Lib\site-packages\gym\__init__.py:20
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\__init__.py:20: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    if distutils.version.LooseVersion(numpy.__version__) < distutils.version.LooseVersion('1.10.4'):
+
+.venv\Lib\site-packages\gym\__init__.py:23
+.venv\Lib\site-packages\gym\__init__.py:23
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\__init__.py:23: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.
+    if distutils.version.LooseVersion(requests.__version__) < distutils.version.LooseVersion('2.0'):
+
+.venv\Lib\site-packages\gym\envs\registration.py:2
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\gym\envs\registration.py:2: UserWarning: pkg_resources is deprecated as an API. See https://setuptools.pypa.io/en/latest/pkg_resources.html. The pkg_resources package is slated for removal as early as 2025-11-30. Refrain from using this package or pin to Setuptools<81.
+    import pkg_resources
+
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:88: PyparsingDeprecationWarning: 'parseString' deprecated - use 'parse_string'
+    parse = parser.parseString(pattern)
+
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\matplotlib\_fontconfig_pattern.py:92: PyparsingDeprecationWarning: 'resetCache' deprecated - use 'reset_cache'
+    parser.resetCache()
+
+.venv\Lib\site-packages\matplotlib\_mathtext.py:45
+  C:\Users\10047\.codex\worktrees\batch-consistency\simglucose\.venv\Lib\site-packages\matplotlib\_mathtext.py:45: PyparsingDeprecationWarning: 'enablePackrat' deprecated - use 'enable_packrat'
+    ParserElement.enablePackrat()
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_batch_consistency.py::test_same_patient_different_scenarios_are_both_saved[False]
+FAILED tests/test_batch_consistency.py::test_same_patient_different_scenarios_are_both_saved[True]
+FAILED tests/test_batch_consistency.py::test_save_results_accepts_directory_created_by_another_worker
+3 failed, 1 passed, 18 warnings in 26.02s
